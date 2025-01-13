@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import re
 import hashlib
-from .string_value_object import StringValueObject
-from .invalid_argument_exception import InvalidArgumentException
+from ..primitive import StringValueObject
+from ..invalid_argument_exception import InvalidArgumentException
 
 
 @dataclass(frozen=True)

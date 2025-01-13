@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import json
 from typing import Any
-from .value_object import ValueObject
-from .invalid_argument_exception import InvalidArgumentException
+from ..value_object import ValueObject
+from ..invalid_argument_exception import InvalidArgumentException
 
 
 @dataclass(frozen=True)

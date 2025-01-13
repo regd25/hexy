@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from ..invalid_argument_exception import InvalidArgumentException
 from ..value_object import ValueObject
 
 
+@dataclass(frozen=True)
 class StringValueObject(ValueObject):
     """A value object that represents a string value."""
 
@@ -15,3 +17,6 @@ class StringValueObject(ValueObject):
 
     def to_primitive(self) -> str:
         return self._value
+
+    def upper(self) -> str:
+        return self._value.upper()
