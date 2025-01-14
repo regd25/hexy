@@ -1,19 +1,18 @@
-from typing import Union, List
+"""Filter Value Value Object Module."""
+
+from typing import Union
+
 from src.shared.domain.value_object import StringValueObject
 
 
-
 class FilterValue(StringValueObject):
-    def __init__(self, value: Union[None, str, bool, List[str]]):
-        if isinstance(value, bool):
-            value = str(value)
-        if isinstance(value, list):
-            value = ",".join(value)
+    """Filter Value Value Object."""
+
+    @staticmethod
+    def create(value: Union[str, int, float, bool, list, None]) -> "FilterValue":
+        """Create a new FilterValue."""
         if value is None:
-            value = "NULL"
-
-        super().__init__(value)
-
-    @classmethod
-    def null(cls) -> "FilterValue":
-        return cls("NULL")
+            return FilterValue(_value="null")
+        if isinstance(value, (list, tuple)):
+            return FilterValue(_value=",".join(map(str, value)))
+        return FilterValue(_value=str(value))

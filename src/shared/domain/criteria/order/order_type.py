@@ -1,5 +1,6 @@
 from enum import Enum
-from ..value_object import EnumValueObject, InvalidArgumentError
+from ..invalid_criteria_exception import InvalidCriteriaException
+from src.shared.domain.value_object import EnumValueObject
 
 
 class OrderTypes(str, Enum):
@@ -19,13 +20,21 @@ class OrderType(EnumValueObject):
         elif value == OrderTypes.DESC:
             return cls(OrderTypes.DESC)
         else:
-            raise InvalidArgumentError(f"El tipo de orden {value} es inválido")
+            raise InvalidCriteriaException(
+                message="Invalid order type",
+                parameter="order_type",
+                value=value,
+            )
 
     def is_none(self) -> bool:
-        return self.value == OrderTypes.NONE
+        return str(self) == OrderTypes.NONE.value
 
     def is_asc(self) -> bool:
-        return self.value == OrderTypes.ASC
+        return str(self) == OrderTypes.ASC
 
     def _throw_error_for_invalid_value(self, value: str) -> None:
-        raise InvalidArgumentError(f"El tipo de orden {value} es inválido")
+        raise InvalidCriteriaException()(
+            message="Invalid order type",
+            parameter="order_type",
+            value=value,
+        )

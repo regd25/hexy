@@ -1,7 +1,7 @@
 from typing import Union, List
 import boto3
-from ...domain.event import DomainEvent
-from ...domain.event.domain_event_publisher import DomainEventPublisher
+from ...domain.domain_event import DomainEvent
+from ...domain.domain_event.domain_event_publisher import DomainEventPublisher
 from .sns_config import SnsConfig
 
 class SnsDomainEventPublisher(DomainEventPublisher):

@@ -1,3 +1,5 @@
+"""Ranges Value Objects Module."""
+
 from .date_value_object import DateValueObject
 from .datetime_value_object import DateTimeValueObject
 from .percentage_value_object import PercentageValueObject

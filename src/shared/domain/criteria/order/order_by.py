@@ -1,5 +1,5 @@
 from typing import Union, List
-from ..value_object import StringValueObject
+from src.shared.domain.value_object import StringValueObject
 
 
 class OrderBy(StringValueObject):

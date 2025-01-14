@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, List
-from src.shared.domain.exception.domain_exception import DomainException
+from ..exception.domain_exception import DomainException
 
 
 @dataclass

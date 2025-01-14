@@ -1,7 +1,7 @@
 
 import re
-from .value_object import ValueObject
-from .invalid_argument_exception import InvalidArgumentException
+from ..value_object import ValueObject
+from ..invalid_argument_exception import InvalidArgumentException
 
 class EmailValueObject(ValueObject):
     """A value object that represents an email address."""

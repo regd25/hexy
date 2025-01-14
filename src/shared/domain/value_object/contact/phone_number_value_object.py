@@ -1,6 +1,6 @@
 import re
 from ..invalid_argument_exception import InvalidArgumentException
-from .string_value_object import StringValueObject
+from ..primitive import StringValueObject
 
 
 class PhoneNumberValueObject(StringValueObject):

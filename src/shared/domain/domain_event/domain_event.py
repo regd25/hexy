@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Dict, Any
-from ..value_object import UuidValueObject, RoutingKey
+from ..value_object import UuidValueObject, RoutingKeyValueObject
 
 
 class DomainEvent:
-    ROUTING_KEY: RoutingKey = None
+    ROUTING_KEY: RoutingKeyValueObject = None
 
     def __init__(
         self,
-        routing_key: RoutingKey,
+        routing_key: RoutingKeyValueObject,
         body: Dict[str, Any],
         event_id: str = None,
         occurred_on: datetime = None,

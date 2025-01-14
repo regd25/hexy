@@ -1,62 +1,81 @@
+"""Filter Operator Value Object Module."""
+
 from enum import Enum
-from src.shared.domain.criteria.exception.invalid_criteria_exception import InvalidCriteriaException
-from src.shared.domain.value_object import EnumValueObject
+
+from src.shared.domain.criteria.invalid_criteria_exception import (
+    InvalidCriteriaException,
+)
+from src.shared.domain.value_object.primitive import EnumValueObject
+
 
 class Operator(str, Enum):
-    EQUAL = '='
-    NOT_EQUAL = '!='
-    GT = '>'
-    LT = '<'
-    LIKE = 'LIKE'
-    LLU = 'LLU'  # lower and unaccent case
-    IN = 'IN'
-    GTE = '>='
-    LTE = '<='
-    ARR_IN = '&&'
+    """Filter Operator Enum."""
+
+    EQUAL = "="
+    NOT_EQUAL = "!="
+    GT = ">"
+    LT = "<"
+    LIKE = "LIKE"
+    LLU = "LLU"  # lower and unaccent case
+    IN = "IN"
+    GTE = ">="
+    LTE = "<="
+    ARR_IN = "&&"
+
 
 class FilterOperator(EnumValueObject):
-    def __init__(self, value: Operator):
-        super().__init__(value, [e.value for e in Operator])
+    """Filter Operator Value Object."""
 
-    @classmethod
-    def from_value(cls, value: str) -> 'FilterOperator':
+    @staticmethod
+    def create(value: str) -> "FilterOperator":
+        """Create a new FilterOperator."""
         if value not in [e.value for e in Operator]:
-            raise Inval
+            raise InvalidCriteriaException.create_invalid_field(
+                field=value,
+                valid_fields=[e.value for e in Operator],
+            )
+        return FilterOperator(_value=value)
 
     def is_positive(self) -> bool:
-        return self.value != Operator.NOT_EQUAL
-
-    def _throw_error_for_invalid_value(self, value: str) -> None:
-        raise InvalidCriteriaException(f"El operador de filtro {value} es inválido")
+        """Check if the operator is positive."""
+        return self._value != Operator.NOT_EQUAL.value
 
     @classmethod
-    def not_equal(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.NOT_EQUAL)
+    def not_equal(cls) -> "FilterOperator":
+        """Create a NOT_EQUAL operator."""
+        return cls.create(Operator.NOT_EQUAL.value)
 
     @classmethod
-    def equal(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.EQUAL)
+    def equal(cls) -> "FilterOperator":
+        """Create an EQUAL operator."""
+        return cls.create(Operator.EQUAL.value)
 
     @classmethod
-    def like(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.LIKE)
+    def like(cls) -> "FilterOperator":
+        """Create a LIKE operator."""
+        return cls.create(Operator.LIKE.value)
 
     @classmethod
-    def llu(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.LLU)
+    def llu(cls) -> "FilterOperator":
+        """Create a LLU operator."""
+        return cls.create(Operator.LLU.value)
 
     @classmethod
-    def in_(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.IN)
+    def in_(cls) -> "FilterOperator":
+        """Create an IN operator."""
+        return cls.create(Operator.IN.value)
 
     @classmethod
-    def gte(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.GTE)
+    def gte(cls) -> "FilterOperator":
+        """Create a GTE operator."""
+        return cls.create(Operator.GTE.value)
 
     @classmethod
-    def lte(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.LTE)
+    def lte(cls) -> "FilterOperator":
+        """Create a LTE operator."""
+        return cls.create(Operator.LTE.value)
 
     @classmethod
-    def arr_in(cls) -> 'FilterOperator':
-        return cls.from_value(Operator.ARR_IN) 
+    def arr_in(cls) -> "FilterOperator":
+        """Create an ARR_IN operator."""
+        return cls.create(Operator.ARR_IN.value)

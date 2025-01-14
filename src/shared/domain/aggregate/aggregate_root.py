@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import List
 from dataclasses import dataclass, field
-from ..event.domain_event import DomainEvent
+from ..domain_event.domain_event import DomainEvent
 
 
 @dataclass

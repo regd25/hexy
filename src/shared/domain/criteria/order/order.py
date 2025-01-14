@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, List
-from ..value_object import InvalidArgumentError
+
+from ..invalid_criteria_exception import InvalidCriteriaException
 from .order_by import OrderBy
 from .order_type import OrderType, OrderTypes
 
@@ -9,28 +10,23 @@ from .order_type import OrderType, OrderTypes
 class Order:
     order_by: OrderBy
     order_type: OrderType
+    valid_order_by_fields: Optional[List[str]] = None
 
-    def __init__(
-        self,
-        order_by: OrderBy,
-        order_type: OrderType,
-        valid_order_by_fields: Optional[List[str]] = None,
-    ):
-        self.order_by = order_by
-        self.order_type = order_type
-
-        if valid_order_by_fields:
-            self._validate_order_by(valid_order_by_fields)
+    def __post_init__(self) -> None:
+        if self.valid_order_by_fields:
+            self._validate_order_by(self.valid_order_by_fields)
 
     def _validate_order_by(self, valid_order_by_fields: List[str]) -> None:
-        order_by_values = self.order_by.value.split(",")
+        order_by_values = str(self.order_by).split(",")
         if not all(field in valid_order_by_fields for field in order_by_values):
-            raise InvalidArgumentError(
-                f"Campo de ordenamiento inválido: {self.order_by.value}"
+            raise InvalidCriteriaException(
+                message="Invalid order by field",
+                parameter="order_by",
+                value=str(self.order_by),
             )
 
     @classmethod
-    def from_values(
+    def create(
         cls,
         order_by: Optional[str] = None,
         order_type: Optional[str] = None,
