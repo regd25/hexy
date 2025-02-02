@@ -6,78 +6,72 @@ implementing the Repository pattern for data access abstraction.
 """
 
 from abc import ABC, abstractmethod
-from ctypes import Union
-from typing import Generic, TypeVar, Optional, List
+from typing import Generic, List, Optional, TypeVar
 from dataclasses import dataclass
 
-from ..value_object import UuidValueObject, NumberIdValueObject
-from ..aggregate.aggregate_root import AggregateRoot
 from ..criteria.criteria import Criteria
 
-T = TypeVar("T", bound=AggregateRoot)
+from .repository_mapper import RepositoryMapper
 
+from ...infrastructure.datasource.datasource import DataSource
+from ..aggregate.aggregate_root import AggregateRoot
+
+T = TypeVar("T", bound=AggregateRoot)
+D = TypeVar("D", bound=DataSource)
+M = TypeVar("M", bound=RepositoryMapper)
+C = TypeVar("C", bound=Criteria)
 
 @dataclass
-class Repository(Generic[T], ABC):
+class Repository(ABC, Generic[T, C, M, D]):
     """
-    Abstract base repository for handling domain entities persistence.
+    Abstract base class for repositories following Domain-Driven Design principles.
+    """
 
-    Generic Parameters:
-        T: Type of the AggregateRoot this repository manages
-    """
+    _data_source: D
+    _table_name: str
+    _mapper: M
+
+    def __init__(
+        self,
+        data_source: D,
+        table_name: str,
+        mapper: M,
+    ):
+        self._data_source = data_source
+        self._table_name = table_name
+        self._mapper = mapper
 
     @abstractmethod
     async def save(self, aggregate: T) -> None:
         """
-        Persist an aggregate to the storage.
-
-        Args:
-            aggregate: AggregateRoot instance to save
+        Save an aggregate to the database
         """
         pass
 
     @abstractmethod
-    async def search_by_id(self, id: Union[UuidValueObject, NumberIdValueObject]) -> Optional[T]:
+    async def search_by_id(self, identifier: str) -> Optional[T]:
         """
-        Find an aggregate by its identifier.
-
-        Args:
-            id: Unique identifier of the aggregate
-
-        Returns:
-            Optional[T]: The found aggregate or None
+        Search an aggregate by its identifier
         """
         pass
 
     @abstractmethod
     async def search_all(self) -> List[T]:
         """
-        Retrieve all aggregates.
-
-        Returns:
-            List[T]: List of all aggregates
+        Search all aggregates
         """
         pass
 
     @abstractmethod
-    async def matching(self, criteria: Criteria) -> List[T]:
+    async def matching(self, criteria: C) -> List[T]:
         """
-        Find aggregates matching the given criteria.
-
-        Args:
-            criteria: Search criteria to apply
-
-        Returns:
-            List[T]: List of matching aggregates
+        Search aggregates matching a criteria
         """
         pass
 
     @abstractmethod
-    async def delete(self, id: Union[UuidValueObject, NumberIdValueObject, List[Union[UuidValueObject, NumberIdValueObject]]]) -> None:
+    async def delete(self, identifier: str) -> None:
         """
-        Remove an aggregate from storage.
-
-        Args:
-            id: Identifier of the aggregate to delete
+        Delete an aggregate by its identifier
         """
         pass

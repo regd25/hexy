@@ -25,3 +25,7 @@ class AggregateRoot(ABC):
 
     def to_primitives(self) -> dict:
         raise NotImplementedError("Subclasses must implement to_primitives()")
+
+    @classmethod
+    def create(cls, primitives: dict) -> "AggregateRoot":
+        return cls(**primitives, _domain_events=[])

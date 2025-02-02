@@ -15,13 +15,14 @@ class Operator(str, Enum):
     NOT_EQUAL = "!="
     GT = ">"
     LT = "<"
-    LIKE = "LIKE"
-    LLU = "LLU"  # lower and unaccent case
+    CONTAINS = "CONTAINS"
     IN = "IN"
     GTE = ">="
     LTE = "<="
-    ARR_IN = "&&"
-
+    BEGINS_WITH = "BEGINS_WITH"
+    LIKE = "LIKE"
+    NOT_LIKE = "NOT LIKE"
+    NOT_IN = "NOT IN"
 
 class FilterOperator(EnumValueObject):
     """Filter Operator Value Object."""
@@ -56,26 +57,46 @@ class FilterOperator(EnumValueObject):
         return cls.create(Operator.LIKE.value)
 
     @classmethod
-    def llu(cls) -> "FilterOperator":
-        """Create a LLU operator."""
-        return cls.create(Operator.LLU.value)
+    def not_like(cls) -> "FilterOperator":
+        """Create a NOT LIKE operator."""
+        return cls.create(Operator.NOT_LIKE.value)
 
     @classmethod
-    def in_(cls) -> "FilterOperator":
+    def contains(cls) -> "FilterOperator":
         """Create an IN operator."""
-        return cls.create(Operator.IN.value)
+        return cls.create(Operator.CONTAINS.value)
 
     @classmethod
-    def gte(cls) -> "FilterOperator":
+    def greater_than_or_equal(cls) -> "FilterOperator":
         """Create a GTE operator."""
         return cls.create(Operator.GTE.value)
 
     @classmethod
-    def lte(cls) -> "FilterOperator":
+    def less_than_or_equal(cls) -> "FilterOperator":
         """Create a LTE operator."""
         return cls.create(Operator.LTE.value)
 
     @classmethod
-    def arr_in(cls) -> "FilterOperator":
-        """Create an ARR_IN operator."""
-        return cls.create(Operator.ARR_IN.value)
+    def less_than(cls) -> "FilterOperator":
+        """Create a LT operator."""
+        return cls.create(Operator.LT.value)
+
+    @classmethod
+    def begins_with(cls) -> "FilterOperator":
+        """Create a BEGINS_WITH operator."""
+        return cls.create(Operator.BEGINS_WITH.value)
+
+    @classmethod
+    def greater_than(cls) -> "FilterOperator":
+        """Create a GT operator."""
+        return cls.create(Operator.GT.value)
+
+    @classmethod
+    def includes(cls) -> "FilterOperator":
+        """Create an IN operator."""
+        return cls.create(Operator.IN.value)
+
+    @classmethod
+    def not_includes(cls) -> "FilterOperator":
+        """Create a NOT_IN operator."""
+        return cls.create(Operator.NOT_IN.value)
