@@ -1,0 +1,31 @@
+{
+  "name": "hexy-typescript",
+  "version": "1.0.0",
+  "description": "Hexy DDD Typescript Framework",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": ["typescript", "hexy", "ddd", "framework"],
+  "author": "Randy Gala",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/pg": "^8.11.11",
+    "pg": "^8.13.3"
+  }
+}
