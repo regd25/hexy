@@ -11,7 +11,18 @@ export class CurrencyValueObject extends EnumValueObject<
 		EUR: 'EUR',
 		GBP: 'GBP',
 		JPY: 'JPY',
-		// Agregar más códigos según necesidad
+		CAD: 'CAD',
+		CHF: 'CHF',
+		MXN: 'MXN',
+		ARS: 'ARS',
+		CLP: 'CLP',
+		COP: 'COP',
+		CRC: 'CRC',
+		CUP: 'CUP',
+		CVE: 'CVE',
+		CZK: 'CZK',
+		DKK: 'DKK',
+		DOP: 'DOP',
 	} as const
 
 	constructor(value: string) {

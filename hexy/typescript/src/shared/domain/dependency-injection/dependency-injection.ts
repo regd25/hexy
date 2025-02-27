@@ -1,6 +1,6 @@
 import { AggregateRoot } from '../aggregate'
 import { Criteria } from '../criteria'
-import { Repository } from '../repository'
+import { Repository } from '../persistence'
 import { Service } from '../service'
 import { UseCase } from '../use-case/use-case'
 import { RepositoryNotFoundError } from './repository-not-found-error'
