@@ -1,13 +1,31 @@
 {
-  "compilerOptions": {
-    "outDir": "./dist",
-    "declaration": true,
-    "module": "commonjs",
-    "target": "es6",
-    "strict": true,
-    "esModuleInterop": true
-    // ... other options as needed
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "tests"]
-} 
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"rootDir": "./",
+		"outDir": "./dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"declaration": true,
+		"sourceMap": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["../src/*"]
+		},
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
+	},
+	"include": [
+		"../src/**/*",
+		"bin/**/*",
+		"src/application",
+		"src/shared/infrastructure/ai",
+		"src/shared/infrastructure/event-bus",
+		"src/shared/infrastructure/observability"
+	],
+	"exclude": ["node_modules", "dist"]
+}
