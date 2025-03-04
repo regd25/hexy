@@ -1,4 +1,4 @@
-import * as hexy from '../shared/domain/value-objects'
+import * as hexy from '../domain/value-objects'
 import * as fs from 'fs'
 import * as path from 'path'
 import { toSnakeCase, toPascalCase } from './utilities'

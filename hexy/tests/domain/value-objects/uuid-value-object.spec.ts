@@ -1,4 +1,4 @@
-import { UuidValueObject } from '@/shared/domain/value-objects/identifiers/uuid-value-object'
+import { UuidValueObject } from '@/shared'
 
 describe('UuidValueObject', () => {
 	it('should create valid UUID', () => {

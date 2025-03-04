@@ -54,9 +54,9 @@ export function createAggregateFile(
 
   const aggregateContent = `${[...voImports].sort().join("\n")}
 
-import { AggregateRoot } from "hexy";
+import { AbstractAggregate } from "hexy";
 
-export class ${aggregatePascal} extends AggregateRoot {
+export class ${aggregatePascal} extends AbstractAggregate {
 ${filteredVoDefinitions
   .map((vo) => {
     const voSnake = toSnakeCase(vo.name)

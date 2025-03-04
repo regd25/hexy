@@ -1,5 +1,5 @@
 import { UseCase } from '../../domain/use-case/use-case'
-import { AIService } from '../../shared/infrastructure/ai/ai-service'
+import { AIService } from '../../infrastructure/ai/ai-service'
 import { Injectable } from '../../domain/dependency-injection'
 
 export interface GenerateContentInput {

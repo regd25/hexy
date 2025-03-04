@@ -1,26 +1,27 @@
-import { DateRangeValueObject } from '@/shared/domain/value-objects/ranges/date-range-value-object'
-import { DateValueObject } from '@/shared/domain/value-objects/ranges/date-value-object'
+import { DateValueObject, DateRangeValueObject } from '@/shared'
 
 describe('DateRangeValueObject', () => {
-  it('should create valid date range', () => {
-    const start = new DateValueObject('2024-01-01')
-    const end = new DateValueObject('2024-01-31')
-    
-    expect(() => new DateRangeValueObject(start, end)).not.toThrow()
-  })
+	it('should create valid date range', () => {
+		const start = new DateValueObject('2024-01-01')
+		const end = new DateValueObject('2024-01-31')
 
-  it('should throw error for inverted dates', () => {
-    const start = new DateValueObject('2024-01-31')
-    const end = new DateValueObject('2024-01-01')
-    
-    expect(() => new DateRangeValueObject(start, end)).toThrowError('Start date must be before end date')
-  })
+		expect(() => new DateRangeValueObject(start, end)).not.toThrow()
+	})
 
-  it('should calculate duration correctly', () => {
-    const start = new DateValueObject('2024-01-01')
-    const end = new DateValueObject('2024-01-10')
-    const range = new DateRangeValueObject(start, end)
-    
-    expect(range.durationInDays()).toBe(9)
-  })
-}) 
+	it('should throw error for inverted dates', () => {
+		const start = new DateValueObject('2024-01-31')
+		const end = new DateValueObject('2024-01-01')
+
+		expect(() => new DateRangeValueObject(start, end)).toThrowError(
+			'Start date must be before end date',
+		)
+	})
+
+	it('should calculate duration correctly', () => {
+		const start = new DateValueObject('2024-01-01')
+		const end = new DateValueObject('2024-01-10')
+		const range = new DateRangeValueObject(start, end)
+
+		expect(range.durationInDays()).toBe(9)
+	})
+})

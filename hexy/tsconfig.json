@@ -14,18 +14,12 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["../src/*"]
+			"@/*": ["src/*"],
+			"hexy": ["src/index.ts"],
 		},
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true
 	},
-	"include": [
-		"../src/**/*",
-		"bin/**/*",
-		"src/application",
-		"src/shared/infrastructure/ai",
-		"src/shared/infrastructure/event-bus",
-		"src/shared/infrastructure/observability"
-	],
+	"include": ["src/**/*", "bin/**/*", "tests/**/*", "examples/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

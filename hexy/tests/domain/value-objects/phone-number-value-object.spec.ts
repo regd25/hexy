@@ -1,4 +1,4 @@
-import { PhoneNumberValueObject } from '@/shared/domain/value-objects/contact/phone-number-value-object'
+import { PhoneNumberValueObject } from '@/shared'
 
 describe('PhoneNumberValueObject', () => {
   it('should create valid phone numbers', () => {
@@ -28,9 +28,9 @@ describe('PhoneNumberValueObject', () => {
 
   it('should format phone number correctly', () => {
     const mxPhone = new PhoneNumberValueObject('+521234567890')
-    expect(mxPhone.formatted).toBe('+52 12 3456 7890')
+    expect(mxPhone.toFormattedString()).toBe('+52 12 3456 7890')
 
     const usPhone = new PhoneNumberValueObject('+11234567890')
-    expect(usPhone.formatted).toBe('+1 (123) 456-7890')
+    expect(usPhone.toFormattedString()).toBe('+1 (123) 456-7890')
   })
 }) 
