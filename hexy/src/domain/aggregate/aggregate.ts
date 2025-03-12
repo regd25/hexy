@@ -1,5 +1,5 @@
 import { DomainAggregate } from '../dependency-injection'
-import { AbstractDomainEvent } from '../domain-event/abstract-domain-event'
+import { Event } from '../event/event'
 import { DataRecord } from '../types'
 import { IdentifierValueObject } from '../value-objects'
 
@@ -7,7 +7,7 @@ import { IdentifierValueObject } from '../value-objects'
  * @description Abstract class for aggregate roots
  */
 @DomainAggregate()
-export abstract class AbstractAggregate {
+export abstract class Aggregate {
 	/**
 	 * @description The id of the aggregate root
 	 */
@@ -16,11 +16,11 @@ export abstract class AbstractAggregate {
 	/**
 	 * @description The events of the aggregate root
 	 */
-	private events: AbstractDomainEvent[] = []
+	private events: Event[] = []
 
 	private version: number = 0
 
-	getEvents(): AbstractDomainEvent[] {
+	getEvents(): Event[] {
 		return this.events
 	}
 
@@ -40,17 +40,17 @@ export abstract class AbstractAggregate {
 		return this.events.length > 0
 	}
 
-	protected apply(event: AbstractDomainEvent): void {
+	protected apply(event: Event): void {
 		this.events.push(event)
 	}
 
-	protected applyEvents(events: AbstractDomainEvent[]): void {
+	protected applyEvents(events: Event[]): void {
 		events.forEach((event) => this.apply(event))
 	}
 
 	abstract toPrimitives(): DataRecord
 
-	static fromPrimitives(primitives: DataRecord): AbstractAggregate {
+	static fromPrimitives(primitives: DataRecord): Aggregate {
 		throw new Error('Not implemented')
 	}
-} 
+}

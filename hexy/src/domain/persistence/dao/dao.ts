@@ -1,29 +1,25 @@
-import { AbstractEntity } from '../../aggregate'
 import { Criteria } from '../../criteria'
+import { DataRecord } from '../../types'
 import { DataSource } from '../data-source/data-source'
-import { DataRecord } from '../../types/data-record'
-import { Mapper } from '../mappers'
+import { StringValueObject, NumberIdValueObject } from '../../value-objects'
 /**
  * @description Interface for a DAO
- * @template EntityType - The type of entity
- * @template RecordType - The type of record
+ * @template DTO - The type of data transfer object
  * @template CriteriaType - The type of criteria
  */
-export interface Dao<
-	EntityType extends AbstractEntity,
-	RecordType extends DataRecord,
-	CriteriaType extends Criteria,
-> {
-	mapper: Mapper<RecordType, RecordType>
+export interface DAO<DTO extends DataRecord, CriteriaType extends Criteria> {
 	datasource: DataSource
 	table: string
-	get(id: EntityType['id']): Promise<EntityType | null>
-	search(criteria: CriteriaType): Promise<EntityType[]>
-	searchOne(criteria: CriteriaType): Promise<EntityType | null>
+	get(id: StringValueObject | NumberIdValueObject): Promise<DTO>
+	search(criteria: CriteriaType): Promise<DTO[]>
+	searchOne(criteria: CriteriaType): Promise<DTO>
 	exists(criteria: CriteriaType): Promise<boolean>
 	count(criteria: CriteriaType): Promise<number>
-	searchAll(): Promise<EntityType[]>
-	create(entity: EntityType): Promise<EntityType>
-	update(identity: EntityType['id'], entity: EntityType): Promise<EntityType>
-	delete(id: EntityType['id']): Promise<void>
+	searchAll(): Promise<DTO[]>
+	create(entity: DTO): Promise<DTO>
+	update(
+		identity: StringValueObject | NumberIdValueObject,
+		entity: DTO,
+	): Promise<DTO>
+	delete(id: StringValueObject | NumberIdValueObject): Promise<void>
 }

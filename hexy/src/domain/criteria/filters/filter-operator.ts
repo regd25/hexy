@@ -13,8 +13,8 @@ export enum FilterOperators {
  * Represents a filter operator that can be used to filter a value.
  */
 export class FilterOperator extends EnumValueObject<typeof FilterOperators> {
-	constructor(value: typeof FilterOperators) {
-		super(FilterOperators[value], Object.values(FilterOperators))
+	constructor(value: FilterOperators) {
+		super(value, FilterOperators)
 		if (!this.validate(value)) {
 			throw new InvalidValueObjectError('Invalid filter operator')
 		}

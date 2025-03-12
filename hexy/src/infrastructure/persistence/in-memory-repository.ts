@@ -1,16 +1,16 @@
-import { AbstractAggregate } from '../../domain/aggregate'
-import { Criteria } from '../../domain/criteria'
-import { EventBus } from '../../domain/event-bus/event-bus'
-import { AbstractRepository } from '../../domain/persistence/repository'
-import { IdentifierValueObject } from '../../domain/value-objects'
+import {
+	Aggregate,
+	Repository,
+	EventBus,
+	IdentifierValueObject,
+	Criteria,
+} from '@/domain'
 
 /**
  * In-memory implementation of Repository for testing and prototyping
  * @template T - The type of aggregate root
  */
-export class InMemoryRepository<
-	T extends AbstractAggregate,
-> extends AbstractRepository<T> {
+export class InMemoryRepository<T extends Aggregate> extends Repository<T> {
 	private items: Map<string, T> = new Map()
 
 	constructor(eventBus?: EventBus) {
@@ -22,9 +22,13 @@ export class InMemoryRepository<
 	 * @param id - The identifier of the aggregate
 	 * @returns The aggregate or null if not found
 	 */
-	async findById(id: IdentifierValueObject): Promise<T | null> {
+	async findById(id: IdentifierValueObject): Promise<T> {
 		const key = id.toString()
-		return this.items.has(key) ? this.items.get(key)! : null
+		const item = this.items.get(key)
+		if (!item) {
+			throw new Error(`Aggregate with id ${id.toString()} not found`)
+		}
+		return item
 	}
 
 	/**

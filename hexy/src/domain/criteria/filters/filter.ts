@@ -40,7 +40,7 @@ export class Filter extends ValueObject<{
 	static fromPrimitives(primitives: FilterPrimitives): Filter {
 		return new Filter(
 			new FilterField(primitives.field),
-			new FilterOperator(primitives.operator as keyof typeof FilterOperators),
+			new FilterOperator(primitives.operator as FilterOperators),
 			new FilterValue(primitives.value),
 		)
 	}

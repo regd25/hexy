@@ -1,7 +1,11 @@
-import { ApplicationService, Inject, Injectable } from 'hexy'
-import { Task, TaskId } from '../domain/aggregate/task'
-import { TaskRepository } from '../domain/aggregate/task-repository'
-import { TaskDomainService } from '../domain/service/task-domain-service'
+import { ApplicationService, Inject } from 'hexy'
+import {
+	TaskDomainService,
+	Task,
+	InvalidTaskDataError,
+	TaskRepository,
+	TaskId,
+} from '../domain'
 import { TASK_REPOSITORY } from '../infrastructure/task-infrastructure-module'
 
 /**
@@ -26,7 +30,7 @@ export class TaskApplicationService {
 
 		// Validate the task using domain service
 		if (!this.taskDomainService.validate(task)) {
-			throw new Error('Invalid task data')
+			throw new InvalidTaskDataError()
 		}
 
 		// Save and return the task
@@ -38,13 +42,8 @@ export class TaskApplicationService {
 	 * Complete a task
 	 * @param id - ID of the task to complete
 	 */
-	async completeTask(id: TaskId): Promise<void> {
-		const task = await this.taskRepository.findById(id)
-
-		if (!task) {
-			throw new Error(`Task with ID ${id.toString()} not found`)
-		}
-
+	async completeTask(id: string): Promise<void> {
+		const task = await this.taskRepository.findById(new TaskId(id))
 		task.complete()
 		await this.taskRepository.save(task)
 	}
@@ -66,5 +65,22 @@ export class TaskApplicationService {
 		return allTasks.filter((task) =>
 			this.taskDomainService.isHighPriority(task),
 		)
+	}
+
+	/**
+	 * Delete a task
+	 * @param id - ID of the task to delete
+	 */
+	async deleteTask(id: string): Promise<void> {
+		await this.taskRepository.delete(new TaskId(id))
+	}
+
+	/**
+	 * Get a task by ID
+	 * @param id - ID of the task to retrieve
+	 * @returns Task if found, otherwise undefined
+	 */
+	async getTaskById(id: string): Promise<Task> {
+		return this.taskRepository.findById(new TaskId(id))
 	}
 }

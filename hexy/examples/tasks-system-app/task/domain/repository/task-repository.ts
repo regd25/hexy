@@ -1,5 +1,5 @@
-import { Repository } from '../../../../src/domain/persistence/repository'
-import { Task, TaskId } from './task'
+import { Repository } from 'hexy'
+import { Task, TaskId } from '../aggregate'
 
 /**
  * Repository interface for Task entities in the domain layer
@@ -11,7 +11,7 @@ export abstract class TaskRepository extends Repository<Task> {
 	 * @param id - Task ID to search for
 	 * @returns Task instance or null if not found
 	 */
-	abstract findById(id: TaskId): Promise<Task | null>
+	abstract findById(id: TaskId): Promise<Task>
 
 	/**
 	 * Find all tasks

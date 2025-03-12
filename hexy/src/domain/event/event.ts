@@ -1,16 +1,16 @@
 import { DomainEvent } from '../dependency-injection'
 import { DataRecord } from '../types'
-import { IdentifierValueObject, RoutingKeyValueObject } from '../value-objects'
+import { RoutingKeyValueObject, StringValueObject, NumberIdValueObject } from '../value-objects'
 
 /**
  * @description Abstract class for domain events
  */
 @DomainEvent()
-export abstract class AbstractDomainEvent {
+export abstract class Event {
 	/**
 	 * @description The id of the aggregate that triggered the event
 	 */
-	readonly aggregateId: IdentifierValueObject
+	readonly aggregateId: StringValueObject | NumberIdValueObject
 
 	/**
 	 * @description The routing key of the event
@@ -33,7 +33,7 @@ export abstract class AbstractDomainEvent {
 	abstract getEventName(): string
 
 	constructor(
-		aggregateId: IdentifierValueObject,
+		aggregateId: StringValueObject | NumberIdValueObject,
 		routingKey: RoutingKeyValueObject,
 		occurredOn: Date = new Date(),
 	) {
@@ -45,8 +45,8 @@ export abstract class AbstractDomainEvent {
 	/**
 	 * @description Convert a primitive object to an event
 	 */
-	static fromPrimitives(data: DataRecord): AbstractDomainEvent {
-		const event = Object.create(AbstractDomainEvent.prototype)
+	static fromPrimitives(data: DataRecord): Event {
+		const event = Object.create(Event.prototype)
 		return event.fromPrimitives(data)
 	}
 }

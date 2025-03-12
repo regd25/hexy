@@ -1,72 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
-import {
-	AbstractAggregate,
-	UuidValueObject,
-	StringValueObject,
-	RoutingKeyValueObject,
-	AbstractDomainEvent,
-	DataRecord,
-} from 'hexy'
+import { TaskEvent } from './task-event'
+import { TaskId, TaskTitle, TaskDescription } from './value-objects'
+import { Aggregate, DataRecord } from 'hexy'
 
-// Value Objects
-export class TaskId extends UuidValueObject {}
-
-export class TaskTitle extends StringValueObject {
-	constructor(value: string) {
-		super(value)
-		if (!value || value.trim() === '') {
-			throw new Error('Task title cannot be empty')
-		}
-		if (value.length > 50) {
-			throw new Error('Task title cannot exceed 50 characters')
-		}
-	}
-}
-
-export class TaskDescription extends StringValueObject {
-	constructor(value: string) {
-		super(value)
-		if (value && value.length > 500) {
-			throw new Error('Task description cannot exceed 500 characters')
-		}
-	}
-}
-
-export class TaskEvent extends AbstractDomainEvent {
-	constructor(
-		public readonly id: TaskId,
-		public readonly title: TaskTitle,
-		public readonly description: TaskDescription,
-		public readonly completed: boolean = false,
-		public readonly createdAt: Date = new Date(),
-	) {
-		super(id, new RoutingKeyValueObject('task'), new Date())
-	}
-
-	static fromPrimitives(data: DataRecord): TaskEvent {
-		return new TaskEvent(
-			new TaskId(data.id as string),
-			new TaskTitle(data.title as string),
-			new TaskDescription(data.description as string),
-		)
-	}
-
-	toPrimitives(): DataRecord {
-		return {
-			id: this.id.toString(),
-			title: this.title.toPrimitive(),
-			description: this.description.toPrimitive(),
-			completed: this.completed,
-			createdAt: this.createdAt.toISOString(),
-		}
-	}
-
-	getEventName(): string {
-		return 'task.created'
-	}
-}
-
-export class Task extends AbstractAggregate {
+export class Task extends Aggregate {
 	constructor(
 		public readonly id: TaskId,
 		public readonly title: TaskTitle,
@@ -120,9 +57,8 @@ export class Task extends AbstractAggregate {
 		description: string = '',
 		completed: boolean = false,
 	): Task {
-		const taskId = new TaskId(id || uuidv4())
 		const task = new Task(
-			taskId,
+			new TaskId(id || uuidv4()),
 			new TaskTitle(title),
 			new TaskDescription(description),
 			completed,

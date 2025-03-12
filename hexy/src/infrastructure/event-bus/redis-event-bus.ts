@@ -1,9 +1,7 @@
-import { DomainEvent } from '../../domain/domain-event/domain-event'
-import { EventBus } from '../../domain/event-bus/event-bus'
-import { Injectable } from '../../domain/dependency-injection'
 import { EventBusError } from './event-bus-error'
 import Redis from 'ioredis'
-
+import { EventBus, EventHandler, Injectable } from '@/domain'
+import { Event } from '@/domain/event/event'
 export interface RedisConfig {
 	host: string
 	port: number
@@ -22,7 +20,7 @@ export interface RedisConfig {
 @Injectable()
 export class RedisEventBus implements EventBus {
 	private redis: Redis
-	private listeners: Array<(event: DomainEvent) => Promise<void>> = []
+	private listeners: Array<EventHandler<any>> = []
 
 	constructor(private readonly config: RedisConfig) {
 		this.redis = new Redis({
@@ -39,7 +37,7 @@ export class RedisEventBus implements EventBus {
 	 * Publishes domain events to the Redis channel.
 	 * @param events The events to publish
 	 */
-	async publish(events: DomainEvent[]): Promise<void> {
+	async publish(events: Event[]): Promise<void> {
 		const publishPromises = events.map(async (event) => {
 			const eventClassName = event.constructor.name
 			const message = JSON.stringify({
@@ -67,7 +65,7 @@ export class RedisEventBus implements EventBus {
 	 * Adds a listener that will be called for each published event.
 	 * @param listener The callback function to be called
 	 */
-	addListener(listener: (event: DomainEvent) => Promise<void>): void {
+	addListener<T extends Event>(listener: EventHandler<T>): void {
 		this.listeners.push(listener)
 	}
 
@@ -101,8 +99,8 @@ export class RedisEventBus implements EventBus {
 	 * @param data The event data in JSON format
 	 * @returns A properly instantiated domain event
 	 */
-	private deserializeEvent(className: string, data: any): DomainEvent {
-		return DomainEvent.fromPrimitives({
+	private deserializeEvent(className: string, data: any): Event {
+		return Event.fromPrimitives({
 			...data,
 			eventName: className,
 		})

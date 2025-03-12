@@ -1,10 +1,10 @@
-import { DomainModuleDecorator, Module } from 'hexy'
+import { DomainModule, Module } from 'hexy'
 import { TaskDomainService } from './service/task-domain-service'
 
 /**
  * Module for Task domain components
  */
-@DomainModuleDecorator({
+@DomainModule({
 	providers: [
 		{
 			provide: TaskDomainService,

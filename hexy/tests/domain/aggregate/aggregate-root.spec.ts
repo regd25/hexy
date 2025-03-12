@@ -1,16 +1,15 @@
-import { AbstractAggregate } from '@/domain/aggregate'
+import { Aggregate } from '@/domain/aggregate'
 import { Criteria } from '@/domain/criteria'
 import { EventBus } from '@/domain/event-bus/event-bus'
 import {
-	IdentifierValueObject,
 	UuidValueObject,
 } from '@/domain/value-objects'
 import { InMemoryRepository } from '@/infrastructure/persistence'
 import { DataRecord } from '@/domain/types'
-import { AbstractDomainEvent } from '@/domain/domain-event/abstract-domain-event'
+import { Event } from '@/domain/event/event'
 
 // Mock implementation of AbstractAggregate for testing
-class TestAggregate extends AbstractAggregate {
+class TestAggregate extends 	Aggregate {
 	constructor(
 		public readonly id: UuidValueObject,
 		private readonly name: string,
@@ -35,7 +34,7 @@ class TestAggregate extends AbstractAggregate {
 		}
 	}
 
-	fromPrimitives(primitives: DataRecord): AbstractAggregate {
+	fromPrimitives(primitives: DataRecord): TestAggregate {
 		return TestAggregate.create(
 			primitives.id as string,
 			primitives.name as string,
@@ -50,7 +49,7 @@ class TestAggregate extends AbstractAggregate {
 }
 
 // Mock implementation of DomainEvent for testing
-class TestAggregateDeactivated extends AbstractDomainEvent {
+class TestAggregateDeactivated extends Event {
 	constructor(aggregateId: string) {
 		super(
 			new UuidValueObject(aggregateId),
@@ -70,7 +69,7 @@ class TestAggregateDeactivated extends AbstractDomainEvent {
 		return 'TestAggregateDeactivated'
 	}
 
-	fromPrimitives(data: DataRecord): AbstractDomainEvent {
+	fromPrimitives(data: DataRecord): Event {
 		return new TestAggregateDeactivated(data.id as string)
 	}
 }

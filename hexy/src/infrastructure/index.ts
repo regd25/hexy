@@ -13,3 +13,6 @@ export * from './event-bus/redis-event-bus'
 export * from './observability/open-telemetry'
 export * from './observability/telemetry'
 export * from './persistence'
+
+// HTTP adapters
+export * from './http'

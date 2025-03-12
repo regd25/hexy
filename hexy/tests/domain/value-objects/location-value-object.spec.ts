@@ -1,4 +1,4 @@
-import { LocationValueObject } from '@/shared'
+import { LocationValueObject } from 'hexy'
 
 describe('LocationValueObject', () => {
 	it('should create valid coordinates', () => {

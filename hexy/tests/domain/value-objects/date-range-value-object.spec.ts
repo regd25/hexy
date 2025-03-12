@@ -1,4 +1,4 @@
-import { DateValueObject, DateRangeValueObject } from '@/shared'
+import { DateValueObject, DateRangeValueObject } from 'hexy'
 
 describe('DateRangeValueObject', () => {
 	it('should create valid date range', () => {

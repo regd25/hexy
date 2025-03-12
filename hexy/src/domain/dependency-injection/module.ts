@@ -19,10 +19,21 @@ export class Module {
 	private readonly imports: Module[]
 	private readonly exports: (Provider | Module | Token<any>)[]
 
+	/**
+	 * Flag to track if the module has been initialized through the constructor
+	 * Used by the ModuleDecorator to prevent double initialization
+	 */
+	protected _initialized: boolean = false
+
 	constructor(options: ModuleOptions) {
 		this.providers = options.providers || []
 		this.imports = options.imports || []
 		this.exports = options.exports || []
+		this._initialized = true
+	}
+
+	get initialized(): boolean {
+		return this._initialized
 	}
 
 	/**
@@ -58,7 +69,7 @@ export class Module {
 
 		// Add this module's providers that are explicitly exported
 		for (const provider of this.providers) {
-			if (this.exports.some(exp => exp === provider.provide)) {
+			if (this.exports.some((exp) => exp === provider.provide)) {
 				result.push(provider)
 			}
 		}
@@ -79,6 +90,6 @@ export class Module {
 	 * Useful for dependency validation.
 	 */
 	getImportedModuleNames(): string[] {
-		return this.imports.map(module => module.constructor.name)
+		return this.imports.map((module) => module.constructor.name)
 	}
 }

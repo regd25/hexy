@@ -1,9 +1,9 @@
-import { AbstractDomainEvent } from '@/domain/domain-event/abstract-domain-event'
+import { Event } from '@/domain/event/event'
 import { DataRecord } from '@/domain/types'
 import { UuidValueObject } from '@/domain/value-objects'
 
 // Mock implementation of DomainEvent for testing
-class TestDomainEvent extends AbstractDomainEvent {
+class TestDomainEvent extends Event {
 	constructor(
 		aggregateId: string,
 		eventName: string = 'test.event',
@@ -28,7 +28,7 @@ class TestDomainEvent extends AbstractDomainEvent {
 		return this.routingKey.toString()
 	}
 
-	fromPrimitives(data: DataRecord): AbstractDomainEvent {
+	fromPrimitives(data: DataRecord): Event {
 		return new TestDomainEvent(
 			data.id as string,
 			data.eventName as string,

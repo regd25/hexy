@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { Token } from './token'
 import { Scope } from './scope'
 import { ResolveError } from './resolve-error'
+import { isOnInit, isOnDestroy, LifecycleState } from './lifecycle'
 /**
  * Provider configuration for the DI container.
  */
@@ -21,6 +22,7 @@ export class Container {
 	private providers = new Map<Token, Provider>()
 	private instances = new Map<Token, any>()
 	private resolving = new Set<Token>()
+	private lifecycleState = new LifecycleState()
 
 	/**
 	 * Registers a provider in the container.
@@ -106,10 +108,25 @@ export class Container {
 				const injectTokens =
 					Reflect.getMetadata('inject:tokens', classToInstantiate) || []
 
+				// Get type inference flags
+				const inferenceFlags =
+					Reflect.getMetadata('inject:inference', classToInstantiate) || []
+
 				// Resolve dependencies
 				const dependencies = paramTypes.map((paramType: any, index: number) => {
+					// If token is undefined and inference is true, use paramType as token
+					const useInference = inferenceFlags[index] === true
 					const customToken = injectTokens[index]
-					return this.resolve(customToken || paramType)
+
+					// When using inference, customToken will be undefined
+					// but we want to use the parameter type for resolution
+					const tokenToUse = useInference
+						? paramType
+						: customToken !== undefined
+							? customToken
+							: paramType
+
+					return this.resolve(tokenToUse)
 				})
 
 				// Create instance with dependencies
@@ -119,6 +136,9 @@ export class Container {
 			if (provider.scope === Scope.SINGLETON) {
 				this.instances.set(token, instance)
 			}
+
+			// Call initialization hook if implemented
+			this.callInitHook(instance)
 
 			return instance
 		} finally {
@@ -130,6 +150,11 @@ export class Container {
 	 * Clears all cached instances but keeps providers.
 	 */
 	clearInstances(): void {
+		// Call destroy lifecycle hooks before clearing instances
+		this.instances.forEach((instance) => {
+			this.callDestroyHook(instance)
+		})
+
 		this.instances.clear()
 	}
 
@@ -137,8 +162,35 @@ export class Container {
 	 * Completely resets the container, removing all providers and instances.
 	 */
 	reset(): void {
+		// Call destroy lifecycle hooks before resetting
+		this.instances.forEach((instance) => {
+			this.callDestroyHook(instance)
+		})
+
 		this.providers.clear()
 		this.instances.clear()
-		this.resolving.clear()
+	}
+
+	/**
+	 * Calls the initialize hook if implemented
+	 */
+	private callInitHook(instance: any): void {
+		if (isOnInit(instance) && !this.lifecycleState.isInitialized(instance)) {
+			instance.onInit()
+			this.lifecycleState.markInitialized(instance)
+		}
+	}
+
+	/**
+	 * Calls the destroy hook if implemented
+	 */
+	private callDestroyHook(instance: any): void {
+		if (
+			isOnDestroy(instance) &&
+			!this.lifecycleState.isDestroyCalled(instance)
+		) {
+			instance.onDestroy()
+			this.lifecycleState.markDestroyedCalled(instance)
+		}
 	}
 }

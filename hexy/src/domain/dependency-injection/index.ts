@@ -15,6 +15,12 @@ export * from './resolve-error'
 export * from './service-not-found-error'
 export * from './repository-not-found-error'
 
+// Lifecycle hooks
+export * from './lifecycle'
+
+// Component scanning
+export * from './component-scanner'
+
 // Layer-specific decorators for hexagonal architecture
 export * from './layers'
 

@@ -1,93 +1,233 @@
-# Aplicación de Ejemplo con Arquitectura Hexagonal
+# Hexy - Task Management App Example
 
-Este ejemplo muestra una implementación completa de una aplicación simple de gestión de tareas (Task Management) siguiendo los principios de:
+This application demonstrates a complete implementation of a Task Management system following:
 
-- Arquitectura Hexagonal (Puertos y Adaptadores)
-- Domain-Driven Design (DDD)
-- Principios SOLID
-- Clean Architecture
+- **Hexagonal Architecture** (Ports & Adapters)
+- **Domain-Driven Design (DDD)** principles
+- **SOLID** principles
+- **Clean Architecture** practices
 
-## Estructura del Proyecto
+## Project Structure
 
-El proyecto está organizado en capas claras siguiendo la arquitectura hexagonal:
+The project is organized in clear layers following hexagonal architecture:
 
 ```
-hexagonal-example/
+tasks-system-app/
 │
-├── domain/                     # Capa de dominio (centro de la aplicación)
+├── domain/                     # Domain layer (core business logic)
 │   └── task/
-│       ├── task.ts             # Entidad y Value Objects
-│       ├── task-repository.ts  # Interfaz de repositorio (puerto)
-│       ├── task-domain-service.ts  # Servicio de dominio
-│       └── task-domain.module.ts   # Módulo de dominio
+│       ├── aggregate/          # Aggregates, entities and value objects
+│       │   ├── task.ts
+│       │   └── task-id.ts
+│       ├── service/            # Domain services
+│       │   └── task-domain-service.ts
+│       └── task-domain-module.ts   # Domain module configuration
 │
-├── application/                # Capa de aplicación (casos de uso)
+├── application/                # Application layer (use cases)
 │   └── task/
-│       ├── create-task.use-case.ts     # Caso de uso para crear tareas
-│       ├── list-tasks.use-case.ts      # Caso de uso para listar tareas
-│       ├── complete-task.use-case.ts   # Caso de uso para completar tareas
-│       └── task-application.module.ts  # Módulo de aplicación
+│       ├── dto/                # Data Transfer Objects
+│       │   ├── create-task.dto.ts
+│       │   └── update-task.dto.ts
+│       ├── task-application-service.ts  # Application service
+│       └── task-application-module.ts   # Application module configuration
 │
-├── infrastructure/             # Capa de infraestructura (adaptadores)
+├── infrastructure/             # Infrastructure layer (adapters)
 │   └── task/
-│       ├── in-memory-task-repository.ts  # Implementación del repositorio
-│       └── task-infrastructure.module.ts # Módulo de infraestructura
+│       ├── repository/         # Repository implementations
+│       │   └── in-memory-task-repository.ts
+│       ├── controllers/        # HTTP controllers (Express)
+│       │   └── task-controller.ts
+│       └── task-infrastructure-module.ts  # Infrastructure module
 │
-├── app.module.ts               # Módulo principal de la aplicación
-└── main.ts                     # Punto de entrada
+├── server.ts                   # Express server entry point
+├── server-with-module.ts       # Express server using module approach
+└── main-module.ts               # Main module
 ```
 
-## Principios de Arquitectura Aplicados
+## Architectural Principles
 
-### Arquitectura Hexagonal
+### Hexagonal Architecture
 
-La arquitectura hexagonal separa claramente:
+The hexagonal architecture clearly separates:
 
-1. **Dominio**: El núcleo de negocio, independiente de frameworks y detalles técnicos
-2. **Aplicación**: Orquesta el flujo de datos usando los casos de uso
-3. **Infraestructura**: Implementa los detalles técnicos como persistencia
+1. **Domain Layer**: The core business logic, independent of frameworks
+2. **Application Layer**: Use case orchestration and business flows
+3. **Infrastructure Layer**: Technical implementations like databases, APIs, and UI
 
-### Flujo de Dependencias
+### Dependency Flow
 
-El flujo de dependencias siempre apunta hacia el centro:
+Dependencies always point toward the center:
 
 ```
-Infraestructura → Aplicación → Dominio
+Infrastructure → Application → Domain
 ```
 
-Esto se logra mediante:
+This is achieved through:
+- Interfaces in the domain layer (ports) implemented in the infrastructure layer (adapters)
+- Dependency injection using Hexy's DI container to provide specific implementations
 
-- Interfaces en el dominio (puertos) implementadas en la infraestructura (adaptadores)
-- Inyección de dependencias para proporcionar implementaciones concretas
+## Key Features
 
-## Características Implementadas
+### Domain Layer
 
-- **Value Objects** inmutables (`TaskId`, `TaskTitle`, `TaskDescription`)
-- **Entidades** con identidad y comportamiento (`Task`)
-- **Servicios de Dominio** para lógica de negocio que no pertenece a entidades
-- **Repositorios** como interfaces en el dominio e implementaciones en infraestructura
-- **Casos de Uso** en la capa de aplicación
-- **Módulos** específicos para cada capa
-- **Sistema de Inyección de Dependencias** con decoradores específicos para cada capa
+- **Value Objects**: Immutable objects like `TaskId`, `TaskTitle`, and `TaskDescription`
+- **Entities**: Objects with identity and behavior (`Task`)
+- **Domain Services**: Business logic that doesn't belong to entities
+- **Repository Interfaces**: Defined in the domain layer for persistence abstraction
 
-## Cómo Ejecutar
+### Application Layer
 
-Para ejecutar este ejemplo:
+- **Application Services**: Orchestrate use cases using domain objects
+- **Data Transfer Objects (DTOs)**: Define data exchange contracts
+- **Use Cases**: Well-defined business operations
+
+### Infrastructure Layer
+
+- **Repository Implementations**: In-memory task repository
+- **HTTP Controllers**: Express-based REST API controllers
+- **Dependency Injection**: Configuration of all services and components
+
+## REST API Integration
+
+The example includes a fully functional REST API built with Express and Hexy's adapter:
+
+### API Endpoints
+
+- `GET /api/tasks` - Get all tasks
+- `GET /api/tasks/:id` - Get a task by ID
+- `POST /api/tasks` - Create a new task
+- `PUT /api/tasks/:id` - Update a task
+- `DELETE /api/tasks/:id` - Delete a task
+
+### Express Integration
+
+The application demonstrates two approaches to Express integration:
+
+1. **Direct API configuration** (server.ts):
+```typescript
+import { container } from 'hexy'
+import { ExpressAdapter } from 'hexy/infrastructure/http/express'
+
+// Create Express adapter with Hexy's DI container
+const expressAdapter = new ExpressAdapter(container, {
+  port: 3000,
+  enableCors: true,
+  enableBodyParser: true
+})
+
+// Register controllers
+expressAdapter.registerControllers([TaskController])
+
+// Start the server
+await expressAdapter.listen()
+```
+
+2. **Module-based approach** (server-with-module.ts):
+```typescript
+import { container } from 'hexy'
+import { ExpressModule } from 'hexy/infrastructure/http'
+
+// Create Express module
+const expressModule = new ExpressModule(container, {
+  expressOptions: {
+    port: 3000,
+    enableCors: true
+  },
+  controllers: [TaskController]
+})
+
+// Initialize and start
+expressModule.initialize()
+await expressModule.listen()
+```
+
+### Controller Implementation
+
+```typescript
+@Controller('/api/tasks')
+export class TaskController {
+  constructor(
+    @Inject() private taskService: TaskApplicationService
+  ) {}
+
+  @Get()
+  async getAllTasks() {
+    const tasks = await this.taskService.getAllTasks()
+    return { tasks }
+  }
+
+  @Post()
+  async createTask(@Body() createTaskDto: CreateTaskDto) {
+    const task = await this.taskService.createTask(
+      createTaskDto.title,
+      createTaskDto.description
+    )
+    return { task }
+  }
+
+  @Get('/:id')
+  async getTaskById(@Param('id') id: string) {
+    // Implementation
+  }
+
+  // More endpoints...
+}
+```
+
+## Running the Example
 
 ```bash
-# Instalar dependencias (asegúrate de tener uuid instalado)
-npm install uuid
+# Install dependencies
+npm install
 
-# Ejecutar la aplicación
-ts-node examples/hexagonal-example/main.ts
+# Start the server
+npm run start:server
 ```
 
-## Extensiones Posibles
+## API Examples
 
-Este ejemplo puede extenderse con:
+### Create a Task
 
-1. Implementación de repositorios persistentes (MongoDB, SQL, etc.)
-2. UI para interactuar con la aplicación (web, CLI, API REST)
-3. Más validaciones y reglas de negocio
-4. Eventos de dominio y manejadores
-5. Tests unitarios e integración para cada capa 
+```bash
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Learn Hexy", "description": "Master the Hexy framework", "priority": 1}'
+```
+
+### Get All Tasks
+
+```bash
+curl http://localhost:3000/api/tasks
+```
+
+### Get a Specific Task
+
+```bash
+curl http://localhost:3000/api/tasks/123
+```
+
+### Update a Task
+
+```bash
+curl -X PUT http://localhost:3000/api/tasks/123 \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Updated Task", "completed": true}'
+```
+
+### Delete a Task
+
+```bash
+curl -X DELETE http://localhost:3000/api/tasks/123
+```
+
+## Potential Extensions
+
+This example can be extended with:
+
+1. Persistent repositories (MongoDB, PostgreSQL)
+2. Authentication and authorization
+3. Advanced validation
+4. Reactive programming patterns
+5. More sophisticated domain logic
+6. Event-driven architecture
+7. Comprehensive testing suite 

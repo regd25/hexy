@@ -1,7 +1,7 @@
-import { DataRecord, DomainEvent, EventBus, EventHandler, UuidValueObject } from '@/shared'
+import { DataRecord, Event, EventBus, EventHandler, UuidValueObject } from 'hexy'
 
-// Mock implementation of DomainEvent for testing
-class TestEvent extends DomainEvent {
+// Mock implementation of Event for testing
+class TestEvent extends Event {
 	constructor(aggregateId: string) {
 		super(
 			new UuidValueObject(aggregateId),
@@ -21,13 +21,13 @@ class TestEvent extends DomainEvent {
 		return 'TestEvent'
 	}
 
-	fromPrimitives(data: DataRecord): DomainEvent {
+	fromPrimitives(data: DataRecord): Event {
 		return new TestEvent(data.id as string)
 	}
 }
 
 // Another event type for testing multiple handlers
-class AnotherTestEvent extends DomainEvent {
+class AnotherTestEvent extends Event {
 	constructor(aggregateId: string) {
 		super(
 			new UuidValueObject(aggregateId),
@@ -47,17 +47,17 @@ class AnotherTestEvent extends DomainEvent {
 		return 'AnotherTestEvent'
 	}
 
-	fromPrimitives(data: DataRecord): DomainEvent {
+	fromPrimitives(data: DataRecord): Event {
 		return new AnotherTestEvent(data.id as string)
 	}
 }
 
 class TestEventBus extends EventBus {
-	publish(events: DomainEvent[]): Promise<void> {
+	publish(events: Event[]): Promise<void> {
 		return Promise.resolve()
 	}
 
-	addListener<T extends DomainEvent>(listener: EventHandler<T>): void {
+	addListener<T extends Event>(listener: EventHandler<T>): void {
 		// No-op implementation
 	}
 }

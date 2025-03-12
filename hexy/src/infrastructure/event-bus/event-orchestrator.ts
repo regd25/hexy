@@ -1,8 +1,6 @@
-import { AbstractDomainEvent } from '../../domain/domain-event/abstract-domain-event'
-import { EventBus } from '../../domain/event-bus/event-bus'
-import { Injectable } from '../../domain/dependency-injection'
+import { Event, EventBus, Injectable } from '@/domain'
 
-export interface EventSubscriber<T extends AbstractDomainEvent> {
+export interface EventSubscriber<T extends Event> {
 	subscribedTo(): string[]
 	on(event: T): Promise<void>
 }
@@ -16,7 +14,7 @@ export class EventOrchestrator {
 	}
 
 	private setupEventBus(): void {
-		this.eventBus.addListener(async (event: AbstractDomainEvent) => {
+		this.eventBus.addListener(async (event: Event) => {
 			await this.dispatch(event)
 		})
 	}
@@ -33,7 +31,7 @@ export class EventOrchestrator {
 		})
 	}
 
-	async dispatch(event: AbstractDomainEvent): Promise<void> {
+	async dispatch(event: Event): Promise<void> {
 		const eventName = event.constructor.name
 		const subscribers = this.subscribers.get(eventName) || []
 

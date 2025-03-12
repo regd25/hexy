@@ -1,5 +1,3 @@
-import { AbstractDomainEvent } from '../domain-event/abstract-domain-event'
+import { Event } from '../event/event'
 
-export type EventHandler<T extends AbstractDomainEvent> = (
-	event: T,
-) => Promise<void>
+export type EventHandler<T extends Event> = (event: T) => Promise<void>

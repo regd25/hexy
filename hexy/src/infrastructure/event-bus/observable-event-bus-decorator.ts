@@ -1,8 +1,6 @@
-import { AbstractDomainEvent } from '../../domain/domain-event/abstract-domain-event'
-import { EventBus } from '../../domain/event-bus/event-bus'
-import { Injectable } from '../../domain/dependency-injection'
+import { EventBus, EventHandler, Injectable } from '@/domain'
+import { Event } from '@/domain/event/event'
 import { Telemetry } from '../observability/telemetry'
-import { EventHandler } from '@/domain'
 
 /**
  * Decorator for EventBus that adds observability.
@@ -15,7 +13,7 @@ export class ObservableEventBusDecorator implements EventBus {
 		private readonly telemetry: Telemetry,
 	) {}
 
-	async publish(events: AbstractDomainEvent[]): Promise<void> {
+	async publish(events: Event[]): Promise<void> {
 		this.telemetry.startSpan('event_bus.publish')
 
 		try {
@@ -48,7 +46,7 @@ export class ObservableEventBusDecorator implements EventBus {
 		}
 	}
 
-	addListener<T extends AbstractDomainEvent>(listener: EventHandler<T>): void {
+	addListener<T extends Event>(listener: EventHandler<T>): void {
 		this.eventBus.addListener(listener)
 	}
 }

@@ -1,4 +1,4 @@
-import { EmailValueObject } from '@/shared'
+import { EmailValueObject } from 'hexy'
 
 describe('EmailValueObject', () => {
 	it('should create valid email', () => {

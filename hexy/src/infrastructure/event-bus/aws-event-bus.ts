@@ -1,6 +1,4 @@
-import { AbstractDomainEvent } from '../../domain/domain-event/abstract-domain-event'
-import { EventBus } from '../../domain/event-bus/event-bus'
-import { Injectable } from '../../domain/dependency-injection'
+import { Event, EventBus, EventHandler, Injectable } from '@/domain'
 import { EventBusError } from './event-bus-error'
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
 import {
@@ -8,7 +6,6 @@ import {
 	ReceiveMessageCommand,
 	DeleteMessageCommand,
 } from '@aws-sdk/client-sqs'
-import { EventHandler } from '@/domain'
 
 export interface AWSSNSSQSConfig {
 	region: string
@@ -51,7 +48,7 @@ export class AWSSNSSQSEventBus implements EventBus {
 	 * Publishes domain events to the SNS topic.
 	 * @param events The events to publish
 	 */
-	async publish(events: AbstractDomainEvent[]): Promise<void> {
+	async publish(events: Event[]): Promise<void> {
 		if (!this.config.topicArn) {
 			throw new EventBusError('AWS SNS topic ARN not provided')
 		}
@@ -88,7 +85,7 @@ export class AWSSNSSQSEventBus implements EventBus {
 	 * Adds a listener that will be called for each published event.
 	 * @param listener The callback function to be called
 	 */
-	addListener<T extends AbstractDomainEvent>(listener: EventHandler<T>): void {
+	addListener<T extends Event>(listener: EventHandler<T>): void {
 		this.listeners.push(listener)
 	}
 
@@ -210,8 +207,8 @@ export class AWSSNSSQSEventBus implements EventBus {
 	 * @param data The event data in JSON format
 	 * @returns A properly instantiated domain event
 	 */
-	private deserializeEvent(className: string, data: any): AbstractDomainEvent {
-		return AbstractDomainEvent.fromPrimitives({
+	private deserializeEvent(className: string, data: any): Event {
+		return Event.fromPrimitives({
 			...data,
 			eventName: className,
 		})

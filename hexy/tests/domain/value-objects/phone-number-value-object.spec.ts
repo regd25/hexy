@@ -1,4 +1,4 @@
-import { PhoneNumberValueObject } from '@/shared'
+import { PhoneNumberValueObject } from 'hexy'
 
 describe('PhoneNumberValueObject', () => {
   it('should create valid phone numbers', () => {

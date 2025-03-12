@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { Injectable } from '../injectable'
-import { createToken, Token } from '../token'
+import { createToken } from '../token'
 
 export const DOMAIN_SERVICE_KEY = 'domain:service'
 export const DOMAIN_ENTITY_KEY = 'domain:entity'
@@ -75,7 +75,6 @@ export function DomainRepository(): ClassDecorator {
 export function isDomainRepository(target: any): boolean {
 	return Reflect.getMetadata(DOMAIN_REPOSITORY_KEY, target) === true
 }
-
 
 /**
  * Decorator for domain aggregates in the Domain layer.

@@ -1,7 +1,5 @@
-import { Criteria, EventBus, InfrastructureRepository } from 'hexy'
-import { Task, TaskId } from '../../domain/aggregate/task'
-import { TaskRepository } from '../../domain/aggregate/task-repository'
-import { TaskAbstractRepository } from '../../domain/aggregate/adapters'
+import { Criteria, EventBus, InfrastructureRepository, Repository } from 'hexy'
+import { TaskRepository, TaskId, Task, TaskNotFoundError } from '../../domain'
 
 /**
  * In-memory implementation of TaskRepository
@@ -9,7 +7,7 @@ import { TaskAbstractRepository } from '../../domain/aggregate/adapters'
  */
 @InfrastructureRepository()
 export class InMemoryTaskRepository
-	extends TaskAbstractRepository
+	extends Repository<Task>
 	implements TaskRepository
 {
 	private tasks: Map<string, Task> = new Map()
@@ -18,9 +16,12 @@ export class InMemoryTaskRepository
 		super(eventBus)
 	}
 
-	async findById(id: TaskId): Promise<Task | null> {
+	async findById(id: TaskId): Promise<Task> {
 		const task = this.tasks.get(id.toString())
-		return task || null
+		if (!task) {
+			throw new TaskNotFoundError(id)
+		}
+		return task
 	}
 
 	async findAll(): Promise<Task[]> {
@@ -38,7 +39,7 @@ export class InMemoryTaskRepository
 	}
 
 	/**
-	 * Implementation of abstract method from AbstractRepository
+	 * Implementation of abstract method from Repository
 	 */
 	protected async persist(task: Task): Promise<void> {
 		this.tasks.set(task.id.toString(), task)
@@ -62,6 +63,9 @@ export class InMemoryTaskRepository
 			return results.length
 		}
 		return this.tasks.size
+	}
+	exists(id: TaskId): Promise<boolean> {
+		return Promise.resolve(this.tasks.has(id.toString()))
 	}
 
 	/**

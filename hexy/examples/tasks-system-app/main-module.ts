@@ -11,7 +11,7 @@ import { TaskApplicationService } from './task'
 	],
 	providers: []
 })
-export class AppModule extends Module {
+export class MainModule extends Module {
 	constructor() {
 		super({
 			imports: [

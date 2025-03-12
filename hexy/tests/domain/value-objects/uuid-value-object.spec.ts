@@ -1,4 +1,4 @@
-import { UuidValueObject } from '@/shared'
+import { UuidValueObject } from 'hexy'
 
 describe('UuidValueObject', () => {
 	it('should create valid UUID', () => {

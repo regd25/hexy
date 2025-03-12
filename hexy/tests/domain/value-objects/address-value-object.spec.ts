@@ -5,7 +5,7 @@ import {
 	StateValueObject,
 	CountryValueObject,
 	ZipCodeValueObject,
-} from '@/shared'
+} from 'hexy'
 
 describe('AddressValueObject', () => {
 	it('should create valid address', () => {

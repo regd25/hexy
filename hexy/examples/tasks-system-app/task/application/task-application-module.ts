@@ -1,12 +1,12 @@
-import { ApplicationModuleDecorator, Module } from 'hexy'
+import { ApplicationModule, Module } from 'hexy'
 import { TaskApplicationService } from './task-application-service'
-import { TaskDomainModule } from '../domain/task-domain-module'
+import { TaskDomainModule } from '../domain'
 import { TaskInfrastructureModule } from '../infrastructure/task-infrastructure-module'
 
 /**
  * Application module for Task features
  */
-@ApplicationModuleDecorator({
+@ApplicationModule({
 	imports: [new TaskDomainModule(), new TaskInfrastructureModule()],
 	providers: [
 		{
