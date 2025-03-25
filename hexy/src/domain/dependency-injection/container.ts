@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Token } from './token'
+import { type Token } from './token'
 import { Scope } from './scope'
 import { ResolveError } from './resolve-error'
 import { isOnInit, isOnDestroy, LifecycleState } from './lifecycle'
@@ -100,21 +100,16 @@ export class Container {
 				// Class provider
 				const classToInstantiate = provider.useClass || (token as any)
 
-				// Get constructor parameter types using reflection
 				const paramTypes =
 					Reflect.getMetadata('design:paramtypes', classToInstantiate) || []
 
-				// Get custom injection tokens if any
 				const injectTokens =
 					Reflect.getMetadata('inject:tokens', classToInstantiate) || []
 
-				// Get type inference flags
 				const inferenceFlags =
 					Reflect.getMetadata('inject:inference', classToInstantiate) || []
 
-				// Resolve dependencies
 				const dependencies = paramTypes.map((paramType: any, index: number) => {
-					// If token is undefined and inference is true, use paramType as token
 					const useInference = inferenceFlags[index] === true
 					const customToken = injectTokens[index]
 
@@ -129,7 +124,6 @@ export class Container {
 					return this.resolve(tokenToUse)
 				})
 
-				// Create instance with dependencies
 				instance = new classToInstantiate(...dependencies)
 			}
 
@@ -137,7 +131,6 @@ export class Container {
 				this.instances.set(token, instance)
 			}
 
-			// Call initialization hook if implemented
 			this.callInitHook(instance)
 
 			return instance

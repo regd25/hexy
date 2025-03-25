@@ -1,4 +1,4 @@
-import { DomainService, Injectable } from 'hexy'
+import { DomainService } from 'hexy/domain'
 import { Task } from '../aggregate/task'
 
 /**
@@ -6,7 +6,6 @@ import { Task } from '../aggregate/task'
  * Contains domain logic that doesn't belong in the entity itself
  */
 @DomainService()
-@Injectable()
 export class TaskDomainService {
 	/**
 	 * Validate a task

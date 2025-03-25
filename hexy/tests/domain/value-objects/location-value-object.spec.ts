@@ -1,4 +1,4 @@
-import { LocationValueObject } from 'hexy'
+import { LocationValueObject } from 'hexy/domain'
 
 describe('LocationValueObject', () => {
 	it('should create valid coordinates', () => {

@@ -1,6 +1,7 @@
-import { container, ExpressModule } from 'hexy'
+import { container } from 'hexy/domain'
 import { TaskController } from './task/infrastructure/controllers/task-controller'
 import { MainModule } from './main-module'
+import { ExpressModule } from 'hexy/infrastructure'
 
 async function bootstrap() {
 	const mainModule = new MainModule()

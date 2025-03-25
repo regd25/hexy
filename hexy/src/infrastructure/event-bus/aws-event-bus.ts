@@ -1,4 +1,4 @@
-import { Event, EventBus, EventHandler, Injectable } from '@/domain'
+import { Event, EventBus, EventHandler, Injectable } from '../.../../../domain'
 import { EventBusError } from './event-bus-error'
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
 import {

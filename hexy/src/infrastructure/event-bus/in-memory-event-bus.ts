@@ -1,4 +1,4 @@
-import { Event, EventBus, EventHandler, Injectable } from '@/domain'
+import { Event, EventBus, EventHandler, Injectable } from '../../domain'
 
 /**
  * In-memory implementation of the EventBus.

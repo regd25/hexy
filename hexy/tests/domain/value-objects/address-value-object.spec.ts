@@ -5,7 +5,7 @@ import {
 	StateValueObject,
 	CountryValueObject,
 	ZipCodeValueObject,
-} from 'hexy'
+} from 'hexy/domain'
 
 describe('AddressValueObject', () => {
 	it('should create valid address', () => {

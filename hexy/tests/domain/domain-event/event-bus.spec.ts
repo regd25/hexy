@@ -1,4 +1,4 @@
-import { DataRecord, Event, EventBus, EventHandler, UuidValueObject } from 'hexy'
+import { DataRecord, Event, EventBus, EventHandler, UuidValueObject } from 'hexy/domain'
 
 // Mock implementation of Event for testing
 class TestEvent extends Event {

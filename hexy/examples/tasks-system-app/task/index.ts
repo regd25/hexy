@@ -12,4 +12,3 @@ export { TaskApplicationService } from './application/task-application-service'
 
 // Export infrastructure implementations
 export { InMemoryTaskRepository } from './infrastructure/repository/in-memory-task-repository'
-export { TASK_REPOSITORY } from './infrastructure/task-infrastructure-module'

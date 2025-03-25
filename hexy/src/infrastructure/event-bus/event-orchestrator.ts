@@ -1,4 +1,4 @@
-import { Event, EventBus, Injectable } from '@/domain'
+import { Event, EventBus, Injectable } from '../../domain'
 
 export interface EventSubscriber<T extends Event> {
 	subscribedTo(): string[]

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { TaskEvent } from './task-event'
 import { TaskId, TaskTitle, TaskDescription } from './value-objects'
-import { Aggregate, DataRecord } from 'hexy'
+import { Aggregate, DataRecord } from 'hexy/domain'
 
 export class Task extends Aggregate {
 	constructor(

@@ -1,7 +1,6 @@
 import { EventBusError } from './event-bus-error'
 import Redis from 'ioredis'
-import { EventBus, EventHandler, Injectable } from '@/domain'
-import { Event } from '@/domain/event/event'
+import { Event, EventBus, EventHandler, Injectable } from '../../domain'
 export interface RedisConfig {
 	host: string
 	port: number

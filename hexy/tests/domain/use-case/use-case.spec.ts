@@ -1,4 +1,4 @@
-import { UseCase } from 'hexy'
+import { UseCase } from 'hexy/domain'
 
 // Mock implementation of UseCase for testing
 class TestUseCase extends UseCase<{

@@ -17,7 +17,7 @@ The dependency injection system in Hexy is designed to facilitate the implementa
 ### Define an Injectable Service
 
 ```typescript
-import { Injectable } from 'hexy';
+import { Injectable } from 'hexy/domain';
 
 @Injectable()
 export class UserService {
@@ -30,7 +30,7 @@ export class UserService {
 ### Dependency Injection
 
 ```typescript
-import { Injectable, Inject } from 'hexy';
+import { Injectable, Inject } from 'hexy/domain';
 import { UserService } from './user.service';
 
 @Injectable()
@@ -49,7 +49,7 @@ export class UserController {
 ### Lifecycle Management
 
 ```typescript
-import { Injectable, OnInit, OnDestroy } from 'hexy';
+import { Injectable, OnInit, OnDestroy } from 'hexy/domain';
 
 @Injectable()
 export class DatabaseService implements OnInit, OnDestroy {
@@ -72,7 +72,7 @@ export class DatabaseService implements OnInit, OnDestroy {
 ### DomainModule Layer
 
 ```typescript
-import { DomainService, DomainEntity, DomainValueObject } from 'hexy';
+import { DomainService, DomainEntity, DomainValueObject } from 'hexy/domain';
 
 @DomainValueObject()
 export class Email {
@@ -124,7 +124,7 @@ export class UserApplicationService {
 ### Infrastructure Layer
 
 ```typescript
-import { InfrastructureService, InjectionToken } from 'hexy';
+import { InfrastructureService, InjectionToken } from 'hexy/domain';
 
 // Define interfaces in the domain
 export interface UserRepository {
@@ -164,7 +164,7 @@ import {
   Module, 
   ApplicationModule, 
   DomainModule 
-} from 'hexy';
+} from 'hexy/domain';
 
 @DomainModule({
   providers: [UserDomainService],

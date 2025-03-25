@@ -1,4 +1,4 @@
-import { PhoneNumberValueObject } from 'hexy'
+import { PhoneNumberValueObject } from 'hexy/domain'
 
 describe('PhoneNumberValueObject', () => {
   it('should create valid phone numbers', () => {

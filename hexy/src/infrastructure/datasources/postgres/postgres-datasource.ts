@@ -2,7 +2,7 @@ import { PostgresCriteriaConverter } from './postgres-criteria-converter'
 import { DataSource } from '../../../domain/persistence'
 import { PostgresConverterResult } from './postgres-converter-result'
 import { Client } from 'pg'
-import { DataRecord } from '@/domain'
+import { DataRecord } from '../../../domain'
 
 /**
  * @description Postgres datasource implementation

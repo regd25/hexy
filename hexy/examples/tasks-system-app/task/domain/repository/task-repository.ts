@@ -1,4 +1,4 @@
-import { Repository } from 'hexy'
+import { Repository } from 'hexy/domain'
 import { Task, TaskId } from '../aggregate'
 
 /**

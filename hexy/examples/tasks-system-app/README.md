@@ -105,7 +105,7 @@ The application demonstrates two approaches to Express integration:
 
 1. **Direct API configuration** (server.ts):
 ```typescript
-import { container } from 'hexy'
+import { container } from 'hexy/domain'
 import { ExpressAdapter } from 'hexy/infrastructure/http/express'
 
 // Create Express adapter with Hexy's DI container
@@ -124,7 +124,7 @@ await expressAdapter.listen()
 
 2. **Module-based approach** (server-with-module.ts):
 ```typescript
-import { container } from 'hexy'
+import { container } from 'hexy/domain'
 import { ExpressModule } from 'hexy/infrastructure/http'
 
 // Create Express module

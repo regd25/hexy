@@ -1,7 +1,16 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"module": "commonjs",
+		"lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "allowJs": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
 		"rootDir": "./",
 		"outDir": "./dist",
 		"strict": true,
@@ -9,16 +18,20 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"moduleResolution": "node",
 		"declaration": true,
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["src/*"],
-			"hexy": ["src/index.ts"],
+			"hexy/domain": ["src/domain/index.ts"],
+			"hexy/infrastructure": ["src/infrastructure/index.ts"],
+			"hexy/application": ["src/application/index.ts"],
 		},
 		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true
+		"emitDecoratorMetadata": true,
+    "noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true
 	},
 	"include": ["src/**/*", "bin/**/*", "examples/**/*", "tests/**/*"],
 	"exclude": ["node_modules", "dist"]

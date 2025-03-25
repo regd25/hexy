@@ -4,7 +4,7 @@ import {
 	EventBus,
 	IdentifierValueObject,
 	Criteria,
-} from '@/domain'
+} from '../../domain'
 
 /**
  * In-memory implementation of Repository for testing and prototyping

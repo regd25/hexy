@@ -13,12 +13,12 @@
   ],
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "node dist/index.js",
     "dev": "bun run --watch examples/tasks-system-app/server.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "example": "bun run examples/tasks-system-app/server.ts"
   },
   "bin": {
     "hexy": "dist/bin/index.js"
@@ -43,7 +43,8 @@
     "prettier": "^3.0.0",
     "ts-jest": "^29.1.2",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/bun": "latest"
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.758.0",

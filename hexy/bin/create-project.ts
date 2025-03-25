@@ -94,7 +94,7 @@ function createStarterStructure() {
   })
 
   // Create basic files
-  fs.writeFileSync('src/index.ts', `import { Hexy } from 'hexy';\n\nconst app = new Hexy();\napp.start();`)
+  fs.writeFileSync('src/index.ts', `import { Hexy } from 'hexy/domain';\n\nconst app = new Hexy();\napp.start();`)
 }
 
 function createEnterpriseStructure() {

@@ -27,7 +27,7 @@ export function createEvent() {
 			}
 
 			// Create event file
-			const content = `import { DomainEvent, DomainEventDecorator } from 'hexy';
+			const content = `import { DomainEvent, DomainEventDecorator } from 'hexy/domain';
 
 
 interface ${eventName}Data {

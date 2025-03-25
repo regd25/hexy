@@ -1,4 +1,4 @@
-import { Criteria, EventBus, InfrastructureRepository, Repository } from 'hexy'
+import { Criteria, EventBus, InfrastructureRepository, Repository, Inject } from 'hexy/domain'
 import { TaskRepository, TaskId, Task, TaskNotFoundError } from '../../domain'
 
 /**
@@ -12,7 +12,7 @@ export class InMemoryTaskRepository
 {
 	private tasks: Map<string, Task> = new Map()
 
-	constructor(eventBus?: EventBus) {
+	constructor(@Inject() eventBus?: EventBus) {
 		super(eventBus)
 	}
 

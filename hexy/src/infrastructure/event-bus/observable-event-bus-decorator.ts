@@ -1,6 +1,4 @@
-import { EventBus, EventHandler, Injectable } from '@/domain'
-import { Event } from '@/domain/event/event'
-import { Telemetry } from '../observability/telemetry'
+import { Event, EventBus, EventHandler, Injectable, Telemetry } from '../../domain'
 
 /**
  * Decorator for EventBus that adds observability.

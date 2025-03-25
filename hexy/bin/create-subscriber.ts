@@ -34,7 +34,7 @@ export function createSubscriber() {
 			}
 
 			// Create subscriber file
-			const content = `import { Injectable, EventSubscriber } from 'hexy';
+			const content = `import { Injectable, EventSubscriber } from 'hexy/domain';
 import { ${eventName}Event } from '../../domain/events/${toSnakeCase(event)}.event';
 
 @Injectable()

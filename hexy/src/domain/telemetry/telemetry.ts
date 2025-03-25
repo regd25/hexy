@@ -1,4 +1,3 @@
-import { Injectable } from '../../domain/dependency-injection'
 
 export interface TelemetryOptions {
 	serviceName: string
@@ -10,7 +9,6 @@ export interface Span {
 	end(): void
 }
 
-@Injectable()
 export abstract class Telemetry {
 	abstract startSpan(name: string): Span
 	abstract recordMetric(

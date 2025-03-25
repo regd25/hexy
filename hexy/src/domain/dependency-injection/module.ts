@@ -1,5 +1,6 @@
-import { Provider } from './container'
-import { Token } from './token'
+import { container } from '.'
+import { type Provider } from './container'
+import { type Token } from './token'
 
 /**
  * Configuration for a DI module.
@@ -40,13 +41,17 @@ export class Module {
 	 * Gets all providers defined in this module and its imports.
 	 */
 	getAllProviders(): Provider[] {
-		// Get providers from imported modules
-		const importedProviders = this.imports.flatMap((module) =>
-			module.getExportedProviders(),
-		)
+		const result: Provider[] = [...this.providers]
 
-		// Combine with this module's providers
-		return [...this.providers, ...importedProviders]
+		for (const importedModule of this.imports) {
+			const moduleProviders = importedModule.getAllProviders()
+			const exportedProviders = moduleProviders.filter((provider) =>
+				importedModule.exports.includes(provider.provide),
+			)
+			result.push(...exportedProviders)
+		}
+
+		return result
 	}
 
 	/**
@@ -55,19 +60,14 @@ export class Module {
 	getExportedProviders(): Provider[] {
 		const result: Provider[] = []
 
-		// Add directly exported providers
 		for (const exportItem of this.exports) {
 			if (exportItem instanceof Module) {
-				// If exporting a module, add all its exported providers
 				result.push(...exportItem.getExportedProviders())
 			} else if (typeof exportItem === 'object' && 'provide' in exportItem) {
-				// If exporting a provider directly
 				result.push(exportItem)
 			}
-			// Skip token exports - they're handled below
 		}
 
-		// Add this module's providers that are explicitly exported
 		for (const provider of this.providers) {
 			if (this.exports.some((exp) => exp === provider.provide)) {
 				result.push(provider)
@@ -91,5 +91,20 @@ export class Module {
 	 */
 	getImportedModuleNames(): string[] {
 		return this.imports.map((module) => module.constructor.name)
+	}
+
+	async initialize(): Promise<void> {
+		for (const importedModule of this.imports) {
+			if (typeof importedModule.initialize === 'function') {
+				await importedModule.initialize()
+			}
+		}
+
+		for (const provider of this.providers) {
+			const instance = container.resolve(provider.provide)
+			if (instance && typeof instance.initialize === 'function') {
+				await instance.initialize()
+			}
+		}
 	}
 }

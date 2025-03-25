@@ -1,4 +1,4 @@
-import { ApplicationService, Inject } from 'hexy'
+import { ApplicationService, Inject } from 'hexy/domain'
 import {
 	TaskDomainService,
 	Task,
@@ -6,7 +6,6 @@ import {
 	TaskRepository,
 	TaskId,
 } from '../domain'
-import { TASK_REPOSITORY } from '../infrastructure/task-infrastructure-module'
 
 /**
  * Application service for Task entities.
@@ -15,7 +14,7 @@ import { TASK_REPOSITORY } from '../infrastructure/task-infrastructure-module'
 @ApplicationService()
 export class TaskApplicationService {
 	constructor(
-		@Inject(TASK_REPOSITORY) private readonly taskRepository: TaskRepository,
+		@Inject() private readonly taskRepository: TaskRepository,
 		private readonly taskDomainService: TaskDomainService,
 	) {}
 

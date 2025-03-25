@@ -1,14 +1,14 @@
-import { Inject } from 'hexy'
-import { Controller, Get, Post, Put, Delete, Body, Param } from 'hexy'
+import { Body, Controller, Delete, Get, Param, Post } from 'hexy/infrastructure'
+import { Inject } from 'hexy/domain'
+import { type CreateTaskDto } from '../../application/dto/create-task.dto'
 import { TaskApplicationService } from '../../application/task-application-service'
-import { CreateTaskDto } from '../../application/dto/create-task.dto'
 
 /**
  * REST API controller for Task resources
  */
 @Controller('/api/tasks')
 export class TaskController {
-	constructor(@Inject() private taskService: TaskApplicationService) {}
+	constructor(@Inject() private readonly taskService: TaskApplicationService) {}
 
 	/**
 	 * Get all tasks

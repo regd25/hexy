@@ -31,7 +31,7 @@ npm install express
 Controllers act as adapters in the hexagonal architecture, connecting your application layer to the HTTP interface:
 
 ```typescript
-import { Inject } from 'hexy'
+import { Inject } from 'hexy/domain'
 import { Controller, Get, Post, Put, Delete, Body, Param } from 'hexy/infrastructure/http/express'
 import { UserService } from '../../application/user.service'
 import { CreateUserDto } from '../../application/dto/create-user.dto'
@@ -83,7 +83,7 @@ export class UserController {
 #### 2. Register the Controller in a Module
 
 ```typescript
-import { InfrastructureModule, Module } from 'hexy'
+import { InfrastructureModule, Module } from 'hexy/domain'
 import { UserController } from './controllers/user.controller'
 
 @InfrastructureModule({
@@ -107,7 +107,7 @@ export class ApiModule extends Module {
 This approach gives you direct access to the Express adapter:
 
 ```typescript
-import { container } from 'hexy'
+import { container } from 'hexy/domain'
 import { ExpressAdapter } from 'hexy/infrastructure/http/express'
 import { AppModule } from './app.module'
 import { UserController } from './infrastructure/controllers/user.controller'
@@ -152,7 +152,7 @@ bootstrap()
 This approach encapsulates Express setup within a module:
 
 ```typescript
-import { container } from 'hexy'
+import { container } from 'hexy/domain'
 import { ExpressModule } from 'hexy/infrastructure/http'
 import { AppModule } from './app.module'
 import { UserController } from './infrastructure/controllers/user.controller'

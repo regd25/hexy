@@ -1,4 +1,4 @@
-import { Container, Provider } from './container'
+import { Container, type Provider } from './container'
 import {
 	isDomainService,
 	isDomainRepository,

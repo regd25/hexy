@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { Module, ModuleOptions } from './module'
+import { Module, type ModuleOptions } from './module'
 
 /**
  * Extended module options that include layer information
@@ -37,15 +37,12 @@ export function ModuleDecorator(options: LayeredModuleOptions): ClassDecorator {
 			exports: options.exports || [],
 		}
 
-		// Store options in metadata for the constructor to use automatically
 		Reflect.defineMetadata(MODULE_OPTIONS_METADATA_KEY, moduleOptions, target)
 
-		// Store layer information if provided
 		if (options.layer) {
 			Reflect.defineMetadata('module:layer', options.layer, target)
 		}
 
-		// Override constructor to automatically pass options to super()
 		const originalConstructor = target
 		const newConstructor: any = function (...args: any[]) {
 			const instance = Reflect.construct(
@@ -54,8 +51,6 @@ export function ModuleDecorator(options: LayeredModuleOptions): ClassDecorator {
 				newConstructor,
 			) as Module
 
-			// If the constructor didn't call super() with options,
-			// we'll initialize it from the metadata
 			if (!instance.initialized) {
 				Object.getPrototypeOf(instance).constructor.call(
 					instance,
@@ -66,11 +61,9 @@ export function ModuleDecorator(options: LayeredModuleOptions): ClassDecorator {
 			return instance
 		}
 
-		// Copy static properties and maintain prototype chain
 		Object.setPrototypeOf(newConstructor, originalConstructor)
 		newConstructor.prototype = originalConstructor.prototype
 
-		// Copy own properties
 		Object.getOwnPropertyNames(target).forEach((prop) => {
 			if (prop !== 'prototype' && prop !== 'name' && prop !== 'length') {
 				Object.defineProperty(
@@ -81,7 +74,6 @@ export function ModuleDecorator(options: LayeredModuleOptions): ClassDecorator {
 			}
 		})
 
-		// Store module definition for potential future reference
 		const module = new Module(moduleOptions)
 		Reflect.defineMetadata('di:module', module, newConstructor)
 

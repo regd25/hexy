@@ -1,4 +1,4 @@
-import { DateValueObject, DateRangeValueObject } from 'hexy'
+import { DateValueObject, DateRangeValueObject } from 'hexy/domain'
 
 describe('DateRangeValueObject', () => {
 	it('should create valid date range', () => {

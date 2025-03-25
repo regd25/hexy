@@ -1,4 +1,4 @@
-import { DomainError } from 'hexy'
+import { DomainError } from 'hexy/domain'
 import { TaskId } from './value-objects'
 
 export class TaskNotFoundError extends DomainError {

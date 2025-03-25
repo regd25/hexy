@@ -181,38 +181,39 @@ export class ExpressAdapter {
 		methodName: string,
 	): (req: Request, res: Response, next: NextFunction) => void {
 		// Get parameter metadata if available
-		const paramsMetadata = getParamMetadata(
-			Object.getPrototypeOf(controllerInstance),
-			methodName
-		) || [];
-		
+		const paramsMetadata =
+			getParamMetadata(Object.getPrototypeOf(controllerInstance), methodName) ||
+			[]
+
 		return async (req: Request, res: Response, next: NextFunction) => {
 			try {
 				// Prepare args based on parameter decorators
-				const args = [];
-				
+				const args = []
+
 				// If we have parameter metadata, use it to build the arguments array
 				if (paramsMetadata.length > 0) {
 					// Sort parameters by index to ensure correct order
-					const sortedParams = [...paramsMetadata].sort((a, b) => a.index - b.index);
-					
+					const sortedParams = [...paramsMetadata].sort(
+						(a, b) => a.index - b.index,
+					)
+
 					// For each parameter, extract its value from the request
 					for (const param of sortedParams) {
-						args[param.index] = extractParamValue(param, req, res, next);
+						args[param.index] = extractParamValue(param, req, res, next)
 					}
 				}
-				
+
 				// Call the controller method with the prepared arguments
-				const result = await controllerInstance[methodName](...args);
-				
+				const result = await controllerInstance[methodName](...args)
+
 				// If the method returned a result and hasn't ended the response, send it
 				if (result !== undefined && !res.headersSent) {
-					res.json(result);
+					res.json(result)
 				}
 			} catch (error) {
-				next(error);
+				next(error)
 			}
-		};
+		}
 	}
 
 	/**

@@ -1,6 +1,6 @@
 import { Injectable } from '../dependency-injection'
 import { Event } from '../event/event'
-import { EventHandler } from './event-handler'
+import { type EventHandler } from './event-handler'
 
 /**
  * Interface for event bus implementations.

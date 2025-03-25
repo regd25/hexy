@@ -5,7 +5,9 @@ module.exports = {
   roots: ['<rootDir>/src/', '<rootDir>/tests/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    'hexy': '<rootDir>/src/index.ts',
+    'hexy/domain': '<rootDir>/src/domain/index.ts',
+    'hexy/infrastructure': '<rootDir>/src/infrastructure/index.ts',
+    'hexy/application': '<rootDir>/src/application/index.ts',
   },
   collectCoverage: true,
   collectCoverageFrom: [

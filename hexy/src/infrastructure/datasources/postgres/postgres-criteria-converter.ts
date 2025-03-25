@@ -1,6 +1,4 @@
-import { Criteria } from '../../../domain/criteria/criteria'
-import { FilterPrimitives } from '../../../domain/criteria/filters/filter'
-import { StringRecord } from '@/domain/types'
+import { Criteria, FilterPrimitives, StringRecord } from '../../../domain'
 import { PostgresConverterResult } from './postgres-converter-result'
 
 /**

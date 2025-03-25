@@ -1,23 +1,16 @@
-import { Module, ModuleDecorator } from 'hexy'
-import { TaskModule } from './task'
-import { TaskApplicationService } from './task'
+import { Module, ModuleDecorator, type ModuleOptions } from 'hexy/domain'
+import { TaskModule } from './task/task-module'
 
 /**
- * Main application module
+ * Main application module that combines all feature modules
  */
 @ModuleDecorator({
-	imports: [
-		new TaskModule()
-	],
-	providers: []
+	imports: [new TaskModule()],
+	providers: [],
+	exports: []
 })
 export class MainModule extends Module {
-	constructor() {
-		super({
-			imports: [
-				new TaskModule()
-			],
-			providers: []
-		});
+	constructor(options: ModuleOptions = { providers: [] }) {
+		super(options);
 	}
 }

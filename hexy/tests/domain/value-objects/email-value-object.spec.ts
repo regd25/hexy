@@ -1,4 +1,4 @@
-import { EmailValueObject } from 'hexy'
+import { EmailValueObject } from 'hexy/domain'
 
 describe('EmailValueObject', () => {
 	it('should create valid email', () => {

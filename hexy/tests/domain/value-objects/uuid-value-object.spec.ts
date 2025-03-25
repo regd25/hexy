@@ -1,4 +1,4 @@
-import { UuidValueObject } from 'hexy'
+import { UuidValueObject } from 'hexy/domain'
 
 describe('UuidValueObject', () => {
 	it('should create valid UUID', () => {

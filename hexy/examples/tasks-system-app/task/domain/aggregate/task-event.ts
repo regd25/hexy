@@ -1,4 +1,4 @@
-import { Event, RoutingKeyValueObject, DataRecord } from 'hexy'
+import { Event, RoutingKeyValueObject, DataRecord } from 'hexy/domain'
 import { TaskId, TaskTitle, TaskDescription } from './value-objects'
 
 export class TaskEvent extends Event {
