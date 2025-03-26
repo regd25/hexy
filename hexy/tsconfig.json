@@ -22,9 +22,10 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"hexy/domain": ["src/domain/index.ts"],
-			"hexy/infrastructure": ["src/infrastructure/index.ts"],
-			"hexy/application": ["src/application/index.ts"],
+			"@hexy/domain": ["src/domain/index.ts"],
+			"@hexy/infrastructure": ["src/infrastructure/index.ts"],
+			"@hexy/application": ["src/application/index.ts"],
+			"@hexy": ["src/index.ts"]
 		},
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,

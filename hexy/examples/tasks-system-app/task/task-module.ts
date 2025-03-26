@@ -1,13 +1,7 @@
-import {
-	Module,
-	ModuleDecorator,
-	type Provider,
-	type ModuleOptions,
-} from 'hexy/domain'
+import { Module, ModuleDecorator, type Provider } from '@hexy'
 import { TaskController } from './infrastructure/controllers/task-controller'
-import { TaskRepository } from './domain'
+import { TaskDomainService, TaskRepository } from './domain'
 import { InMemoryTaskRepository } from './infrastructure/repository/in-memory-task-repository'
-import { TaskDomainService } from './domain'
 import { TaskApplicationService } from './application/task-application-service'
 
 /**

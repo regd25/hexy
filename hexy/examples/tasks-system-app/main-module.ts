@@ -1,4 +1,4 @@
-import { Module, ModuleDecorator, type ModuleOptions } from 'hexy/domain'
+import { Module, ModuleDecorator, type ModuleOptions } from '@hexy'
 import { TaskModule } from './task/task-module'
 
 /**
@@ -7,10 +7,10 @@ import { TaskModule } from './task/task-module'
 @ModuleDecorator({
 	imports: [new TaskModule()],
 	providers: [],
-	exports: []
+	exports: [],
 })
 export class MainModule extends Module {
 	constructor(options: ModuleOptions = { providers: [] }) {
-		super(options);
+		super(options)
 	}
 }
