@@ -12,6 +12,16 @@ export interface Query extends UseCaseInput {
 }
 
 /**
+ * @description Error codes for query failures
+ */
+export enum QueryErrorCode {
+	VALIDATION_ERROR = 'VALIDATION_ERROR',
+	NOT_FOUND = 'NOT_FOUND',
+	UNAUTHORIZED = 'UNAUTHORIZED',
+	INTERNAL_ERROR = 'INTERNAL_ERROR'
+}
+
+/**
  * @description Generic query result interface
  * Represents the result of a query execution
  */
@@ -34,5 +44,29 @@ export interface QueryResult<T = any> {
 	/**
 	 * Error code if the query failed
 	 */
-	errorCode?: string
+	errorCode?: QueryErrorCode | string
+}
+
+/**
+ * Creates a successful query result
+ */
+export function createSuccessQueryResult<T>(data: T): QueryResult<T> {
+	return {
+		success: true,
+		data
+	}
+}
+
+/**
+ * Creates a failed query result
+ */
+export function createFailedQueryResult(
+	error: string, 
+	errorCode: QueryErrorCode | string = QueryErrorCode.INTERNAL_ERROR
+): QueryResult<never> {
+	return {
+		success: false,
+		error,
+		errorCode
+	}
 }

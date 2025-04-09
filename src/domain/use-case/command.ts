@@ -12,6 +12,18 @@ export interface Command extends UseCaseInput {
 }
 
 /**
+ * @description Error codes for command failures
+ */
+export enum CommandErrorCode {
+	VALIDATION_ERROR = 'VALIDATION_ERROR',
+	BUSINESS_RULE_VIOLATION = 'BUSINESS_RULE_VIOLATION',
+	NOT_FOUND = 'NOT_FOUND',
+	UNAUTHORIZED = 'UNAUTHORIZED',
+	CONFLICT = 'CONFLICT',
+	INTERNAL_ERROR = 'INTERNAL_ERROR'
+}
+
+/**
  * @description Generic command result interface
  * Represents the result of a command execution
  */
@@ -34,5 +46,29 @@ export interface CommandResult<T = any> {
 	/**
 	 * Error code if the command failed
 	 */
-	errorCode?: string
+	errorCode?: CommandErrorCode | string
+}
+
+/**
+ * Creates a successful command result
+ */
+export function createSuccessCommandResult<T>(data?: T): CommandResult<T> {
+	return {
+		success: true,
+		data
+	}
+}
+
+/**
+ * Creates a failed command result
+ */
+export function createFailedCommandResult(
+	error: string, 
+	errorCode: CommandErrorCode | string = CommandErrorCode.INTERNAL_ERROR
+): CommandResult<never> {
+	return {
+		success: false,
+		error,
+		errorCode
+	}
 }
