@@ -1,5 +1,5 @@
-import { Injectable } from '../dependency-injection/injectable'
-import { type OnInit } from '../dependency-injection/lifecycle'
+import { Injectable } from '../../shared/di/injectable'
+import { type OnInit } from '../../shared/di/lifecycle'
 import { v4 as uuidv4 } from 'uuid'
 
 /**

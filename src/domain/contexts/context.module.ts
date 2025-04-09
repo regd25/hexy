@@ -1,4 +1,4 @@
-import { Module } from '../dependency-injection/module'
+import { Module } from '../../shared/di/module'
 import { Context } from './context'
 import { ContextService } from './context-service'
 import { CONTEXT_REPOSITORY_TOKEN, ACTIVE_CONTEXT_TOKEN } from './tokens'

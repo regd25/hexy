@@ -1,4 +1,4 @@
-import { createToken } from '../dependency-injection/token'
+import { createToken } from '../../shared/di/token'
 import { type IContextRepository } from './context-repository'
 import { Context } from './context'
 

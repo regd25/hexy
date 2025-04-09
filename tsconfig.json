@@ -1,16 +1,16 @@
 {
 	"compilerOptions": {
 		"lib": ["ESNext"],
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleDetection": "force",
-    "allowJs": true,
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleDetection": "force",
+		"allowJs": true,
 
-    // Bundler mode
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
+		// Bundler mode
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true,
 		"rootDir": "./",
 		"outDir": "./dist",
 		"strict": true,
@@ -22,17 +22,14 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"@hexy/domain": ["src/domain/index.ts"],
-			"@hexy/infrastructure": ["src/infrastructure/index.ts"],
-			"@hexy/application": ["src/application/index.ts"],
-			"@hexy": ["src/index.ts"]
+			"shared/*": ["src/shared/*"]
 		},
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-    "noFallthroughCasesInSwitch": true,
+		"noFallthroughCasesInSwitch": true,
 		"noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": true
+		"noUnusedParameters": true,
+		"noPropertyAccessFromIndexSignature": true
 	},
 	"include": ["src/**/*", "bin/**/*", "examples/**/*", "tests/**/*"],
 	"exclude": ["node_modules", "dist"]
