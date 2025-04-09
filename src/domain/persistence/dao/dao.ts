@@ -1,7 +1,7 @@
 import { Criteria } from '../../criteria'
 import { DataRecord } from '../../types'
 import { DataSource } from '../data-source/data-source'
-import { StringValueObject, NumberIdValueObject } from '../../value-objects'
+import { StringValueObject, NumberIdValueObject } from '../../aggregate/value-objects'
 /**
  * @description Interface for a DAO
  * @template DTO - The type of data transfer object

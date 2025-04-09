@@ -1,4 +1,4 @@
-import { ValueObject, InvalidValueObjectError } from '../../value-objects'
+import { ValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 import { Filter } from './filter'
 
 /**

@@ -1,4 +1,4 @@
-import { ValueObject, InvalidValueObjectError } from '../../value-objects'
+import { ValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 import { OrderBy } from './order-by'
 import { OrderType, OrderTypes } from './order-type'
 

@@ -1,4 +1,4 @@
-import { EnumValueObject, InvalidValueObjectError } from '../../value-objects'
+import { EnumValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 
 /**
  * Represents an order type that can be used to order a collection of items.

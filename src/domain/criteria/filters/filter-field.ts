@@ -1,4 +1,4 @@
-import { StringValueObject, InvalidValueObjectError } from '../../value-objects'
+import { StringValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 
 /**
  * Represents a filter field that can be used to filter a value.

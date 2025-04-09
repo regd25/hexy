@@ -40,6 +40,7 @@ export type Token<T = any> =
 	| symbol
 	| InjectionToken<T>
 	| { new (...args: any[]): T }
+	| (abstract new (...args: any[]) => T)
 
 /**
  * Creates a named token for dependency injection.

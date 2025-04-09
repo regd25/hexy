@@ -1,7 +1,7 @@
 import { DomainAggregate } from '../dependency-injection'
 import { Event } from '../event/event'
 import { DataRecord } from '../types'
-import { IdentifierValueObject } from '../value-objects'
+import { IdentifierValueObject } from './value-objects'
 
 /**
  * @description Abstract class for aggregate roots

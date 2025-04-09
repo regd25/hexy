@@ -1,110 +1,118 @@
-import { container } from '.'
-import { type Provider } from './container'
-import { type Token } from './token'
+import 'reflect-metadata'
+import { ModuleClass, type ModuleOptions } from './module-class'
 
 /**
- * Configuration for a DI module.
+ * Extended module options that include layer information
  */
-export interface ModuleOptions {
-	providers: Provider[]
-	imports?: Module[]
-	exports?: (Provider | Module | Token<any>)[]
+export interface LayeredModuleOptions extends ModuleOptions {
+	layer?: 'application' | 'domain' | 'infrastructure'
+}
+
+// Metadata key for storing module options
+const MODULE_OPTIONS_METADATA_KEY = 'module:options'
+
+/**
+ * Decorator function that creates a Module class from the decorated class.
+ * This allows defining modules in a more declarative way using decorators.
+ *
+ * The decorator automatically configures the module's constructor, so you don't need
+ * to manually pass the options to super() in your module class.
+ *
+ * @example
+ * ```typescript
+ * @ModuleDecorator({
+ *   providers: [UserService],
+ *   imports: [DatabaseModule],
+ *   exports: [UserService],
+ *   layer: 'application'
+ * })
+ * export class UserModule extends Module {}
+ * ```
+ */
+export function Module(options: LayeredModuleOptions): ClassDecorator {
+	return function (target: any) {
+		const moduleOptions: ModuleOptions = {
+			providers: options.providers || [],
+			imports: options.imports || [],
+			exports: options.exports || [],
+		}
+
+		Reflect.defineMetadata(MODULE_OPTIONS_METADATA_KEY, moduleOptions, target)
+
+		if (options.layer) {
+			Reflect.defineMetadata('module:layer', options.layer, target)
+		}
+
+		const originalConstructor = target
+		const newConstructor: any = function (...args: any[]) {
+			const instance = Reflect.construct(
+				originalConstructor,
+				args,
+				newConstructor,
+			) as ModuleClass
+
+			if (!instance.initialized) {
+				Object.getPrototypeOf(instance).constructor.call(
+					instance,
+					Reflect.getMetadata(MODULE_OPTIONS_METADATA_KEY, target),
+				)
+			}
+
+			return instance
+		}
+
+		Object.setPrototypeOf(newConstructor, originalConstructor)
+		newConstructor.prototype = originalConstructor.prototype
+
+		Object.getOwnPropertyNames(target).forEach((prop) => {
+			if (prop !== 'prototype' && prop !== 'name' && prop !== 'length') {
+				Object.defineProperty(
+					newConstructor,
+					prop,
+					Object.getOwnPropertyDescriptor(target, prop)!,
+				)
+			}
+		})
+
+		const module = new ModuleClass(moduleOptions)
+		Reflect.defineMetadata('di:module', module, newConstructor)
+
+		return newConstructor
+	}
 }
 
 /**
- * A module that groups related providers together.
- * Modules can import other modules and export providers.
+ * Function to get the layer of a module
  */
-export class Module {
-	private readonly providers: Provider[]
-	private readonly imports: Module[]
-	private readonly exports: (Provider | Module | Token<any>)[]
+export function getModuleLayer(target: any): string | undefined {
+	return Reflect.getMetadata('module:layer', target)
+}
 
-	/**
-	 * Flag to track if the module has been initialized through the constructor
-	 * Used by the ModuleDecorator to prevent double initialization
-	 */
-	protected _initialized: boolean = false
+/**
+ * Function to get the options used to configure a module
+ */
+export function getModuleOptions(target: any): ModuleOptions | undefined {
+	return Reflect.getMetadata(MODULE_OPTIONS_METADATA_KEY, target)
+}
 
-	constructor(options: ModuleOptions) {
-		this.providers = options.providers || []
-		this.imports = options.imports || []
-		this.exports = options.exports || []
-		this._initialized = true
-	}
+/**
+ * Convenience decorators for specific layer modules
+ */
+export function ApplicationModule(options: ModuleOptions): ClassDecorator {
+	return Module({ ...options, layer: 'application' })
+}
 
-	get initialized(): boolean {
-		return this._initialized
-	}
+export function DomainModule(options: ModuleOptions): ClassDecorator {
+	return Module({ ...options, layer: 'domain' })
+}
 
-	/**
-	 * Gets all providers defined in this module and its imports.
-	 */
-	getAllProviders(): Provider[] {
-		const result: Provider[] = [...this.providers]
+export function InfrastructureModule(options: ModuleOptions): ClassDecorator {
+	return Module({ ...options, layer: 'infrastructure' })
+}
 
-		for (const importedModule of this.imports) {
-			const moduleProviders = importedModule.getAllProviders()
-			const exportedProviders = moduleProviders.filter((provider) =>
-				importedModule.exports.includes(provider.provide),
-			)
-			result.push(...exportedProviders)
-		}
-
-		return result
-	}
-
-	/**
-	 * Gets providers exported by this module.
-	 */
-	getExportedProviders(): Provider[] {
-		const result: Provider[] = []
-
-		for (const exportItem of this.exports) {
-			if (exportItem instanceof Module) {
-				result.push(...exportItem.getExportedProviders())
-			} else if (typeof exportItem === 'object' && 'provide' in exportItem) {
-				result.push(exportItem)
-			}
-		}
-
-		for (const provider of this.providers) {
-			if (this.exports.some((exp) => exp === provider.provide)) {
-				result.push(provider)
-			}
-		}
-
-		return result
-	}
-
-	/**
-	 * Gets the modules that this module imports.
-	 * Useful for dependency validation.
-	 */
-	getImportedModules(): Module[] {
-		return [...this.imports]
-	}
-
-	/**
-	 * Gets the constructor names of the imported modules.
-	 * Useful for dependency validation.
-	 */
-	getImportedModuleNames(): string[] {
-		return this.imports.map((module) => module.constructor.name)
-	}
-
-	async initialize(): Promise<void> {
-		for (const importedModule of this.imports) {
-			if (typeof importedModule.initialize === 'function') {
-				await importedModule.initialize()
-			}
-		}
-
-		for (const provider of this.providers) {
-			const instance = container.resolve(provider.provide)
-			if (instance && typeof instance.initialize === 'function') {
-				await instance.initialize()
-			}
-		}
-	}
+/**
+ * Gets the module definition from a module class.
+ */
+export function getModuleFromClass(moduleClass: any): ModuleClass | null {
+	return Reflect.getMetadata('di:module', moduleClass)
 }

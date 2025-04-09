@@ -2,7 +2,7 @@
 export * from './container'
 export * from './token'
 export * from './scope'
-export * from './module'
+export * from './module-class'
 export * from './application'
 
 // Decorators

@@ -1,6 +1,6 @@
 import { DomainEvent } from '../dependency-injection'
 import { DataRecord } from '../types'
-import { RoutingKeyValueObject, StringValueObject, NumberIdValueObject } from '../value-objects'
+import { RoutingKeyValueObject, StringValueObject, NumberIdValueObject } from '../aggregate/value-objects'
 
 /**
  * @description Abstract class for domain events

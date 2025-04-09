@@ -1,4 +1,4 @@
-import { DataRecord } from '../types'
+import { type DataRecord } from '../types'
 
 /**
  * @description Interface for a use case input

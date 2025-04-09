@@ -1,4 +1,4 @@
-import { ValueObject } from '../value-objects/value-object'
+import { ValueObject } from '../aggregate/value-objects/value-object'
 import { FilterPrimitives } from './filters/filter'
 import { Filters } from './filters/filters'
 import { Order, OrderPrimitive } from './order/order'

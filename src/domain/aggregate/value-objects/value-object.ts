@@ -1,4 +1,4 @@
-import { DomainValueObject } from "../dependency-injection"
+import { DomainValueObject } from "../../dependency-injection"
 
 @DomainValueObject()
 export abstract class ValueObject<T> {

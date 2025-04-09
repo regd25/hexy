@@ -1,16 +1,16 @@
-import { Module, ModuleDecorator, type ModuleOptions } from '@hexy'
+import { Module, ModuleClass } from '@hexy'
 import { TaskModule } from './task/task-module'
 
 /**
  * Main application module that combines all feature modules
  */
-@ModuleDecorator({
+@Module({
 	imports: [new TaskModule()],
 	providers: [],
 	exports: [],
 })
-export class MainModule extends Module {
-	constructor(options: ModuleOptions = { providers: [] }) {
+export class MainModule extends ModuleClass {
+	constructor(options = { providers: [] }) {
 		super(options)
 	}
 }

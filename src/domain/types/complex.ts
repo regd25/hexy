@@ -1,4 +1,4 @@
-import { Primitive } from './primitive'
+import { type Primitive } from './primitive'
 type ComplexValue = {
 	[key: string]: Primitive
 }

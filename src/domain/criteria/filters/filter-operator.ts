@@ -1,4 +1,4 @@
-import { EnumValueObject, InvalidValueObjectError } from '../../value-objects'
+import { EnumValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 
 export enum FilterOperators {
 	EQUAL = '=',

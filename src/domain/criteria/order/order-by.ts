@@ -1,4 +1,4 @@
-import { StringValueObject } from '../../value-objects'
+import { StringValueObject } from '../../aggregate/value-objects'
 
 /**
  * Represents an order by field that can be used to order a collection of items.

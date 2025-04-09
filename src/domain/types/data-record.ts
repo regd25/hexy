@@ -1,5 +1,5 @@
-import { Complex } from './complex'
-import { Primitive } from './primitive'
+import { type Complex } from './complex'
+import { type Primitive } from './primitive'
 
 export type DataRecord = Record<string, Primitive | Complex>
 

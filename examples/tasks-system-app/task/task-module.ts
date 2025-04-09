@@ -1,4 +1,4 @@
-import { Module, ModuleDecorator, type Provider } from '@hexy'
+import { Module, ModuleClass, type Provider } from '@hexy'
 import { TaskController } from './infrastructure/controllers/task-controller'
 import { TaskDomainService, TaskRepository } from './domain'
 import { InMemoryTaskRepository } from './infrastructure/repository/in-memory-task-repository'
@@ -7,7 +7,7 @@ import { TaskApplicationService } from './application/task-application-service'
 /**
  * Main Task module that integrates all layers
  */
-@ModuleDecorator({
+@Module({
 	providers: [
 		{
 			provide: TaskRepository,
@@ -25,8 +25,8 @@ import { TaskApplicationService } from './application/task-application-service'
 	],
 	exports: [TaskController, TaskApplicationService],
 })
-export class TaskModule extends Module {
-	constructor() {
-		super({ providers: [] })
+export class TaskModule extends ModuleClass {
+	constructor(options = { providers: [] }) {
+		super(options)
 	}
 }

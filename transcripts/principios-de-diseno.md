@@ -1,0 +1,63 @@
+# 🧠 Principios de Diseño de Hexy
+
+## 1. ✨ El Dominio es el Corazón del Software
+> _“The heart of software is its ability to solve domain related problems for the user.” – Eric Evans_
+
+- El código gira en torno al **modelo del dominio**, no a detalles técnicos.
+- El dominio se ubica en su propia capa, aislada de la infraestructura y la aplicación.
+- La lógica de negocio es explícita, testeable y evolutiva.
+
+## 2. ⚖️ Modelo Unido al Código
+- El modelo conceptual está **estrechamente vinculado** a la implementación.
+- Entidades, objetos de valor y servicios reflejan el **lenguaje del negocio**.
+- Hexy impone una estructura de carpetas por contexto y servicio que expresa el modelo en el código:
+  ```
+  domain/
+    entity.ts
+    value-object.ts
+    aggregate.ts
+  application/
+    use-case.ts
+  infrastructure/
+    controllers/
+    repository/
+  ```
+
+## 3. 🎤 Lenguaje Ubicuo
+- Nombres en el código reflejan conceptos del dominio.
+- El lenguaje compartido entre negocio y desarrollo se ve reflejado en:
+  - Clases y métodos
+  - Eventos de dominio
+  - Casos de uso y controladores
+
+## 4. 🏠 Separación de Responsabilidades (Arquitectura Hexagonal)
+- El dominio no depende de tecnología.
+- Puertos y adaptadores desacoplan infraestructura.
+- Hexy define:
+  - `application/` orquesta casos de uso
+  - `domain/` contiene reglas de negocio
+  - `infrastructure/` adapta al mundo exterior
+
+## 5. ✅ Testabilidad y Mantenibilidad
+- Dominio puro, sin dependencias externas.
+- Contratos definidos por interfaces.
+- Inyección de dependencias basada en módulos.
+- Casos de uso (`UseCase`) como funciones puras.
+
+## 6. 📃 Explícito es Mejor que Implícito
+- Entidades tienen identidad y comportamientos definidos.
+- Objetos de valor son inmutables y representan conceptos puros.
+- Las reglas del negocio viven en el dominio, no en controladores.
+
+## 7. 🏰 Modularidad y Evolución Guiada por el Dominio
+- Organización modular por **contexto** y **servicio**.
+- Cada requerimiento provoca cambios en el modelo.
+- La iteración se basa en:
+  - Exploración del dominio
+  - Conversaciones con expertos
+  - Refactorizaciones guiadas por el conocimiento adquirido
+
+---
+
+_"Hexy no es solo un framework, es una filosofía de diseño centrada en el negocio."_
+

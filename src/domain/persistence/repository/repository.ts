@@ -2,7 +2,7 @@ import { Aggregate } from '../../aggregate'
 import { Criteria } from '../../criteria'
 import { DomainRepository } from '../../dependency-injection'
 import { EventBus } from '../../event-bus/event-bus'
-import { StringValueObject, NumberIdValueObject } from '../../value-objects'
+import { StringValueObject, NumberIdValueObject } from '../../aggregate/value-objects'
 
 /**
  * Abstract implementation of Repository that provides common functionality

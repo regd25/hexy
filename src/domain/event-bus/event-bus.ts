@@ -1,5 +1,5 @@
 import { Injectable } from '../dependency-injection'
-import { Event } from '../event/event'
+import { Event } from './event'
 import { type EventHandler } from './event-handler'
 
 /**

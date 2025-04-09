@@ -1,4 +1,4 @@
-import { ValueObject, InvalidValueObjectError } from '../../value-objects'
+import { ValueObject, InvalidValueObjectError } from '../../aggregate/value-objects'
 import { FilterField } from './filter-field'
 import { FilterOperator, FilterOperators } from './filter-operator'
 import { FilterValue, FilterValuePrimitive } from './filter-value'
