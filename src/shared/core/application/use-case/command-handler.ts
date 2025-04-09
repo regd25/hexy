@@ -1,4 +1,4 @@
-import { Injectable } from '../../shared/di/injectable'
+import { Injectable } from 'shared/di'
 import type { Command, CommandResult } from './command'
 import { CommandUseCase } from './command-use-case'
 

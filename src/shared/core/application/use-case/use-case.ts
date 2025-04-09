@@ -1,5 +1,5 @@
-import { UseCaseInput } from './use-case-input'
-import { UseCaseOutput } from './use-case-output'
+import type { UseCaseInput } from './use-case-input'
+import type { UseCaseOutput } from './use-case-output'
 
 /**
  * @description Abstract class for a use case
