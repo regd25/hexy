@@ -1,5 +1,8 @@
-import { Criteria, EventBus, InfrastructureRepository, Repository, Inject } from '@hexy/domain'
+import { InfrastructureRepository, Inject } from 'src/core/di'
 import { TaskRepository, TaskId, Task, TaskNotFoundError } from '../../domain'
+import { Repository } from 'src/core/contracts'
+import type { EventBus } from 'src/core/contracts'
+import type { Criteria } from 'src/core/criteria'
 
 /**
  * In-memory implementation of TaskRepository

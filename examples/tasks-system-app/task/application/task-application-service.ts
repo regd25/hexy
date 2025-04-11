@@ -1,4 +1,4 @@
-import { ApplicationService, Inject } from '@hexy/domain'
+import { ApplicationService, Inject } from 'src/core/di'
 import {
 	TaskDomainService,
 	Task,
@@ -15,7 +15,7 @@ import {
 export class TaskApplicationService {
 	constructor(
 		@Inject() private readonly taskRepository: TaskRepository,
-		private readonly taskDomainService: TaskDomainService,
+		@Inject() private readonly taskDomainService: TaskDomainService,
 	) {}
 
 	/**

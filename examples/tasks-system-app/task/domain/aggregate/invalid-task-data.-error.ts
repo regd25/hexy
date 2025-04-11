@@ -1,4 +1,4 @@
-import { DomainError } from '@hexy/domain'
+import { DomainError } from 'src/core/context'
 
 export class InvalidTaskDataError extends DomainError {
 	constructor() {

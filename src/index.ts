@@ -1,5 +1,5 @@
 // Shared kernel exports
-export * from './shared';
+export * from './core';
 
 // Bounded contexts exports
-export * from './contexts';
+export * from './core';

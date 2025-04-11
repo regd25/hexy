@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
 import { TaskEvent } from './task-event'
 import { TaskId, TaskTitle, TaskDescription } from './value-objects'
-import { Aggregate, DataRecord } from '@hexy/domain'
+import { AggregateRoot } from 'src/core/context'
+import type { DataRecord } from 'src/core/types'
 
-export class Task extends Aggregate {
+export class Task extends AggregateRoot {
 	constructor(
 		public readonly id: TaskId,
 		public readonly title: TaskTitle,
@@ -82,11 +83,11 @@ export class Task extends Aggregate {
 
 	static fromPrimitives(primitives: DataRecord): Task {
 		return new Task(
-			new TaskId(primitives.id as string),
-			new TaskTitle(primitives.title as string),
-			new TaskDescription(primitives.description as string),
-			primitives.completed as boolean,
-			new Date(primitives.createdAt as string),
+			new TaskId(primitives['id'] as string),
+			new TaskTitle(primitives['title'] as string),
+			new TaskDescription(primitives['description'] as string),
+			primitives['completed'] as boolean,
+			new Date(primitives['createdAt'] as string),
 		)
 	}
 }

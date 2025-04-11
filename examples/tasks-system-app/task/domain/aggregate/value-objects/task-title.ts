@@ -1,4 +1,4 @@
-import { StringValueObject, DomainError } from '@hexy/domain'
+import { StringValueObject, DomainError } from 'src/core/context'
 
 export class TaskTitle extends StringValueObject {
 	constructor(value: string) {

@@ -1,4 +1,4 @@
-import { DomainService } from '@hexy/domain'
+import { DomainService } from 'src/core/di'
 import { Task } from '../aggregate/task'
 
 /**
@@ -15,9 +15,9 @@ export class TaskDomainService {
 	validate(task: Task): boolean {
 		// A simple validation that could be extended with more complex business rules
 		return (
-			task.title.toPrimitive().length > 0 &&
-			!this.containsForbiddenWords(task.title.toPrimitive()) &&
-			!this.containsForbiddenWords(task.description.toPrimitive())
+			task.title.toString().length > 0 &&
+			!this.containsForbiddenWords(task.title.toString()) &&
+			!this.containsForbiddenWords(task.description.toString())
 		)
 	}
 
@@ -29,7 +29,7 @@ export class TaskDomainService {
 	isHighPriority(task: Task): boolean {
 		const highPriorityKeywords = ['urgent', 'important', 'critical', 'asap']
 		return highPriorityKeywords.some((keyword) =>
-			task.title.toPrimitive().toLowerCase().includes(keyword),
+			task.title.toString().toLowerCase().includes(keyword),
 		)
 	}
 
