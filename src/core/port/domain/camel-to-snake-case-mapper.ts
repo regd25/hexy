@@ -1,5 +1,5 @@
 import type { DataRecord, Snaked } from 'src/core/types'
-import type { Mapper } from 'src/core/contracts'
+import type { Mapper } from 'shared/port'
 
 /**
  * @description Abstract class for mapping camelCase records to snake_case records and vice versa

@@ -1,4 +1,4 @@
-import { Repository, EventBus } from 'src/core/contracts'
+import { Repository, EventBus } from 'shared/port'
 import type { AggregateRoot, IdentifierValueObject } from 'src/core/context'
 import type { Criteria } from 'src/core/criteria'
 

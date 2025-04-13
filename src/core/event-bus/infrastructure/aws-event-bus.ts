@@ -6,7 +6,7 @@ import {
 	ReceiveMessageCommand,
 	DeleteMessageCommand,
 } from '@aws-sdk/client-sqs'
-import type { EventBus, EventHandler } from 'src/core/contracts'
+import type { EventBus, EventHandler } from 'shared/port'
 import { DomainEvent } from 'src/core/context'
 
 export interface AWSSNSSQSConfig {

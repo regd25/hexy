@@ -1,4 +1,4 @@
-import { Repository } from 'src/core/contracts'
+import { Repository } from 'shared/port'
 import { Task, TaskId } from '../aggregate'
 
 /**

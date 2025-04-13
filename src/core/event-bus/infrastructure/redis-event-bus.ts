@@ -1,6 +1,6 @@
 import { EventBusError } from './event-bus-error'
 import Redis from 'ioredis'
-import { EventBus, type EventHandler } from 'src/core/contracts'
+import { EventBus, type EventHandler } from 'shared/port'
 import { Injectable } from 'src/core/di'
 import { DomainEvent } from 'src/core/context'
 

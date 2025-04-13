@@ -1,42 +1,53 @@
-# Hexy Framework
+# Hexy Framework – Guía Inicial
 
-![Hexy Logo](https://via.placeholder.com/150x50?text=Hexy)
+Bienvenido a Hexy, un framework diseñado para ayudarte a construir servicios backend modulares, testables y alineados a Domain-Driven Design y Arquitectura Hexagonal.
 
-## Introducción a Hexy y su arquitectura
+---
 
-Hexy es un framework basado en los principios de Domain-Driven Design (DDD) y Arquitectura Hexagonal (también conocida como Ports and Adapters) diseñado para aplicaciones Node.js. El framework facilita la implementación de aplicaciones empresariales complejas manteniendo la separación de responsabilidades y un enfoque centrado en el dominio.
+## 🧭 Estructura de la Guía
 
-La **Arquitectura Hexagonal** propone un diseño donde el núcleo de la aplicación (dominio) es independiente de las tecnologías externas, permitiendo que la lógica de negocio sea el centro del sistema y los adaptadores externos se comuniquen con ella a través de puertos bien definidos.
+Este repositorio de documentación está organizado por módulos. Aquí encontrarás la explicación de cada concepto fundamental en Hexy, cómo implementarlo, buenas prácticas y ejemplos.
 
-Hexy implementa esta arquitectura mediante tres capas principales:
+### 📚 Índice (Español)
 
-- **Capa de Dominio**: Contiene la lógica de negocio y reglas del dominio
-- **Capa de Aplicación**: Orquesta los casos de uso coordinando el dominio
-- **Capa de Infraestructura**: Proporciona implementaciones concretas para comunicarse con servicios externos
+1. [Estructura del Proyecto](docs/es/estructura-del-proyecto.md)
+2. [Casos de Uso (UseCases)](docs/es/use-cases.md)
+3. [Servicios (Services)](docs/es/services.md)
+4. [Aggregates](docs/es/aggregates.md)
+5. [Value Objects](docs/es/value-objects.md)
+6. [Repositorios](docs/es/repositories.md)
+7. [Eventos y Manejadores](docs/es/events.md)
+8. [Factories y Specifications](docs/es/factories.md)
+9. [Puertos y Adaptadores](docs/es/ports-and-adapters.md)
+10. [Decoradores y Documentación](docs/es/documentation.md)
+11. [Observabilidad](docs/es/observability.md)
+12. [Testing](docs/es/testing.md)
+13. [Configuración y Versionado](docs/es/configuration.md)
 
-### Beneficios principales:
+---
 
-- **Testabilidad**: Facilita las pruebas unitarias e integración gracias a la separación de capas
-- **Mantenibilidad**: Estructura clara que soporta cambios y evolución del software
-- **Modularidad**: Componentes desacoplados que se pueden reemplazar con mínimo impacto
-- **Independencia tecnológica**: El dominio no depende de frameworks o bases de datos específicas
+### 📚 Index (English)
 
-### Organización de carpetas:
+1. [Project Structure](docs/en/estructura-del-proyecto.en.md)
+2. [UseCases](docs/en/use-cases.en.md)
+3. [Services](docs/en/services.en.md)
+4. [Aggregates](docs/en/aggregates.en.md)
+5. [Value Objects](docs/en/value-objects.en.md)
+6. [Repositories](docs/en/repositories.en.md)
+7. [Events and Handlers](docs/en/events.en.md)
+8. [Factories and Specifications](docs/en/factories.en.md)
+9. [Ports and Adapters](docs/en/ports-and-adapters.en.md)
+10. [Decorators and Docs](docs/en/documentation.en.md)
+11. [Observability](docs/en/observability.en.md)
+12. [Testing](docs/en/testing.en.md)
+13. [Configuration and Versioning](docs/en/configuration.en.md)
 
-- **domain**: Contiene los modelos de dominio, incluyendo agregados, entidades, objetos de valor, eventos y servicios de dominio.
-- **application**: Contiene los servicios de aplicación y casos de uso que coordinan el flujo entre la infraestructura y el dominio.
-- **infrastructure**: Implementaciones concretas de los puertos definidos en el dominio, como adaptadores HTTP, persistencia o mensajería.
-- **shared**: Componentes compartidos como el sistema de inyección de dependencias, utilidades y código común.
+---
 
+Cada sección incluye:
+- Su ubicación dentro de la estructura del proyecto.
+- Reglas de diseño.
+- Ejemplos de implementación.
+- Decoradores requeridos (si aplica).
 
-## Documentación
-
-Para la documentación completa, visite [la documentación oficial](https://docs.hexy.io).
-
-## Contribuir
-
-Las contribuciones son bienvenidas. Por favor, lea las [directrices de contribución](CONTRIBUTING.md) antes de enviar un pull request.
-
-## Licencia
-
-[MIT](LICENSE) 
+You can navigate modules according to your workflow or explore the entire framework from this index.

@@ -1,4 +1,4 @@
-import { EventBus } from 'src/core/contracts'
+import { EventBus } from 'shared/port'
 import { InMemoryEventBus } from './in-memory-event-bus'
 import { AWSSNSSQSEventBus } from './aws-event-bus'
 import { RedisEventBus } from './redis-event-bus'

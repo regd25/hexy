@@ -18,14 +18,19 @@ alwaysApply: false
 - Hexy impone una estructura de carpetas por contexto y servicio que expresa el modelo en el código:
   ```
   domain/
-    entity.ts
-    value-object.ts
-    aggregate.ts
+    {name}-{entity-name}.ts
+    {name}-{value-object-name}.ts
+    {name}.ts
+    {name}-repository.ts
   application/
-    use-case.ts
+    {name}-use-case.ts
+    {}
   infrastructure/
     controllers/
+      {name}-controller.ts
     repository/
+      postgres-{name}-repository.ts
+      in-memory-{name}-repository.ts
   ```
 
 ## 3. 🎤 Lenguaje Ubicuo

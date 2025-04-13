@@ -1,4 +1,4 @@
-import { EventBus, type EventHandler } from 'src/core/contracts'
+import { EventBus, type EventHandler } from 'shared/port'
 import type { DomainEvent } from 'src/core/context'
 import { Injectable } from 'src/core/di'
 
