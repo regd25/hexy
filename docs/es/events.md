@@ -1,6 +1,6 @@
 ### Eventos de Dominio
 
-- Ubicación: `/context/<context>/domain/event/`
+- Ubicación: `/context/<context>/event/`
 - Son clases inmutables que representan hechos del dominio.
 - Deben extender de `DomainEvent` y estar decorados con `@DomainEvent({ ... })`
 
@@ -47,7 +47,7 @@ export class UserRegistered extends DomainEvent {
 
 ### Manejadores de Eventos (Event Handlers)
 
-- Ubicación: `/context/<context>/application/event-handler/`
+- Ubicación: `/context/<context>/event-handler/`
 - Responden a eventos del dominio ejecutando efectos secundarios.
 - Deben extender de `BaseEventHandler<Event>` y estar decorados con `@EventHandler(...)`
 

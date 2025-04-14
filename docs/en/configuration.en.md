@@ -6,7 +6,7 @@ Hexy provides a structured way to define service parameters and secrets. Adapter
 
 ### 🧩 Official Structure
 
-Location: `/context/<context>/infrastructure/config/`
+Location: `/context/<context>/config/`
 
 #### ✅ Preferred (separate files)
 ```

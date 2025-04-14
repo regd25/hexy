@@ -1,6 +1,6 @@
 ### Servicios (Services)
 
-- Ubicación: `/context/<context>/application/service/`
+- Ubicación: `/context/<context>/service/`
 - Encapsulan lógica del dominio y coordinación de objetos del modelo.
 - Deben ser inyectados por los casos de uso (UseCases).
 - No deben comunicarse directamente con la infraestructura — solo mediante puertos.

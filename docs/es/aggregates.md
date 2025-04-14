@@ -1,6 +1,6 @@
 ### Aggregates
 
-- Ubicación: `/context/<context>/domain/aggregate/`
+- Ubicación: `/context/<context>/aggregate/`
 - Un Aggregate representa una unidad de consistencia transaccional del dominio.
 - Debe extender de `AggregateRoot`.
 - Debe estar decorado con `@Aggregate({ ... })` para registrar su contexto, eventos y comandos.

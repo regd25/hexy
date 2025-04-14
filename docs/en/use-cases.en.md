@@ -1,6 +1,6 @@
 ### UseCases
 
-- Location: `/context/<context>/application/use-case/`
+- Location: `/context/<context>/use-case/`
 - Each UseCase must extend one of the following base classes:
   - `CommandUseCase<Input, Output>` — for state-changing operations.
   - `QueryUseCase<Input, Output>` — for read-only operations.

@@ -1,6 +1,6 @@
 ### WebSocket Handler
 
-- Location: `/context/<context>/infrastructure/adapter/ws/handler/`
+- Location: `/context/<context>/adapter/ws/handler/`
 - Handles incoming WebSocket events and delegates to UseCases.
 - Must be decorated with `@WebSocketHandler({ ... })`.
 

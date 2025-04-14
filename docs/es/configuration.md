@@ -6,7 +6,7 @@ Hexy permite definir parámetros de configuración y secretos sensibles de forma
 
 ### 🧩 Estructura oficial
 
-Ubicación: `/context/<context>/infrastructure/config/`
+Ubicación: `/context/<context>/config/`
 
 #### ✅ Forma preferida (archivos separados)
 ```

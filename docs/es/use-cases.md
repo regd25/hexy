@@ -1,6 +1,6 @@
 ### Casos de Uso (UseCases)
 
-- Ubicación: `/context/<context>/application/use-case/`
+- Ubicación: `/context/<context>/use-case/`
 - Cada UseCase debe ser una clase que extienda uno de los siguientes tipos:
   - `CommandUseCase<Input, Output>` — para operaciones que modifican estado.
   - `QueryUseCase<Input, Output>` — para consultas sin efectos secundarios.

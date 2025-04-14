@@ -1,49 +1,47 @@
-### 🧱 Plan de Implementación: Caso de Uso Create Context
+### 🧱 Subplan: Implementación de Lógica CLI para Create Context (Contexto: tooling)
 
-**🎯 Objetivo:** Permitir a través de CLI crear la estructura base de un nuevo contexto siguiendo la arquitectura de Hexy (DDD + Hexagonal).
+**📁 Ubicación esperada:** `src/context/tooling/application/use-case/create-context.usecase.ts`
+> 🔍 Este comando vive en el contexto `tooling`, el cual encapsula las herramientas internas del framework Hexy. Este contexto sigue la misma estructura y principios de cualquier otro bounded context.
 
-**📥 Input esperado:**
-- Nombre del contexto (e.g. `billing`)
-- Opcional: parámetros para configuración inicial
+**🛠️ Tareas a ejecutar:**
 
-**🛠 Tareas por fase:**
+#### Fase 1 — Setup de Comando CLI
+1. Crear archivo `create-context.ts` en `context/tooling/application/`
+2. Registrar el comando en el entrypoint del CLI principal (`index.ts` o `main.ts`)
+   - Registrar el módulo `tooling/module.ts` en el bootstrap principal del CLI si aplica
+3. Definir argumentos esperados:
+   - `--context` o `<context>` como argumento requerido
+   - Opcionales: `--service`, `--use-case`, `--aggregate`, `--value-object`
 
-#### Fase 1 – Modelado
-1. Definir el comando: `hexy create context <nombre>`
-2. Establecer los paths que deben crearse:
-   - `/src/context/<context>/domain/`
-   - `/src/context/<context>/application/`
-   - `/src/context/<context>/infrastructure/`
-   - `/src/context/<context>/module.ts`
+#### Fase 2 — Generación de Archivos y Carpetas
+4. Usar `fs/promises` o una librería como `fs-extra` para generar:
+   - `domain/`, `application/`, `infrastructure/` y `module.ts`
+5. Verificar si el contexto ya existe para evitar sobrescritura accidental
+6. Incluir placeholders como `.gitkeep` o `README.md`
 
-#### Fase 2 – Implementación
-3. Implementar generador CLI con Node.js + filesystem
-4. Verificar colisión de nombres
-5. Generar estructura mínima con placeholders y `README.md` opcional
-6. Crear `module.ts` con boilerplate básico de registro de dependencias
+#### Fase 3 — Plantilla de module.ts
+7. Generar `module.ts` con función `registerModule()` vacía o con wiring mínimo
+8. Incluir comentarios guía para desarrolladores
 
-#### Fase 3 – Testing
-7. Testear en entorno de desarrollo:
-   - Contextos válidos
-   - Nombres reservados o inválidos
-   - Sobreescritura accidental
+#### Fase 4 — Logging y Feedback CLI
+9. Mostrar logs informativos del progreso (`chalk`, `ora`, etc.)
+10. Confirmar al usuario que el contexto fue creado exitosamente
 
-#### Fase 4 – Documentación
-8. Registrar en documentación de comandos CLI
-9. Agregar entrada en help global de `hexy`
+#### Fase 5 — Testing de CLI
+11. Crear pruebas en `src/context/tooling/__tests__/create-context.usecase.spec.ts`
+12. Simular ejecución del comando en diferentes escenarios:
+    - Contexto nuevo
+    - Contexto existente
+    - Contexto con nombre inválido
 
-**📦 Artefactos generados:**
-- Carpeta completa del contexto
-- `module.ts` inicial con `registerModule()`
-- Logs de ejecución en consola
+**📌 Librerías sugeridas:**
+- `commander`, `yargs` o similar
+- `fs-extra` para manejo de archivos
+- `chalk`, `ora`, `log-symbols` para logs coloridos
 
-**🧩 CLI Final:**
-```bash
-hexy create context billing
-```
-
-**✅ Validaciones:**
-- [ ] Estructura mínima creada correctamente
-- [ ] `module.ts` contiene plantilla válida
-- [ ] No sobreescribe si ya existe
-- [ ] Aparece en documentación
+**✅ Validaciones en tests:**
+- [ ] El comando se registra y aparece en la ayuda del CLI
+- [ ] Se genera la estructura correcta al ejecutar
+- [ ] Se evita sobrescritura
+- [ ] Tests del CLI cubren escenarios base
+- [ ] El contexto tooling se registra correctamente como cualquier otro contexto

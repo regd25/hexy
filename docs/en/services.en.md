@@ -1,6 +1,6 @@
 ### Services
 
-- Location: `/context/<context>/application/service/`
+- Location: `/context/<context>/service/`
 - Services encapsulate domain logic and coordinate model objects.
 - They must be injected into UseCases via constructor.
 - Services must not interact with infrastructure directly — only through ports.
