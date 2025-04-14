@@ -1,93 +1,55 @@
-# Hexy 🔷
+# Hexy Framework – Guía Inicial
 
-Hexy: A framework for event-driven architectures and Domain-Driven Design, built for simplicity, scalability, and empowering developers to focus on business value. 🚀
+Bienvenido a Hexy, un framework diseñado para ayudarte a construir servicios backend modulares, testables y alineados a Domain-Driven Design y Arquitectura Hexagonal.
 
-## 🏗️ Architecture Overview
+---
 
-This project follows a strict Hexagonal Architecture pattern, also known as Ports and Adapters, with the following key components:
+## 🧭 Estructura de la Guía
 
-```
-src/
-├── shared/           # Shared kernel with common domain components
-│   └── domain/
-│       └── value_object/  # Immutable value objects
-├── context/          # Bounded contexts
-│   └── [domain]/
-│       ├── application/   # Use cases & application services
-│       ├── domain/       # Domain model & business rules
-│       └── infrastructure/ # External adapters & implementations
-```
+Este repositorio de documentación está organizado por módulos. Aquí encontrarás la explicación de cada concepto fundamental en Hexy, cómo implementarlo, buenas prácticas y ejemplos.
 
-## 🎯 Key Features
+### 📚 Índice (Español)
 
-- **Domain-Driven Design**: Strong focus on domain modeling and business rules
-- **Value Objects**: Comprehensive suite of immutable value objects for type safety
-- **Modern Python**: Type hints, dataclasses, and modern Python features
-- **SOLID Principles**: Adherence to SOLID design principles
-- **Clean Architecture**: Clear separation of concerns and dependencies
+0. [Guía de Desarrollo (Guidelines)](docs/guidelines.md)
+1. [Estructura del Proyecto](docs/es/estructura-del-proyecto.md)
+2. [Casos de Uso (UseCases)](docs/es/use-cases.md)
+3. [Servicios (Services)](docs/es/services.md)
+4. [Aggregates](docs/es/aggregates.md)
+5. [Value Objects](docs/es/value-objects.md)
+6. [Puertos y Adaptadores](docs/es/ports-and-adapters.md)
+7. [Repositorios](docs/es/repositories.md)
+8. [Eventos y Manejadores](docs/es/events.md)
+9. [Factories y Specifications](docs/es/factories.md)
+10. [Decoradores y Documentación](docs/es/documentation.md)
+11. [Observabilidad](docs/es/observability.md)
+12. [Testing](docs/es/testing.md)
+13. [Configuración y Versionado](docs/es/configuration.md)
 
-## 🧱 Value Objects
+---
 
-The project includes a rich set of value objects for common domain concepts:
+### 📚 Index (English)
 
-- **Primitives**: `String`, `Integer`, `Float`, `Boolean`, `Enum`
-- **Identity**: `Uuid`, `NumberId`, `RoutingKey`
-- **DateTime**: `Date`, `Time`, `DateTime`
-- **Contact**: `Email`, `PhoneNumber`, `Url`
-- **Location**: `Address`, `ZipCode`, `City`, `State`
-- **Monetary**: `Money`, `Currency`
-- **Others**: `Temperature`, `Json`, `Hash`, `DocumentNumber`
+0. [Development Guidelines](docs/guidelines.en.md)
+1. [Project Structure](docs/en/estructura-del-proyecto.en.md)
+2. [UseCases](docs/en/use-cases.en.md)
+3. [Services](docs/en/services.en.md)
+4. [Aggregates](docs/en/aggregates.en.md)
+5. [Value Objects](docs/en/value-objects.en.md)
+6. [Ports and Adapters](docs/en/ports-and-adapters.en.md)
+7. [Repositories](docs/en/repositories.en.md)
+8. [Events and Handlers](docs/en/events.en.md)
+9. [Factories and Specifications](docs/en/factories.en.md)
+10. [Decorators and Docs](docs/en/documentation.en.md)
+11. [Observability](docs/en/observability.en.md)
+12. [Testing](docs/en/testing.en.md)
+13. [Configuration and Versioning](docs/en/configuration.en.md)
 
-## 🚀 Getting Started
+---
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/hexy.git
-cd hexy
-```
+Cada sección incluye:
+- Su ubicación dentro de la estructura del proyecto.
+- Reglas de diseño.
+- Ejemplos de implementación.
+- Decoradores requeridos (si aplica).
 
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-## 📚 Documentation
-
-Each module and value object is thoroughly documented with docstrings and type hints. For example:
-
-```python
-from src.shared.domain.value_object import EmailValueObject
-
-email = EmailValueObject("user@example.com")
-```
-
-## 🧪 Testing
-
-Run tests with:
-```bash
-pytest
-```
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## ✨ Acknowledgments
-
-- Inspired by DDD, Hexagonal Architecture, and SOLID principles
-- Built with modern Python best practices
-- Focused on maintainability and scalability
+You can navigate modules according to your workflow or explore the entire framework from this index.
