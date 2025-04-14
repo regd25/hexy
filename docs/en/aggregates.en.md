@@ -1,6 +1,6 @@
 ### Aggregates
 
-- Location: `/context/<context>/domain/aggregate/`
+- Location: `/context/<context>/aggregate/`
 - An Aggregate represents a transactional consistency boundary in the domain.
 - Must extend from `AggregateRoot`.
 - Should be decorated with `@Aggregate({ ... })` to register its context, emitted events, and commands.

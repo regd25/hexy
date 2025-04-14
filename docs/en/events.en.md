@@ -1,6 +1,6 @@
 ### Domain Events
 
-- Location: `/context/<context>/domain/event/`
+- Location: `/context/<context>/event/`
 - Immutable classes representing business facts.
 - Must extend `DomainEvent` and be decorated with `@DomainEvent({ ... })`
 
@@ -47,7 +47,7 @@ export class UserRegistered extends DomainEvent {
 
 ### Event Handlers
 
-- Location: `/context/<context>/application/event-handler/`
+- Location: `/context/<context>/event-handler/`
 - React to domain events by executing side effects.
 - Must extend from `EventHandler<Event>` and be decorated with `@EventHandler(...)`
 

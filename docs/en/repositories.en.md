@@ -1,7 +1,7 @@
 ### Repositories
 
-- Abstraction in: `/context/<context>/domain/repository/`
-- Implementations in: `/context/<context>/infrastructure/adapter/<db>/`
+- Abstraction in: `/context/<context>/repository/`
+- Implementations in: `/context/<context>/adapter/<db>/`
 
 ---
 

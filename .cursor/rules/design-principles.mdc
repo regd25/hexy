@@ -22,15 +22,14 @@ alwaysApply: false
     {name}-{value-object-name}.ts
     {name}.ts
     {name}-repository.ts
-  application/
+  usecase/
     {name}-use-case.ts
     {}
-  infrastructure/
-    controllers/
-      {name}-controller.ts
-    repository/
-      postgres-{name}-repository.ts
-      in-memory-{name}-repository.ts
+  controllers/
+    {name}-controller.ts
+  adapters/
+    postgres-{name}-repository.ts
+    in-memory-{name}-repository.ts
   ```
 
 ## 3. 🎤 Lenguaje Ubicuo

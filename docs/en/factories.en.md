@@ -1,6 +1,6 @@
 ### Factories
 
-- Location: `/context/<context>/domain/factory/`
+- Location: `/context/<context>/factory/`
 - Encapsulate construction of Aggregates or complex Entities.
 - Separate creation logic from constructors.
 

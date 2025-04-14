@@ -1,6 +1,6 @@
 ### Controladores
 
-- Ubicación: `/context/<context>/infrastructure/adapter/http/controller/<nombre>.controller.ts`
+- Ubicación: `/context/<context>/adapter/http/controller/<nombre>.controller.ts`
 - Actúan como adaptadores entre HTTP y los UseCases.
 - Utilizan el decorador `@Controller()` y decoradores de método (`@Get`, `@Post`, etc.).
 

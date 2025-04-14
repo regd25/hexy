@@ -1,6 +1,6 @@
 ### Factories
 
-- Ubicación: `/context/<context>/domain/factory/`
+- Ubicación: `/context/<context>/factory/`
 - Encapsulan la construcción de Aggregates o Entidades complejas.
 - Separan la lógica de creación del constructor directo.
 

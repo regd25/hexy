@@ -2,8 +2,8 @@
 
 - Hexy implementa el patrón Ports and Adapters como eje central de su arquitectura.
 - Los puertos definen contratos abstractos que la infraestructura implementa.
-- Se definen en: `/context/<context>/domain/port/`
-- Las implementaciones se colocan en: `/context/<context>/infrastructure/adapter/<tipo>/`
+- Se definen en: `/context/<context>/port/`
+- Las implementaciones se colocan en: `/context/<context>/adapter/<tipo>/`
 
 ---
 

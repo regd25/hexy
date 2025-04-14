@@ -2,8 +2,8 @@
 
 - Hexy applies the Ports and Adapters (hexagonal) architecture as a core design principle.
 - Ports define contracts; adapters implement them.
-- Ports go in: `/context/<context>/domain/port/`
-- Adapters go in: `/context/<context>/infrastructure/adapter/<type>/`
+- Ports go in: `/context/<context>/port/`
+- Adapters go in: `/context/<context>/adapter/<type>/`
 
 ---
 

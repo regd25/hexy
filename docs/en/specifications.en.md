@@ -1,6 +1,6 @@
 ### Specifications
 
-- Location: `/context/<context>/domain/specification/`
+- Location: `/context/<context>/specification/`
 - Encapsulate reusable boolean rules for the domain.
 - Must not have side effects or access infrastructure.
 

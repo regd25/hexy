@@ -1,6 +1,6 @@
 ### Specifications (Especificaciones)
 
-- Ubicación: `/context/<context>/domain/specification/`
+- Ubicación: `/context/<context>/specification/`
 - Encapsulan reglas booleanas reutilizables del dominio.
 - No tienen efectos secundarios ni acceden a infraestructura.
 

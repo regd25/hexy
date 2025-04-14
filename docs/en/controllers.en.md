@@ -1,6 +1,6 @@
 ### Controllers
 
-- Location: `/context/<context>/infrastructure/adapter/http/controller/<name>.controller.ts`
+- Location: `/context/<context>/adapter/http/controller/<name>.controller.ts`
 - Serve as adapters between HTTP and UseCases.
 - Use the `@Controller()` decorator and HTTP method decorators (`@Get`, `@Post`, etc.).
 

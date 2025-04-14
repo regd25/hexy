@@ -1,7 +1,7 @@
 ### Repositorios
 
-- Abstracción ubicada en: `/context/<context>/domain/repository/`
-- Implementaciones en: `/context/<context>/infrastructure/adapter/<db>/`
+- Abstracción ubicada en: `/context/<context>/repository/`
+- Implementaciones en: `/context/<context>/adapter/<db>/`
 
 ---
 

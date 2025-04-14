@@ -1,6 +1,6 @@
 ### Value Objects (Objetos de Valor)
 
-- Ubicación: `/context/<context>/domain/value-object/`
+- Ubicación: `/context/<context>/value-object/`
 - Representan conceptos del dominio sin identidad propia.
 - Son inmutables, comparables por valor y encapsulan lógica propia.
 - Deben estar decorados con `@ValueObject({ ... })` para registrar metadata útil para herramientas o visualización.

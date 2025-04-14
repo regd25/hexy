@@ -1,6 +1,6 @@
 ### Value Objects
 
-- Location: `/context/<context>/domain/value-object/`
+- Location: `/context/<context>/value-object/`
 - Represent domain concepts without identity.
 - Immutable, comparable by value, and encapsulate business logic.
 - Should be decorated with `@ValueObject({ ... })` to support tooling and introspection.
