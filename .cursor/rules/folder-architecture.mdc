@@ -38,8 +38,8 @@ src/
 
 ## 3. Shared Modules
 
-- Place reusable domain logic or utilities in the `shared/` folder.
-- Follow the same structure inside `shared/` if complexity grows.
+- Place reusable domain logic or utilities in the `core/` folder.
+- Follow the same structure inside `core/` if complexity grows.
 
 ## 4. API and Interfaces
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from 'src/core/http'
+import { Body, Controller, Delete, Get, Param, Post } from 'core/adapters/http'
 import { Inject } from 'src/core/di'
 import { type CreateTaskDto } from '../../application/dto/create-task.dto'
 import { TASK_APPLICATION_SERVICE } from '../../application/tokens'

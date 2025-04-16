@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises'
 import * as path from 'path'
-import { CommandUseCase, UseCase } from 'shared/context'
+import { CommandUseCase, UseCase } from 'core/context'
 
 export class CreateContextInput {
 	constructor(public readonly contextName: string) {}

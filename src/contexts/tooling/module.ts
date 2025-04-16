@@ -1,4 +1,4 @@
-import { Module } from 'shared/di'
+import { Module } from 'core/di'
 import { CreateContextUseCase } from './application/use-case/create-context.usecase'
 
 @Module({

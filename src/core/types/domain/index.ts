@@ -1,7 +1,0 @@
-export * from './camel'
-export * from './complex'
-export * from './data-record'
-export * from './optional'
-export * from './primitive'
-export * from './snaked'
-export * from './string-record'

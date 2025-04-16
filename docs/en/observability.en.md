@@ -1,6 +1,6 @@
 ### Observability
 
-- Location: `/shared/observability/`
+- Location: `/core/observability/`
 - The system must implement a base class `Telemetry` and multiple adapters.
 - Hexy provides decorators to enable tracing automatically.
 

@@ -1,4 +1,4 @@
-import { ExpressAdapter } from 'src/core/http'
+import { ExpressAdapter } from 'core/adapters/http'
 import { container, getModuleFromClass } from 'src/core/di'
 import { TaskController } from './task/infrastructure/controllers/task-controller'
 import { MainModule } from './main-module'

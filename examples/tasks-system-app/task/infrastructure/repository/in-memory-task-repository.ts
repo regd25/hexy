@@ -1,7 +1,7 @@
 import { InfrastructureRepository, Inject } from 'src/core/di'
 import { TaskRepository, TaskId, Task, TaskNotFoundError } from '../../domain'
-import { Repository } from 'shared/port'
-import type { EventBus } from 'shared/port'
+import { Repository } from 'core/port'
+import type { EventBus } from 'core/port'
 import type { Criteria } from 'src/core/criteria'
 
 /**

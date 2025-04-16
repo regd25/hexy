@@ -1,4 +1,4 @@
-import { Repository } from 'shared/port'
+import { Repository } from 'core/port'
 import { Task, TaskId } from '../aggregate'
 
 /**
