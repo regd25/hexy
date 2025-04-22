@@ -733,7 +733,7 @@ export class InMemoryTelemetry extends Telemetry {
 ### 🧪 Pruebas
 
 - Pruebas de adaptadores en `adapter/` como integración.
-- Mockeo de puertos en pruebas de dominio o application.
+- Mockeo de puertos en pruebas de adaptadores.
 
 ---
 
