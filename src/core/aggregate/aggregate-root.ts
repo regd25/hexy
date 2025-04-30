@@ -1,17 +1,15 @@
-import { DomainAggregate } from 'src/core/di'
 import type { DataRecord } from 'src/core/types'
-import type { IdentifierValueObject } from './value-object'
-import type { DomainEvent } from './domain-event'
+import type { DomainEvent } from '../event/domain-event'
+import type { Identifier } from './value-object'
 
 /**
  * @description Abstract class for aggregate roots
  */
-@DomainAggregate()
 export abstract class AggregateRoot {
 	/**
 	 * @description The id of the aggregate root
 	 */
-	abstract id: IdentifierValueObject
+	abstract id: Identifier
 
 	/**
 	 * @description The events of the aggregate root

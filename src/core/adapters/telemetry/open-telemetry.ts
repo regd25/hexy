@@ -1,5 +1,5 @@
 import { Injectable } from 'core/di'
-import type { Span, Telemetry, TelemetryOptions } from 'core/port'
+import type {  } from 'core/port'
 
 class OpenTelemetrySpan implements Span {
 	constructor(private readonly name: string) {}

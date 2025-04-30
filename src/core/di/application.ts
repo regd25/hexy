@@ -40,7 +40,6 @@ export class Application {
 	constructor(private options: ApplicationOptions = {}) {
 		this.container = new Container()
 
-		// Register global providers if any
 		if (options.providers && options.providers.length > 0) {
 			this.container.registerMany(options.providers)
 		}
@@ -52,20 +51,15 @@ export class Application {
 	 * @param name Optional name for the module (defaults to the module's constructor name)
 	 */
 	registerModule(moduleClass: any, name?: string): void {
-		// Get the module instance (using the decorator)
 		const module = new moduleClass()
 
-		// Use the provided name or generate one from the class name
 		const moduleName = name || moduleClass.name
 
-		// Store the module
 		this.modules.set(moduleName, module)
 
-		// Register providers from the module
 		const providers = module.getAllProviders()
 		this.container.registerMany(providers)
 
-		// Track module by layer
 		const layer = getModuleLayer(moduleClass) || 'unknown'
 		this.layerModules.get(layer)?.add(moduleName)
 	}

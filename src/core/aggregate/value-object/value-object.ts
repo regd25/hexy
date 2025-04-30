@@ -1,6 +1,6 @@
-import { DomainValueObject } from 'src/core/di'
 
-@DomainValueObject()
+
+
 export abstract class ValueObject<T> {
 	protected readonly value: T
 

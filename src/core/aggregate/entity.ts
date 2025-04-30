@@ -1,8 +1,8 @@
-import type { DataRecord } from 'src/core/types'
-import type { IdentifierValueObject } from './value-object'
+import type { DataRecord } from '../types'
+import type { Identifier } from './value-object'
 
 export abstract class Entity {
-	abstract id: IdentifierValueObject
+	abstract id: Identifier
 
 	abstract toPrimitives(): DataRecord
 

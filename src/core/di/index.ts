@@ -21,9 +21,6 @@ export * from './lifecycle'
 // Component scanning
 export * from './component-scanner'
 
-// Layer-specific decorators for hexagonal architecture
-export * from './layers'
-
 // Export a default container instance for convenience
 import { Container } from './container'
 export const container = new Container()

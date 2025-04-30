@@ -1,25 +1,20 @@
-import type { DataRecord } from 'core/types'
-import { Event } from 'core/di'
-import type {
-	StringValueObject,
-	NumberIdValueObject,
-	RoutingKeyValueObject,
-} from 'core/aggregate'
+import type { DataRecord } from '../types'
+import type { Identifier, RoutingKey } from '../aggregate/value-object'
 
 /**
  * @description Abstract class for domain events
  */
-@Event()
+
 export abstract class DomainEvent {
 	/**
 	 * @description The id of the aggregate that triggered the event
 	 */
-	readonly aggregateId: StringValueObject | NumberIdValueObject
+	readonly aggregateId: Identifier
 
 	/**
 	 * @description The routing key of the event
 	 */
-	readonly routingKey: RoutingKeyValueObject
+	readonly routingKey: RoutingKey
 
 	/**
 	 * @description The date and time the event occurred
@@ -36,9 +31,15 @@ export abstract class DomainEvent {
 	 */
 	abstract getEventName(): string
 
+	/**
+	 * @description Constructor for the domain event
+	 * @param aggregateId - The id of the aggregate that triggered the event
+	 * @param routingKey - The routing key of the event
+	 * @param occurredOn - The date and time the event occurred
+	 */
 	constructor(
-		aggregateId: StringValueObject | NumberIdValueObject,
-		routingKey: RoutingKeyValueObject,
+		aggregateId: Identifier,
+		routingKey: RoutingKey,
 		occurredOn: Date = new Date(),
 	) {
 		this.aggregateId = aggregateId

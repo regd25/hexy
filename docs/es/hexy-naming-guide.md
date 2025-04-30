@@ -18,7 +18,6 @@
 | `controller/`               | HTTP Controller               | `.controller.ts`           | `user.controller.ts`                 |
 | `adapter/ws/handler/`       | WebSocket Handler             | `.ws-handler.ts`           | `user-typing.ws-handler.ts`          |
 | `adapter/<tech>/`           | Adaptador externo             | `.adapter.ts`              | `sendgrid.adapter.ts`                |
-| `dto/`                      | DTO                           | `.dto.ts`                  | `register-user.dto.ts`               |
 | `config/`                   | Parámetros de configuración   | `parameters.ts`            | `parameters.ts`                      |
 | `config/`                   | Secretos                      | `secrets.ts`               | `secrets.ts`                         |
 | cualquiera                  | Prueba unitaria o integración | `.spec.ts`                 | `generate-invoice.usecase.spec.ts`   |
