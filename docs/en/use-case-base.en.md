@@ -2,7 +2,7 @@
 
 The `UseCase` class defines a standardized execution flow for all use cases in Hexy. It wraps the core logic with optional lifecycle hooks such as `beforeExecute`, `afterExecute`, and `onError`.
 
-Recommended location: `/src/core/context/use-case/use-case.ts`
+Recommended location: `/src/@/context/use-case/use-case.ts`
 
 ---
 

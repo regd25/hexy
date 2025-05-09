@@ -34,9 +34,9 @@
 
 ### 🧩 Example
 ```ts
-import { Aggregate } from '@/core/metadata'
+import { Aggregate } from '@/@/metadata'
 import { InvoiceCreated, InvoicePaid } from '../event'
-import { COMMANDS } from '../core/command.tokens'
+import { COMMANDS } from '../@/command.tokens'
 
 @Aggregate({
   context: 'Billing',
@@ -206,7 +206,7 @@ const jwt = getSecret(secrets.jwtSecret)
 
 The `UseCase` class defines a standardized execution flow for all use cases within Hexy. This allows wrapping the core logic with optional hooks like `beforeExecute`, `afterExecute`, and `onError`.
 
-Recommended location: `/src/core/context/use-case/use-case.ts`
+Recommended location: `/src/@/context/use-case/use-case.ts`
 
 ---
 
@@ -590,7 +590,7 @@ export class UserFactory {
 
 ### Observability
 
-- Location: `/core/observability/`
+- Location: `/@/observability/`
 - System must implement a base `Telemetry` class and multiple adapters.
 - Hexy provides decorators to automatically enable traceability.
 

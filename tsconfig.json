@@ -22,7 +22,7 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"core/*": ["src/core/*"]
+			"@/*": ["src/*"]
 		},
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,

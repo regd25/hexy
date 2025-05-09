@@ -34,9 +34,9 @@
 
 ### 🧩 Ejemplo
 ```ts
-import { Aggregate } from '@/core/metadata'
+import { Aggregate } from '@/@/metadata'
 import { InvoiceCreated, InvoicePaid } from '../event'
-import { COMMANDS } from '../core/command.tokens'
+import { COMMANDS } from '../@/command.tokens'
 
 @Aggregate({
   context: 'Billing',

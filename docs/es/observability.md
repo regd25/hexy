@@ -1,6 +1,6 @@
 ### Observabilidad
 
-- Ubicación: `/core/observability/`
+- Ubicación: `/@/observability/`
 - El sistema debe implementar una clase base `Telemetry` y múltiples adaptadores.
 - Hexy provee decoradores para habilitar trazabilidad automáticamente.
 
