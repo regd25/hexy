@@ -10,7 +10,7 @@
 ### 🧱 Structure Guidelines
 
 - Should be `readonly` or `private`, no setters.
-- Must validate on construction or by extending `PrimitiveValueObject<T>`.
+- Must validate on construction or by extending `ValueObject<T>`.
 - Compare via `equals()` or custom logic.
 - Implement `toPrimitive()` to expose raw value.
 
@@ -40,7 +40,7 @@
   description: 'Non-empty username',
   primitive: 'string'
 })
-export class Username extends PrimitiveValueObject<string> {
+export class Username extends ValueObject<string> {
   protected validate(value: string): void {
     if (!value.trim()) {
       throw new Error('Username cannot be empty');

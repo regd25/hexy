@@ -2,14 +2,14 @@
 	"compilerOptions": {
 		"lib": ["ESNext"],
 		"target": "ESNext",
-		"module": "ESNext",
+		"module": "CommonJS",
 		"moduleDetection": "force",
 		"allowJs": true,
 
 		// Bundler mode
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": true,
+		"moduleResolution": "node",
+		"allowImportingTsExtensions": false,
+		"verbatimModuleSyntax": false,
 		"noEmit": true,
 		"rootDir": "./",
 		"outDir": "./dist",

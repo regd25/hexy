@@ -1,5 +1,5 @@
 import type { Class } from '../types'
-import type { AggregateRoot } from '../aggregate'
+import type { AggregateRoot } from '../domain/aggregate'
 
 export interface RepositoryMetadata {
 	entity: Class<AggregateRoot>

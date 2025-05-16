@@ -80,7 +80,7 @@ export class Invoice extends AggregateRoot {
 ### 🧱 Structure rules
 
 - Must be `readonly` or `private`, without setters.
-- Must validate in constructor or when extending `PrimitiveValueObject<T>`.
+- Must validate in constructor or when extending `ValueObject<T>`.
 - Compare using `equals()` or defined operators.
 - Implement `toPrimitive()` to expose their value.
 
@@ -110,7 +110,7 @@ export class Invoice extends AggregateRoot {
   description: 'Non-empty username',
   primitive: 'string'
 })
-export class Username extends PrimitiveValueObject<string> {
+export class Username extends ValueObject<string> {
   protected validate(value: string): void {
     if (!value.trim()) {
       throw new Error('Username cannot be empty')

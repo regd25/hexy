@@ -1,0 +1,92 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Testing Rules
+
+## Automatic Test Execution
+
+When creating or modifying test files, follow these guidelines:
+
+1. Test files must be placed in `__tests__` directories next to the files they test
+2. Test files must follow the naming pattern `*.test.ts`
+3. Tests must be written using Jest and follow the configuration in [jest.config.js](mdc:jest.config.js)
+
+### Test Execution Commands
+
+The following commands are available for running tests:
+
+- `npm test`: Run all tests
+- `npm run test:watch`: Run tests in watch mode
+- `npm run test:coverage`: Run tests with coverage report
+- `npm run test:ci`: Run tests in CI mode with coverage
+- `npm run test:update`: Update test snapshots
+- `npm run test:clear`: Clear Jest cache
+
+### Test Coverage Requirements
+
+The project maintains strict test coverage requirements as defined in [jest.config.js](mdc:jest.config.js):
+
+- Minimum 80% branch coverage
+- Minimum 80% function coverage
+- Minimum 80% line coverage
+- Minimum 80% statement coverage
+
+### Test File Structure
+
+Test files should follow this structure:
+
+```typescript
+import { Component } from '../component'
+
+describe('Component', () => {
+  let component: Component
+
+  beforeEach(() => {
+    // Setup
+  })
+
+  afterEach(() => {
+    // Cleanup
+  })
+
+  describe('method', () => {
+    it('should do something', () => {
+      // Test implementation
+    })
+  })
+})
+```
+
+### Best Practices
+
+1. Use descriptive test names that explain the behavior being tested
+2. Follow the Arrange-Act-Assert pattern
+3. Mock external dependencies
+4. Clean up after each test
+5. Test both success and error cases
+6. Keep tests focused and isolated
+7. Use appropriate Jest matchers
+8. Maintain test coverage above thresholds
+
+### Automatic Test Execution
+
+When creating or modifying test files:
+
+1. Run `npm test` to verify all tests pass
+2. Run `npm run test:coverage` to ensure coverage requirements are met
+3. Fix any failing tests or coverage issues before committing
+
+### CI/CD Integration
+
+Tests are automatically run in CI/CD pipelines using:
+
+```bash
+npm run test:ci
+```
+
+This ensures:
+- Tests run in a clean environment
+- Coverage reports are generated
+- Tests run in sequence to prevent race conditions
