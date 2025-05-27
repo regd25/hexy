@@ -1,0 +1,82 @@
+# Módulo 5 – Sintaxis y formatos de representación
+
+El Semantic Context Language (SCL) se escribe en un formato legible por humanos, usualmente **YAML**, y se puede exportar a representaciones formales como **RDF/Turtle** o **JSON-LD** para interoperar con tecnologías semánticas y agentes de IA.
+
+## Estructura base en YAML
+
+```yaml
+organization:
+  name: Acme Inc
+  mission: Crear sistemas de automatización accesibles y éticos.
+  vision: Democratizar la inteligencia contextual.
+  values: [transparencia, adaptabilidad, impacto]
+
+concepts:
+  - name: Bot
+    description: Programa que ejecuta tareas definidas por el usuario.
+  - name: Action
+    description: Operación que un bot puede realizar.
+
+use_cases:
+  - name: ExecuteAction
+    description: Permite al bot ejecutar una acción disponible.
+
+paths:
+  - name: SuccessPath
+    trigger: Acción ejecutada correctamente.
+
+rules:
+  - name: RequireAuthentication
+    description: Toda acción debe ejecutarse en una sesión autenticada.
+
+agents:
+  - name: User
+    role: Persona que configura y lanza las acciones.
+
+kpis:
+  - name: action_success_rate
+    unit: porcentaje
+    description: Porcentaje de acciones exitosas sobre el total intentado.
+
+narratives:
+  - for: RequireAuthentication
+    content: Se busca asegurar integridad y trazabilidad del sistema.
+```
+
+## Campos requeridos y opcionales
+
+- Todo artefacto debe tener al menos un `name`.
+- `description` y `content` son recomendados para `concepts`, `rules`, `narratives`.
+- `organization` siempre debe estar definido al inicio o vinculado desde un documento raíz.
+- Los artefactos pueden estar en archivos separados o modularizados por servicio/contexto.
+
+## Formatos exportables
+
+### RDF/Turtle
+
+```turtle
+@prefix scl: <https://hexi.dev/scl#> .
+@prefix ex: <https://example.org#> .
+
+ex:ExecuteAction a scl:UseCase ;
+  scl:description "Permite al bot ejecutar una acción disponible" ;
+  scl:relatedConcept ex:Action .
+```
+
+### JSON-LD
+
+```json
+{
+  "@context": "https://hexi.dev/scl/context.jsonld",
+  "@type": "UseCase",
+  "name": "ExecuteAction",
+  "description": "Permite al bot ejecutar una acción disponible"
+}
+```
+
+## Buenas prácticas
+
+- Nombrar los artefactos en inglés para facilitar interoperabilidad.
+- Usar `kebab-case` para nombres de archivos y `camelCase` para KPIs.
+- Agregar `narratives` siempre que una decisión tenga intención no obvia.
+- Incluir una narrativa general por cada módulo o contexto modelado.

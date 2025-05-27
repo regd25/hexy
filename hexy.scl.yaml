@@ -1,0 +1,111 @@
+concepts:
+- description: Lenguaje semántico de definición contextual interoperable entre humanos
+    y agentes artificiales.
+  name: SCL
+- name: Modulo1_Introduccion
+- name: Modulo2_FilosofiaYPrincipios
+- name: Modulo3_EstructuraDelLenguaje
+- name: Modulo4_ProcesoDeDefinicion
+- name: Modulo5_Sintaxis
+- name: Modulo6_Interpretacion
+- name: Modulo7_Integraciones
+- name: Modulo8_Contribucion
+- name: Artefacto_Organization
+- name: Artefacto_Concept
+- name: Artefacto_UseCase
+- name: Artefacto_Rule
+- name: Artefacto_Agent
+- name: Artefacto_Path
+- name: Artefacto_KPI
+- name: Artefacto_Narrative
+- name: LandingpPage
+- name: Stack
+narratives:
+- content: SCL nace como respuesta a la necesidad de representar el significado operativo
+    de los sistemas, haciendo visible su intención y facilitando su evolución reflexiva.
+  for: SCL
+- content: La dodumentacion debe estar albergada en una pagina accesible para el usuario,
+    debe ser facil y accesible poder interactuar con los diferentes conceptos del lenguaje.
+  for: LandingPage
+- content: Posiciona a SCL como un lenguaje intermedio entre intención humana y ejecución
+    técnica.
+  for: Modulo1_Introduccion
+- content: Define los axiomas fundacionales del lenguaje.
+  for: Modulo2_FilosofiaYPrincipios
+- content: Describe los artefactos de SCL y sus relaciones semánticas.
+  for: Modulo3_EstructuraDelLenguaje
+- content: Guía paso a paso la construcción contextual de sistemas usando SCL.
+  for: Modulo4_ProcesoDeDefinicion
+- content: Explica cómo se estructura formalmente un archivo SCL y cómo se exporta.
+  for: Modulo5_Sintaxis
+- content: Muestra cómo humanos y agentes entienden un sistema SCL.
+  for: Modulo6_Interpretacion
+- content: Define cómo SCL se conecta con herramientas del ecosistema técnico.
+  for: Modulo7_Integraciones
+- content: Estructura el proceso de colaboración y gobernanza del lenguaje.
+  for: Modulo8_Contribucion
+- content: Todo el stack tecnologico debe ser usando las mejores practicas de diseño de software,
+    para construir codigo escalable, legible y que sea eficiente.
+  for: Stack
+organization:
+  mission: Crear un lenguaje operativo que conecte humanos, máquinas e inteligencia
+    artificial desde el contexto.
+  name: HEXI
+  vision: Un marco semántico que haga evolucionar la ingeniería de sistemas vivos.
+rules:
+- description: Todo archivo SCL debe poder ser interpretado de forma mínima sin sistemas
+    externos.
+  name: MustBeExecutableWithoutBackend
+- description: Cada caso de uso nuevo debe contar con una narrativa que explique su
+    razón de ser.
+  name: AllUseCasesMustIncludeNarrative
+- description: El Stack debe alinearse a usar arquitectura hexagonal y DDD
+  name: ArchitecturePatternDesign
+  for: Stack
+- description: El Stack debe poder testearse y aplicar TDD, Test Driven Development para seguir las reglas de consistencia
+  name: TestMethod
+  for: Stack
+use_cases:
+- concepts:
+  - CLI
+  - EntryPoint
+  description: Iniciar el CLI de entrada mínima con comandos esenciales para validar
+    y generar contexto SCL.
+  name: ActivateCLIExperience
+  narratives:
+  - content: El CLI es clave para facilitar la adopción temprana y reducir la fricción
+      técnica al empezar con SCL.
+- concepts:
+  - Documentation
+  - UX
+  description: Crear una guía interactiva con un flujo de ejemplo y artefactos predefinidos.
+  name: LaunchGuidedOnboarding
+  narratives:
+  - content: La guía busca suavizar la curva de aprendizaje inicial mostrando un modelo
+      completo desde el inicio.
+- concepts:
+  - Runtime
+  - Validation
+  description: Permitir la ejecución y validación de SCL sin requerir sistemas externos.
+  name: BuildStandaloneCompatibility
+  narratives:
+  - content: SCL debe poder ser validado y ejecutado de forma mínima sin requerir
+      infraestructura adicional.
+- concepts:
+  - DeveloperExperience
+  - IDE
+  description: Desarrollar extensiones para Cursor y VS Code que interpreten SCL en
+    vivo.
+  name: CreateIDEExtensions
+  narratives:
+  - content: Integrar SCL con entornos existentes es clave para fomentar su uso cotidiano
+      y evitar resistencia.
+- concepts:
+  - LLM
+  - Assistant
+  description: Diseñar un modelo de lenguaje o embeddings adaptado a archivos SCL
+    para navegación y explicación contextual.
+  name: TrainContextualModel
+  narratives:
+  - content: La comprensión asistida por IA reducirá las barreras conceptuales y acelerará
+      la curva de adopción.

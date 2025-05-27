@@ -1,0 +1,58 @@
+# Module 2 – Filosofía y principios
+
+## Fundamentos y axiomas
+
+El diseño del Semantic Context Language (SCL) se apoya en una serie de principios fundamentales que buscan garantizar que cualquier sistema modelado con él sea transparente, trazable y evolutivo. Estos axiomas funcionan como guías filosóficas y prácticas para estructurar el pensamiento contextual.
+
+1. **Visibilidad – Lo que no se representa tiende a fragmentarse.**  
+Todo lo que no es explicitado en el modelo está en riesgo de convertirse en deuda cognitiva. SCL exige visibilizar los elementos críticos del sistema para evitar ambigüedades y fragmentaciones operativas.
+
+2. **Observabilidad – Lo que no se mide, no se mejora.**  
+Cada contexto definido debe poder conectarse con métricas que lo validen o tensionen. Los KPIs no son opcionales: son sensores del aprendizaje estructural.
+
+3. **Intención preservada – Cada regla crítica merece una narrativa.**  
+SCL no acepta reglas vacías. Cada decisión debe estar acompañada de su porqué. La narrativa no es decoración; es una ancla para la evolución reflexiva del sistema.
+
+4. **Lenguaje común – No es una herramienta; es una condición estructural.**  
+SCL es una lengua compartida entre negocio, tecnología y agentes de IA. Esta capa común permite reducir fricciones y acelerar alineamientos en entornos multidisciplinares.
+
+5. **Economía de la repetición – Si algo se repite con impacto, conviene modelarlo.**  
+La recurrencia con valor es una señal de patrón. SCL promueve modelar esas repeticiones para crear economías cognitivas y operativas.
+
+6. **Evolubilidad – Un sistema que se puede leer, se puede transformar.**  
+El propósito final del lenguaje es posibilitar el cambio. SCL estructura los contextos de forma que puedan ser entendidos, criticados, versionados y rediseñados con facilidad.
+
+---
+
+## Enfoque semántico vs enfoque técnico
+
+Tradicionalmente, los sistemas han sido diseñados desde un enfoque técnico, centrado en el detalle operativo: bases de datos, algoritmos, servicios, integraciones. Este enfoque privilegia la ejecución, pero muchas veces deja fuera el contexto, la intención y el significado detrás de las decisiones que estructuran un sistema.
+
+SCL representa un cambio de paradigma hacia un enfoque semántico. No se enfoca en el “cómo se ejecuta” el sistema, sino en el “por qué existe” y “para qué actúa” en cada contexto. La semántica aquí no es solo significado, sino la capa de intención que conecta a los actores humanos y artificiales con el funcionamiento del sistema.
+
+En este nuevo enfoque:
+- El código deja de ser el punto de partida. En su lugar, se modela primero el contexto, y luego se genera lo técnico a partir de él.
+- Los desarrolladores ya no son solo constructores de software; se transforman en intérpretes de significado y traductores de intención.
+- Las decisiones de negocio, producto y experiencia se vuelven parte estructural del sistema, no solo documentación externa.
+
+Este cambio también refleja una evolución natural del rol del desarrollador: desde el dominio de la máquina hacia el dominio del lenguaje contextual. Hoy en día, la capacidad de abstraer, representar y comunicar el conocimiento humano a una IA o a otro actor dentro del sistema es tan importante como saber optimizar una base de datos.
+
+SCL nace como un framework semántico: no reemplaza a los frameworks técnicos, pero los ordena, los dirige y los alinea a través del contexto. Así, logra que el conocimiento organizacional se integre de forma viva en la operación del sistema.
+
+---
+
+## El rol de la narrativa en los sistemas
+
+Toda interacción humana está mediada por el lenguaje. No hablamos en funciones ni en estructuras lógicas: hablamos en narrativas, en historias, en contextos compartidos. Cuando decimos “quiero simplificar este flujo” o “esto ya no se alinea con la visión del producto”, estamos transmitiendo mucho más que datos: estamos compartiendo intención, perspectiva, experiencia y juicio.
+
+Desde la teoría del lenguaje, se sabe que cada palabra no es unívoca. El término "cliente", por ejemplo, puede significar cosas muy distintas para una diseñadora UX, un analista de datos o un modelo de lenguaje. Esa ambigüedad semántica es natural, porque el lenguaje humano no está hecho solo para transmitir información, sino para negociar significados, construir acuerdos y adaptarse a nuevos contextos.
+
+SCL toma esta raíz lingüística como uno de sus fundamentos: cada artefacto debe llevar una narrativa que preserve su significado original, su porqué. Esta narrativa no es opcional. No es un comentario. Es el ancla semántica que permite que el sistema pueda evolucionar sin perder el sentido de lo que se modeló.
+
+¿Por qué es importante esto? Porque cuando los sistemas empiezan a ser operados por inteligencias artificiales, o por equipos humanos distribuidos, la pérdida de intención es uno de los principales vectores de error o desalineación. Una regla técnica sin historia puede ser interpretada (o modificada) sin entender su impacto real. Una métrica sin justificación puede incentivar comportamientos nocivos.
+
+Por eso, la narrativa en SCL no es un adorno, es una estructura formal obligatoria. Cada `UseCase`, cada `Rule`, cada `KPI` puede tener múltiples interpretaciones técnicas, pero solo una intención contextual precisa, y esa debe quedar expresada con claridad. SCL obliga a capturarla, nombrarla y preservarla como parte del diseño.
+
+Además, esto tiene una segunda función: permitir la evolución reflexiva del sistema. Cuando todo está narrado, cualquier persona o IA que tome una decisión o modifique un flujo puede comprender las razones originales, dialogar con ellas, y construir encima de lo que ya existe con respeto semántico. Esto no solo mejora la mantenibilidad técnica, sino también la coherencia ética y organizacional del sistema.
+
+La narrativa convierte a SCL en un lenguaje interpretativo, no solo declarativo. Nos permite crear sistemas que no solo “funcionan”, sino que tienen sentido, y pueden sostener una conversación continua entre diseñadores, desarrolladores, usuarios, agentes inteligentes y cualquier otro actor del ecosistema.
