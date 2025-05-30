@@ -1,0 +1,114 @@
+context: SemanticKernel
+narrative: >
+  El SemanticKernel es el núcleo que valida la estructura semántica del lenguaje SCL. Asegura que
+  todos los artefactos definidos cumplan con las convenciones del lenguaje: narrativa explícita,
+  alineación gramatical, consistencia con los axiomas y trazabilidad. Permite escalar la 
+  representación del conocimiento organizacional.
+
+rule:
+  - id: SemanticValidationRequired
+    narrative: >
+      Todo documento `.scl.yaml` debe pasar por una validación estructural y semántica antes de ser
+      aceptado dentro del sistema.
+
+  - id: NarrativeMandatoryInAllArtifacts
+    narrative: >
+      Cada artefacto definido en SCL debe incluir una narrativa clara que exponga su propósito dentro del sistema.
+
+protocol:
+  - id: ValidateSemanticCompliance
+    narrative: >
+      Revisa que todos los campos de un artefacto respeten la semántica del lenguaje SCL: convenciones,
+      narrativa, estructuras y relaciones.
+
+  - id: UpdateSemanticRuleset
+    narrative: >
+      Gestiona los cambios al conjunto de reglas semánticas, asegurando que las nuevas versiones no rompan
+      compatibilidad con artefactos existentes.
+
+  - id: EvaluateNarrativeCoherence
+    narrative: >
+      Evalúa si la narrativa de un artefacto mantiene coherencia lógica y contextual con el resto del documento.
+
+  - id: ValidateContextExtension
+    narrative: >
+      Valida que cualquier nuevo contexto agregado respete las convenciones del lenguaje y no contradiga
+      la narrativa del núcleo semántico.
+
+flow:
+  - id: DefinirContextoSemanticKernel
+    narrative: >
+      Crea el contexto base del SemanticKernel incluyendo reglas, protocolos, y flujos semánticos básicos.
+
+  - id: EjecutarValidacionSemantica
+    narrative: >
+      Lanza el proceso de revisión semántica sobre un documento o conjunto de artefactos definidos en SCL.
+
+  - id: ProponerActualizacionDeReglas
+    narrative: >
+      Ejecuta el flujo de sugerencia, revisión, votación y publicación de nuevas reglas semánticas para el sistema.
+
+  - id: ValidarExtensionDeContexto
+    narrative: >
+      Verifica que la incorporación de un nuevo contexto no contradiga las definiciones semánticas ya aprobadas.
+
+kpi:
+  - id: validationTimeMs
+    narrative: >
+      Tiempo promedio (en milisegundos) que tarda el SemanticKernel en validar un documento `.scl.yaml` completo.
+    unit: milliseconds
+
+  - id: semanticAlignmentScore
+    narrative: >
+      Porcentaje de artefactos que cumplen correctamente con las convenciones semánticas del lenguaje.
+    unit: percentage
+
+  - id: conflictRatePerDoc
+    narrative: >
+      Promedio de conflictos detectados por documento durante la validación semántica.
+    unit: decimal
+
+  - id: escalationRatio
+    narrative: >
+      Porcentaje de casos que requieren intervención humana tras la evaluación del kernel.
+    unit: percentage
+
+  - id: contextRejectionRate
+    narrative: >
+      Tasa de contextos que son rechazados por no alinearse correctamente a la semántica establecida.
+    unit: percentage
+
+  - id: coverageScore
+    narrative: >
+      Porcentaje del grafo total de artefactos que ha sido validado formalmente.
+    unit: percentage
+
+  - id: narrativeInferenceAccuracy
+    narrative: >
+      Precisión del modelo de lenguaje al generar o inferir la narrativa de artefactos sin narrativa explícita.
+    unit: percentage
+
+outcome:
+  - id: SemanticValidationApproved
+    narrative: >
+      El documento fue validado exitosamente y puede ser integrado al grafo organizacional.
+
+  - id: SemanticValidationEscalated
+    narrative: >
+      El documento fue enviado a revisión humana por inconsistencias no resolubles automáticamente.
+
+  - id: RulesetUpdated
+    narrative: >
+      La propuesta de actualización de reglas fue aprobada y publicada como versión estable.
+
+  - id: RulesetRejected
+    narrative: >
+      La propuesta de actualización fue rechazada por romper convenciones o no incluir narrativa adecuada.
+
+  - id: ContextExtensionValidated
+    narrative: >
+      El nuevo contexto fue evaluado y se integró sin romper la semántica preexistente.
+
+  - id: ContextExtensionRejected
+    narrative: >
+      El contexto fue rechazado por conflicto semántico o narrativa incompleta.
