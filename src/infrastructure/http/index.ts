@@ -1,5 +1,0 @@
-export * from './express/decorators/controller'
-export * from './express/decorators/param'
-export * from './express/decorators/route'
-export * from './express/decorators/typings'
-export * from './express'

@@ -1,0 +1,87 @@
+# Module 3 – Estructura del lenguaje
+
+## Artefactos semánticos
+
+| Artefacto     | Propósito principal                                              |
+|---------------|------------------------------------------------------------------|
+| **Organization** | Define identidad, propósito, misión, visión y valores del sistema. |
+| **Concept**       | Representa entidades clave del dominio (objetos, ideas, procesos). |
+| **UseCase**       | Modela acciones o flujos que generan valor y transforman contexto. |
+| **Rule**          | Establece restricciones, políticas o condiciones operativas.       |
+| **Agent**         | Describe actores humanos, automatizados o híbridos que interactúan. |
+| **Path**          | Traza los flujos posibles: éxito, error o alternativos.             |
+| **KPI**           | Define métricas observables, indicadores de éxito o salud sistémica.|
+| **Narrative**     | Conserva la intención histórica, cultural o estratégica del artefacto. |
+
+---
+
+## Relación entre artefactos y su origen
+
+En SCL, cada artefacto forma parte de una estructura semántica interconectada que representa la lógica del sistema. Su relación puede verse como un ciclo donde intención, acción, restricción y aprendizaje se retroalimentan:
+
+1. `Organization` define el propósito.
+2. Se identifican `Concepts`.
+3. Se definen `UseCases`.
+4. Que generan `Paths`.
+5. Activan `Agents` y `Rules`.
+6. Se validan con `KPIs`.
+7. Todo está narrado con `Narratives`.
+
+Origen conceptual:
+- `Organization`: teoría organizacional.
+- `Concept`: DDD.
+- `UseCase`: ingeniería de software y servicio.
+- `Rule`: teoría de control.
+- `Agent`: teoría de sistemas e IA.
+- `Path`: flujos y procesos.
+- `KPI`: observabilidad y aprendizaje.
+- `Narrative`: teoría del lenguaje y hermenéutica.
+
+---
+
+## Ejemplo práctico – Plataforma de jams musicales
+
+```yaml
+organization:
+  name: Ritmeria
+  mission: Democratizar la creación de música en vivo mediante sesiones digitales accesibles.
+  vision: Un mundo donde cualquier persona pueda improvisar música en tiempo real, desde cualquier lugar.
+  values: [creatividad, colaboración, expresividad, acceso]
+
+concepts:
+  - name: Jam
+    description: Sesión musical en vivo entre varios usuarios.
+  - name: BackingTrack
+    description: Base rítmica que acompaña la jam.
+
+use_cases:
+  - name: StartLiveJam
+    description: Permite que un usuario inicie una sesión musical con otros usuarios invitados.
+    concepts: [Jam, BackingTrack]
+    paths: [HappyPath, Error_InvalidPlan]
+
+paths:
+  - name: HappyPath
+    trigger: Usuario con plan activo inicia sesión.
+  - name: Error_InvalidPlan
+    trigger: Usuario no tiene plan válido.
+
+rules:
+  - name: LimitTracksPerPlan
+    description: Los usuarios con plan gratuito solo pueden usar una pista por jam.
+
+agents:
+  - name: User
+    role: Músico humano que interactúa con la plataforma.
+  - name: LiveJamEngine
+    role: Servicio automático que sincroniza las pistas y latencias en tiempo real.
+
+kpis:
+  - name: jam_startup_time
+    unit: segundos
+    description: Tiempo desde que se presiona “Iniciar jam” hasta que se activa la sesión.
+
+narratives:
+  - for: StartLiveJam
+    content: Este caso de uso es clave para ofrecer experiencias musicales colaborativas sin fricción. Diseñado para minimizar la latencia y crear una sensación de presencia en tiempo real.
+```

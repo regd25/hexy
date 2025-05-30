@@ -1,0 +1,94 @@
+# Módulo 4 – Proceso de definición SCL
+
+## Parte 1: Etapas del proceso
+
+### 1. Context Kick-off  
+Inicio del modelado. Se define el problema, el propósito y la identidad del sistema (`Organization`). Es la declaración de existencia.
+
+### 2. Concept Mining  
+Extracción de conceptos clave. Se identifican entidades, ideas o recursos relevantes para el dominio (`Concepts`).
+
+### 3. Use‑Case Storming  
+Exploración de acciones con valor. Se documentan flujos deseables o críticos (`UseCases`), junto con sus caminos (`Paths`).
+
+### 4. Rule & KPI Binding  
+Formalización de condiciones. Se declaran restricciones (`Rules`) y métricas observables (`KPIs`) para medir y controlar el comportamiento.
+
+### 5. Narrative Capture  
+Preservación del porqué. Se registra la intención o razón de ser de cada artefacto clave (`Narrative`), especialmente aquellos con impacto estratégico.
+
+### 6. Validation Loop  
+Revisión contextual desde tres perspectivas: negocio, tecnología e inteligencia artificial. Permite ajustar antes de implementar.
+
+### 7. Automation & Codegen  
+Generación automatizada de código, documentos, servicios o pruebas a partir de artefactos definidos.
+
+### 8. Observability & Learning  
+Evaluación continua del sistema mediante KPIs, retroalimentación de usuarios y nuevos insights. Alimenta la evolución semántica del sistema.
+
+---
+
+## Parte 2: Ejemplo documentado – Plataforma TutorLink
+
+### Contexto
+
+**Nombre:** TutorLink  
+**Fundación:** 2021  
+**Propósito:** Conectar estudiantes y tutores de forma directa para clases uno a uno de alta calidad.  
+**Equipo inicial:** 4 personas (2 cofundadores, 1 backend, 1 diseño)
+
+### Decisiones clave
+
+- 2022: Se limita cantidad de clases diarias para evitar burnout.
+- 2023: Se añade feedback post-sesión por baja retención en materias.
+- 2024: Se introduce IA para sugerencia de horarios óptimos.
+
+### Artefactos definidos
+
+```yaml
+organization:
+  name: TutorLink
+  mission: Conectar estudiantes con expertos para potenciar el aprendizaje individual.
+  vision: Que cualquier persona pueda acceder a clases uno a uno de calidad.
+  values: [acceso, claridad, eficiencia, mejora continua]
+
+concepts:
+  - name: Tutor
+  - name: Student
+  - name: Session
+  - name: Subject
+
+use_cases:
+  - name: BookSession
+  - name: CancelSession
+  - name: RateSession
+  - name: SuggestAltTutors
+
+paths:
+  - name: HappyPath
+  - name: SessionCanceled
+  - name: TutorUnavailable
+
+rules:
+  - name: MaxDailySessions
+
+kpis:
+  - name: booking_conversion_rate
+  - name: session_completion_rate
+
+narratives:
+  - for: BookSession
+    content: Facilitar la reserva eficiente es central para el modelo.
+  - for: MaxDailySessions
+    content: Mantiene la calidad de las sesiones impartidas.
+  - for: SuggestAltTutors
+    content: Queremos que ningún estudiante abandone por falta de opciones.
+```
+
+### Ciclo de retroalimentación
+
+**Febrero 2024:**  
+- Problema detectado: baja en `booking_conversion_rate`.  
+- Acción: nuevo `UseCase` `SuggestAltTutors`.  
+- Resultado: +14% en conversión tras 1 mes.  
+- Aprendizaje: la flexibilidad semántica permite adaptaciones ágiles y rastreables.

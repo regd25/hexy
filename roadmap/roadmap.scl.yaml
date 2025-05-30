@@ -1,0 +1,69 @@
+version: 0.1
+generatedAt: 2025-05-27
+project: Hexy
+context: Sistema Organizacional Vivo
+roadmap:
+  phases:
+    - id: SCL-01
+      name: "Definir modelo SCL base y artefactos"
+      duration: 14d
+      objective: "Consolidar artefactos y esquema inicial"
+    - id: SCL-02
+      name: "Diseñar Agente de Observación"
+      duration: 10d
+      objective: "Arquitectura y PoC de captura de eventos"
+    - id: SCL-03
+      name: "Motor de eventos y datos"
+      duration: 14d
+      objective: "Persistencia y normalización de eventos"
+    - id: SCL-04
+      name: "Grafo semántico vivo"
+      duration: 14d
+      objective: "RDF/TinkerGraph + API de consulta"
+    - id: SCL-05
+      name: "IA para razonamiento contextual"
+      duration: 12d
+      objective: "Prototipo con OpenAI/Claude + RAG"
+    - id: SCL-06
+      name: "Sistema de revisión humano"
+      duration: 7d
+      objective: "Flujo de aprobación y auditoría"
+    - id: SCL-07
+      name: "Automatizar PRs semánticos"
+      duration: 10d
+      objective: "Integración CI/CD (GitHub Actions)"
+    - id: SCL-08
+      name: "Iterar y escalar"
+      duration: 14d
+      objective: "Casos reales, métricas, optimización"
+risks:
+  - id: R1
+    description: "Complejidad inicial"
+    mitigation: "Fases cortas y PoCs"
+  - id: R2
+    description: "Costos de cómputo IA"
+    mitigation: "Cotas de consumo, fine‑tuning ligero"
+  - id: R3
+    description: "Calidad de datos"
+    mitigation: "Validaciones automáticas + curador humano"
+  - id: R4
+    description: "Resistencia al cambio"
+    mitigation: "Workshops internos y quick wins visibles"
+actionsSprint1:
+  - id: A1
+    description: "Cerrar esquema SCL v0.1"
+    owner: "Domain Team"
+    deadline: 2025-06-04
+  - id: A2
+    description: "Configurar pipeline de eventos (ventas, feedback)"
+    deadline: 2025-06-11
+  - id: A3
+    description: "Definir MVP del Agente de Observación"
+    deadline: 2025-06-12
+  - id: A4
+    description: "Demo interna del grafo vivo con sample data"
+    deadline: 2025-06-18
+questions:
+  - "¿Qué métricas serán las primeras en detonar aprendizaje semántico?"
+  - "¿Qué dominio o contexto será piloto para eventos?"
+  - "Nivel de automatización tolerado en PRs semánticos (auto‑merge vs review)"

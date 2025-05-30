@@ -1,0 +1,58 @@
+{
+  "name": "hexy-scl-landing",
+  "version": "1.0.0",
+  "description": "SCL (Semantic Context Language) Landing Page - Organization Framework",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/regd25/hexy.git"
+  },
+  "keywords": [
+    "SCL",
+    "Semantic Context Language",
+    "Organization Framework",
+    "DDD",
+    "Hexagonal Architecture"
+  ],
+  "author": "HEXI Organization",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/regd25/hexy/issues"
+  },
+  "homepage": "https://github.com/regd25/hexy#readme",
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "clsx": "^2.1.1",
+    "framer-motion": "^10.0.0",
+    "fuse.js": "^7.0.0",
+    "gray-matter": "^4.0.0",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "autoprefixer": "^10.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,70 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Semantic Context Language (SCL) – Manifiesto v1.0
+
+> *“Un sistema que se puede leer, se puede evolucionar.”*
+
+## 1. Introducción
+El **Semantic Context Language (SCL)** es un lenguaje modular diseñado para expresar el significado operativo de cualquier sistema vivo —organización, producto, comunidad o ecosistema— por medio de artefactos semánticos que combinan estructura **(reglas, agentes, KPIs)** con narrativa **(intención, decisión, aprendizaje)**.  
+Su propósito es conectar **estrategia ↔ operación ↔ automatización**, de modo que personas y agentes de IA compartan el mismo contexto y puedan **generar código, documentación y decisiones** de forma rastreable y evolutiva.
+
+SCL exporta sus definiciones a **RDF/Turtle**, lo que las hace visibles dentro de la web semántica y consultables vía SPARQL. Cada elemento puede además generar **JSON‑LD** y “rich snippets” para **SEO** y **AIO (AI Optimization)**, mejorando la indexabilidad por motores de búsqueda y la comprensión por modelos de lenguaje.
+
+---
+
+## 2. Fundamentos y axiomas
+1. **Visibilidad** – Lo que no se representa tiende a fragmentarse.  
+2. **Observabilidad** – Lo que no se mide, no se mejora.  
+3. **Intención preservada** – Cada regla crítica merece una narrativa.  
+4. **Lenguaje común** – No es una herramienta; es una condición estructural.  
+5. **Economía de la repetición** – Si algo se repite con impacto, conviene modelarlo.  
+6. **Evolubilidad** – Un sistema que se puede leer, se puede transformar.  
+
+---
+
+## 3. Artefactos SCL
+
+| Artefacto     | Propósito                                                       |
+|---------------|-----------------------------------------------------------------|
+| **Organization** | Identidad, misión, visión, valores.                            |
+| **Concept**       | Entidades clave del dominio (e.g. `Jam`, `BackingTrack`).      |
+| **UseCase**       | Acciones que generan valor (e.g. `StartLiveJam`).              |
+| **Rule**          | Restricciones o políticas (ej. `LimitTracksPerPlan`).          |
+| **Agent**         | Actores humanos/sistemas/IA (ej. `User`, `LiveJamEngine`).     |
+| **Path**          | Flujos Happy / Error / Alternate.                             |
+| **KPI**           | Métricas (ej. `jam_startup_time`, `user_usage_cost`).          |
+| **Narrative**     | Justificación histórica/cultural asociada al artefacto.       |
+
+---
+
+## 4. Proceso de definición SCL
+1. **Context Kick‑off** – Identificar problema y `organization`.  
+2. **Concept Mining** – Extraer conceptos esenciales con negocio y técnica.  
+3. **Use‑Case Storming** – Describir acciones, paths y narrativas.  
+4. **Rule & KPI Binding** – Vincular políticas y métricas medibles.  
+5. **Narrative Capture** – Documentar las razones para preservar intención.  
+6. **Validation Loop** – Revisión rápida negocio‑dev‑IA.  
+7. **Automation & Codegen** – Generar servicios, docs, pruebas.  
+8. **Observability & Learning** – Métricas alimentan iteraciones del SCL.
+
+---
+
+## 6. Integración con otras tecnologías
+* **RDF/OWL** – Publicación de artefactos (`.ttl`, `.rdf`) para SPARQL.  
+* **Microsoft Semantic Kernel** – SCL provee contexto; SK ejecuta skills.  
+* **Open Semantic Framework** – Mapeo a vocabularios estándar (FOAF, DC).  
+* **SEO / AIO** – JSON‑LD autogenerado y FAQ context‑aware para motores y LLMs.
+
+---
+
+## 7. Fundamentos avanzados del lenguaje
+* **Contexto como unidad semántica.**  
+* **Narrativa operativa obligatoria.**  
+* **Interpretabilidad híbrida (humano + IA).**  
+* **Dimensiones: Intención · Operación · Evolución.**  
+* **Trazabilidad reflexiva de cambios.**
+

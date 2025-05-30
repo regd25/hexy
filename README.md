@@ -1,55 +1,106 @@
-# Hexy Framework – Guía Inicial
+# Hexy
 
-Bienvenido a Hexy, un framework diseñado para ayudarte a construir servicios backend modulares, testables y alineados a Domain-Driven Design y Arquitectura Hexagonal.
-
----
-
-## 🧭 Estructura de la Guía
-
-Este repositorio de documentación está organizado por módulos. Aquí encontrarás la explicación de cada concepto fundamental en Hexy, cómo implementarlo, buenas prácticas y ejemplos.
-
-### 📚 Índice (Español)
-
-0. [Guía de Desarrollo (Guidelines)](docs/guidelines.md)
-1. [Estructura del Proyecto](docs/es/estructura-del-proyecto.md)
-2. [Casos de Uso (UseCases)](docs/es/use-cases.md)
-3. [Servicios (Services)](docs/es/services.md)
-4. [Aggregates](docs/es/aggregates.md)
-5. [Value Objects](docs/es/value-objects.md)
-6. [Puertos y Adaptadores](docs/es/ports-and-adapters.md)
-7. [Repositorios](docs/es/repositories.md)
-8. [Eventos y Manejadores](docs/es/events.md)
-9. [Factories y Specifications](docs/es/factories.md)
-10. [Decoradores y Documentación](docs/es/documentation.md)
-11. [Observabilidad](docs/es/observability.md)
-12. [Testing](docs/es/testing.md)
-13. [Configuración y Versionado](docs/es/configuration.md)
+This repository contains the complete implementation of the **HEXY Semantic Runtime**, the system responsible for interpreting, validating, and executing artifacts defined in SCL (Semantic Context Language).
 
 ---
 
-### 📚 Index (English)
+## 📋 Table of Contents
 
-0. [Development Guidelines](docs/guidelines.en.md)
-1. [Project Structure](docs/en/estructura-del-proyecto.en.md)
-2. [UseCases](docs/en/use-cases.en.md)
-3. [Services](docs/en/services.en.md)
-4. [Aggregates](docs/en/aggregates.en.md)
-5. [Value Objects](docs/en/value-objects.en.md)
-6. [Ports and Adapters](docs/en/ports-and-adapters.en.md)
-7. [Repositories](docs/en/repositories.en.md)
-8. [Events and Handlers](docs/en/events.en.md)
-9. [Factories and Specifications](docs/en/factories.en.md)
-10. [Decorators and Docs](docs/en/documentation.en.md)
-11. [Observability](docs/en/observability.en.md)
-12. [Testing](docs/en/testing.en.md)
-13. [Configuration and Versioning](docs/en/configuration.en.md)
+- [Hexy](#hexy)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🏗️ Project Modules](#️-project-modules)
+  - [📦 Monorepo Structure](#-monorepo-structure)
+  - [🛠️ Core Technologies](#️-core-technologies)
+  - [🚀 Getting Started](#-getting-started)
+  - [🔍 Project Objective](#-project-objective)
+  - [🔐 Minimum Environment Requirements](#-minimum-environment-requirements)
+  - [📄 License](#-license)
+  - [👥 Contributors](#-contributors)
 
 ---
 
-Cada sección incluye:
-- Su ubicación dentro de la estructura del proyecto.
-- Reglas de diseño.
-- Ejemplos de implementación.
-- Decoradores requeridos (si aplica).
+## 🏗️ Project Modules
 
-You can navigate modules according to your workflow or explore the entire framework from this index.
+| Module | Description |
+|--------|-------------|
+| **engine/** | Core semantic processing engine |
+| └── **semantic-kernel/** | Core semantic validation engine that ensures all SCL artifacts comply with language conventions, maintain explicit narratives, grammatical alignment, axiom consistency, and traceability |
+| **landing/** | Next.js web application providing the main user interface and landing page for the HEXY platform |
+| **roadmap/** | Project roadmap documentation and planning artifacts in SCL format |
+| **hexy_runtime.py** | Python runtime implementation for SCL artifact execution and validation |
+| **hexy.scl.yaml** | Main SCL configuration file defining the HEXY organization structure and rules |
+| **hexy-test.yaml** | Test scenarios and validation cases for SCL artifacts |
+
+---
+
+## 📦 Monorepo Structure
+
+```
+hexy-monorepo/
+├── runtime-core/         # Core engine in Rust (parser, evaluator, governance, executor)
+├── cli-agent/            # Command-line agent for human interaction and simulations
+├── llm-evaluator/        # Python service for semantic evaluation using LLMs (optional)
+├── web-ui/               # Web interface to visualize artifacts, flows, and logs
+├── examples/             # Example SCL artifacts and test scenarios
+├── test-suite/           # Automated tests for defined flows and rules
+├── models/               # Local LLM models for offline environment evaluation
+└── docs/                 # Language documentation and runtime structure
+```
+
+---
+
+## 🛠️ Core Technologies
+
+* **Rust** → runtime-core, CLI
+* **Python** → optional LLM service (`llama-cpp`, `FastAPI`, `langchain`)
+* **React + Tailwind** → administrative UI
+* **SQLite / JSON Logs** → local storage for execution and state
+
+---
+
+## 🚀 Getting Started
+
+1. Clone the repository
+2. Make sure you have Rust and Python installed
+3. Install LLM service dependencies if you use them
+
+```bash
+cargo build
+python -m venv venv && source venv/bin/activate
+pip install -r llm-evaluator/requirements.txt
+```
+
+4. Run a test scenario
+
+```bash
+cargo run --package cli-agent -- simulate examples/flujo_aprobacion.scl.yaml
+```
+
+---
+
+## 🔍 Project Objective
+
+Transform the SCL language into a living and governed system that allows organizations to define their operational logic and execute it with traceability, validation, versioning, and human-in-the-loop control.
+
+---
+
+## 🔐 Minimum Environment Requirements
+
+* CPU with AVX2 support for local models (optional)
+* 1 GB RAM to run rules without model
+* 8 GB RAM recommended if using local LLM
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 👥 Contributors
+
+This repository is part of the HEXY project led by Randy Gala.
+Contributions are made through PRs accompanied by SCL definitions.
+
+> The future of living organizations is written in SCL ✨
