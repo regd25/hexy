@@ -56,7 +56,7 @@ SCL toma esta raíz lingüística como uno de sus fundamentos: cada artefacto de
 
 ¿Por qué es importante esto? Porque cuando los sistemas empiezan a ser operados por inteligencias artificiales, o por equipos humanos distribuidos, la pérdida de intención es uno de los principales vectores de error o desalineación. Una regla técnica sin historia puede ser interpretada (o modificada) sin entender su impacto real. Una métrica sin justificación puede incentivar comportamientos nocivos.
 
-Por eso, la narrativa en SCL no es un adorno, es una estructura formal obligatoria. Cada `Flow`, cada `Rule`, cada `KPI` puede tener múltiples interpretaciones técnicas, pero solo una intención contextual precisa, y esa debe quedar expresada con claridad. SCL obliga a capturarla, nombrarla y preservarla como parte del diseño.
+Por eso, la narrativa en SCL no es un adorno, es una estructura formal obligatoria. Cada `Process`, cada `Rule`, cada `KPI` puede tener múltiples interpretaciones técnicas, pero solo una intención contextual precisa, y esa debe quedar expresada con claridad. SCL obliga a capturarla, nombrarla y preservarla como parte del diseño.
 
 Además, esto tiene una segunda función: permitir la evolución reflexiva del sistema. Cuando todo está narrado, cualquier persona o IA que tome una decisión o modifique un flujo puede comprender las razones originales, dialogar con ellas, y construir encima de lo que ya existe con respeto semántico. Esto no solo mejora la mantenibilidad técnica, sino también la coherencia ética y organizacional del sistema.
 

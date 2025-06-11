@@ -1,0 +1,48 @@
+{
+  "name": "sol",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#fields"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "begin": "#",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.sol"
+            }
+          },
+          "end": "$\\n?",
+          "name": "comment.line.number-sign.sol"
+        }
+      ]
+    },
+    "fields": {
+      "patterns": [
+        {
+          "match": "\\b(id|content|description|steps|actors|type|vision|premise|measurement|unit|goal|issuedBy|reason|timestamp)\\b",
+          "name": "variable.parameter.sol"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "match": "\\b(Vision|Domain|Concept|Policy|Process|Actor|Indicator|Result|Signal|Observation|Authority|Protocol)\\b",
+          "name": "keyword.control.sol"
+        }
+      ]
+    }
+  },
+  "scopeName": "source.sol",
+  "scopeNameComment": "Syntax highlighting for Semantic Orchestration Language (.sol.yaml)"
+}

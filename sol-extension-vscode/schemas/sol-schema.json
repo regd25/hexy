@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "Actor": {
+      "items": {
+        "properties": {
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "type": "string"
+        },
+        "required": [
+          "id",
+          "type"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "Domain": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "indicators": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "policies": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "processes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "vision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "vision"
+      ],
+      "type": "object"
+    },
+    "Indicator": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "measurement": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "measurement"
+      ],
+      "type": "object"
+    },
+    "Policy": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "premise": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "vision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "premise",
+        "vision"
+      ],
+      "type": "object"
+    },
+    "Process": {
+      "properties": {
+        "actors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "vision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "steps",
+        "vision",
+        "actors"
+      ],
+      "type": "object"
+    },
+    "Vision": {
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "date": {
+          "format": "date",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "content"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "SOL Artifact",
+  "type": "object"
+}

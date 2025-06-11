@@ -1,0 +1,159 @@
+Policies:
+- id: PoliticaTDD
+  premise: >
+    Toda funcionalidad debe desarrollarse aplicando Test-Driven Development (TDD), comenzando con una prueba que falle, seguida de su resolución mínima y adaptación iterativa.
+- id: PoliticaCoverageAlto
+  premise: >
+    Todo desarrollo debe alcanzar un porcentaje de coverage mayor o igual al 95% como condición de aceptación del código.
+- id: PoliticaDesarrolloDesdeSOL
+  premise: >
+    Toda lógica de negocio debe derivarse explícitamente desde requerimientos definidos en artefactos SOL, promoviendo trazabilidad semántica y consistencia funcional.
+- id: PoliticaRevisionCodigo
+  premise: >
+    Todo código debe ser revisado antes de integración, verificando: (1) cumplimiento de políticas TDD y coverage, (2) alineación con artefactos SOL, (3) principios SOLID y arquitectura hexagonal, (4) tipado estricto TypeScript, y (5) convenciones de naming semántico.
+- id: SeleccionPatronArquitectura
+  premise: Toda propuesta de arquitectura debe estar alineada con los principios de
+    modularidad, extensibilidad y bajo acoplamiento semántico definidos en la Vision:DesarrolloProcesosOrganizacionalesConHexy.
+- id: EvaluacionTecnologiasSugeridas
+  premise: Las tecnologías sugeridas por el SemanticAgent (IDE) deben cumplir con criterios
+    mínimos de interoperabilidad, soporte activo y compatibilidad con artefactos SOL.
+- id: ConformidadArquitectonica
+  premise: Todo código generado debe seguir estrictamente la estructura hexagonal aprobada en ArquitecturaInicialAprobada, respetando separación de capas y responsabilidades.
+  vision: DesarrolloProcesosOrganizacionalesConHexy
+- id: TipadoEstricto
+  premise: Todo código TypeScript generado debe usar tipado estricto, principios SOLID, y máximo una clase por archivo siguiendo convenciones modernas.
+  vision: DesarrolloProcesosOrganizacionalesConHexy
+- id: ConvencionesNaming
+  premise: La nomenclatura debe ser semántica en inglés para código, siguiendo convenciones TypeScript/Node.js establecidas.
+Authority:
+- id: RandyGala
+  role: architect
+  approves:
+    - Policy:PoliticaTDD
+    - Policy:PoliticaCoverageAlto
+    - Policy:PoliticaDesarrolloDesdeSOL
+    - Policy:PoliticaRevisionCodigo
+  scope: ConvencionesDeDesarrollo
+
+Actor:
+- id: SemanticAgent (IDE)
+  type: system
+
+- id: UsuarioAdministrador
+  type: human
+
+Process:
+- actors:
+  - SemanticAgent (IDE)
+  - UsuarioAdministrador
+  id: DefinirArquitecturaInicial
+  steps:
+  - SemanticAgent (IDE) → Interpretar objetivos desde Vision:DesarrolloProcesosOrganizacionalesConHexy
+  - SemanticAgent (IDE) → Sugerir patrón arquitectónico inicial (Policy:SeleccionPatronArquitectura)
+  - SemanticAgent (IDE) → Proponer alternativas tecnológicas base (Policy:EvaluacionTecnologiasSugeridas)
+  - UsuarioAdministrador → Aprobar o ajustar decisión arquitectónica
+  - SemanticAgent (IDE) → Generar estructura conceptual base
+  - 'SemanticAgent (IDE) → Registrar Result: ArquitecturaInicialAprobada'
+  vision: DesarrolloProcesosOrganizacionalesConHexy
+
+- actors:
+  - SemanticAgent (IDE)
+  - UsuarioAdministrador
+  id: GenerarBoilerplateArquitectura
+  steps:
+  - SemanticAgent (IDE) → Analizar estructura definida en architecture-blueprint.md
+  - 'SemanticAgent (IDE) → Generar estructura de directorios (Policy: ConformidadArquitectonica)'
+  - 'SemanticAgent (IDE) → Crear entidades base del dominio SOL (Policy: TipadoEstricto)'
+  - 'SemanticAgent (IDE) → Generar interfaces/ports para desacoplamiento (Policy: ConformidadArquitectonica)'
+  - 'SemanticAgent (IDE) → Crear casos de uso fundamentales (Policy: TipadoEstricto)'
+  - 'SemanticAgent (IDE) → Generar adaptadores de infraestructura básicos (Policy: ConvencionesNaming)'
+  - 'SemanticAgent (IDE) → Crear configuración del proyecto (package.json, tsconfig, schemas)'
+  - UsuarioAdministrador → Revisar y aprobar boilerplate generado
+  - 'SemanticAgent (IDE) → Registrar Result: BoilerplateGenerado'
+  vision: DesarrolloProcesosOrganizacionalesConHexy
+
+- actors:
+  - SemanticAgent (IDE)
+  - UsuarioAdministrador
+  id: DesarrolloMantenimientoFuncionalidades
+  steps:
+  - SemanticAgent (IDE) → Analizar sol.yml del contexto seleccionado
+  - SemanticAgent (IDE) → Analizar proceso a desarrollar (si indicado)
+  - SemanticAgent (IDE) → Iniciar ciclo TDD (prueba falla, resolución mínima, refactorización)
+  - SemanticAgent (IDE) → Validar semántica del código generado
+  - SemanticAgent (IDE) → Ejecutar suite de pruebas
+  - SemanticAgent (IDE) → Actualizar Result:MantenimientoFuncionalidades con avances
+  vision: DesarrolloProcesosOrganizacionalesConHexy
+
+Result:
+- id: ArquitecturaInicialAprobada
+  issuedBy: SemanticAgent (IDE)
+  outcome: Estructura base definida y validada con patrón Hexagonal + Event-Driven, Node.js/TypeScript, APIs híbridas GraphQL/REST
+  reason: Aprobación del diseño por UsuarioAdministrador conforme a políticas establecidas. Arquitectura documentada en architecture-blueprint.md
+  timestamp: '2025-01-11T16:30:00Z'
+
+- id: BoilerplateGenerado
+  issuedBy: SemanticAgent (IDE)
+  outcome: Estructura de código base implementada siguiendo arquitectura aprobada con soporte completo para validación LLM
+  reason: Generación exitosa de boilerplate con estructura hexagonal, entidades SOL, casos de uso, ports, infraestructura de eventos, y integración ValidadorSemanticoLLM
+  timestamp: '2025-01-11T17:45:00Z'
+
+- id: MantenimientoFuncionalidades
+  issuedBy: SemanticAgent (IDE)
+  outcome: Avance en el desarrollo y mantenimiento de funcionalidades registrado.
+  reason: Actualización de progreso en la implementación y validación de procesos SOL, incluyendo métricas de cobertura y estado.
+  timestamp: '2025-01-11T18:00:00Z'
+
+Vision:
+  content: 'Hexy Framework es un framework de desarrollo de procesos organizacionales
+    enfocado al ámbito del desarrollo. Su propósito es modelar, automatizar y evolucionar
+    estructuras vivas dentro de organizaciones nativas digitales, alineando intención,
+    operación y tecnología mediante el lenguaje SOL (Semantic Operations Language).
+
+
+    Hexy no genera solo código, sino flujos, políticas, actores y resultados que expresan
+    la lógica operativa real de la organización. Ofrece herramientas de documentación
+    semántica, automatización de procesos y gobernanza contextual para que equipos
+    técnicos y no técnicos trabajen sobre una base compartida y trazable.
+
+
+    Este marco transforma la forma en que las organizaciones definen y ejecutan su
+    estrategia, brindando una capa semántica que permite la colaboración efectiva
+    entre visión y ejecución.'
+  id: DesarrolloProcesosOrganizacionalesConHexy
+
+Indicator:
+- id: PorcentajeTestsCubiertos
+  description: Porcentaje de cobertura de pruebas unitarias y de integración.
+  measure: percentage
+
+- id: ProcesosNoImplementados
+  description: Número de procesos definidos en SOL que aún no han sido implementados.
+  measure: count
+
+- id: ProcesosImplementados
+  description: Número de procesos definidos en SOL que han sido completamente implementados y validados.
+  measure: count
+
+- id: ProcesosWIP
+  description: Número de procesos definidos en SOL que están actualmente en progreso (Work In Progress).
+  measure: count
+
+Protocol:
+- id: DocumentacionResultadosFuncionalidades
+  description: Protocolo para la documentación estandarizada de los resultados del proceso de desarrollo de funcionalidades.
+  steps:
+    - SemanticAgent (IDE) → Generar archivo SOL de resultados con formato <nombre-del-proceso>-results.sol.yaml. Si el proceso ya existe, sobrescribir el registro; de lo contrario, anexar como un nuevo registro.
+    - SemanticAgent (IDE) → Generar informe en Markdown con formato <nombre-del-proceso>-results.md, incluyendo:
+      - Resumen del resultado
+      - Proceso aplicado
+      - Protocolo aplicado
+      - Avances
+      - Procesos cumplidos
+      - Procesos no cumplidos y por qué
+      - Procesos en curso
+      - Siguientes avances
+      - Diagramas de apoyo (Mermaid) para procesos e implementaciones.
+  actors:
+    - SemanticAgent (IDE)
+  vision: DesarrolloProcesosOrganizacionalesConHexy

@@ -1,0 +1,70 @@
+{
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sol-yaml-support.helloWorld",
+        "title": "Hello World (SOL)"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sol",
+        "path": "./syntaxes/sol.tmLanguage.json",
+        "scopeName": "source.sol"
+      }
+    ],
+    "languages": [
+      {
+        "aliases": [
+          "SOL",
+          "Semantic Orchestration Language"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".sol.yaml",
+          ".sol.yml"
+        ],
+        "id": "sol"
+      }
+    ],
+    "yamlValidation": [
+      {
+        "fileMatch": [
+          "*.sol.yaml",
+          "*.sol.yml"
+        ],
+        "url": "./schemas/sol-schema.json"
+      }
+    ]
+  },
+  "description": "Provides syntax highlighting, schema validation and language support for Semantic Orchestration Language (.sol.yaml) files.",
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "typescript": "^4.7.0",
+    "vscode-languageclient": "^8.0.0",
+    "vscode-languageserver": "^8.0.0",
+    "vscode-languageserver-textdocument": "^1.0.0"
+  },
+  "displayName": "SOL YAML Support",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "files": [
+    "syntaxes/sol.tmLanguage.json",
+    "schemas/sol-schema.json",
+    "language-configuration.json"
+  ],
+  "main": "./out/extension.js",
+  "name": "sol-yaml-support",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "compile-server": "tsc -p ./server",
+    "vscode:prepublish": "npm run compile",
+    "watch": "tsc -watch -p ./"
+  },
+  "version": "0.1.0"
+}

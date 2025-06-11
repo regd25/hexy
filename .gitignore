@@ -216,4 +216,5 @@ settings.local.*
 # Archive files
 *.zip
 *.tar.gz
-*.rar 
+*.rar
+*/.git

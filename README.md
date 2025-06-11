@@ -1,6 +1,6 @@
 # Hexy
 
-This repository contains the complete implementation of the **HEXY Semantic Runtime**, the system responsible for interpreting, validating, and executing artifacts defined in SCL (Semantic Context Language).
+This repository contains the complete implementation of the **HEXY Semantic Runtime**, the system responsible for interpreting, validating, and executing artifacts defined in SOL (Semantic Context Language).
 
 ---
 
@@ -24,12 +24,12 @@ This repository contains the complete implementation of the **HEXY Semantic Runt
 | Module | Description |
 |--------|-------------|
 | **engine/** | Core semantic processing engine |
-| └── **semantic-kernel/** | Core semantic validation engine that ensures all SCL artifacts comply with language conventions, maintain explicit narratives, grammatical alignment, axiom consistency, and traceability |
+| └── **semantic-kernel/** | Core semantic validation engine that ensures all SOL artifacts comply with language conventions, maintain explicit narratives, grammatical alignment, axiom consistency, and traceability |
 | **landing/** | Next.js web application providing the main user interface and landing page for the HEXY platform |
-| **roadmap/** | Project roadmap documentation and planning artifacts in SCL format |
-| **hexy_runtime.py** | Python runtime implementation for SCL artifact execution and validation |
-| **hexy.scl.yaml** | Main SCL configuration file defining the HEXY organization structure and rules |
-| **hexy-test.yaml** | Test scenarios and validation cases for SCL artifacts |
+| **roadmap/** | Project roadmap documentation and planning artifacts in SOL format |
+| **hexy_runtime.py** | Python runtime implementation for SOL artifact execution and validation |
+| **hexy.sol.yaml** | Main SOL configuration file defining the HEXY organization structure and rules |
+| **hexy-test.yaml** | Test scenarios and validation cases for SOL artifacts |
 
 ---
 
@@ -41,7 +41,7 @@ hexy-monorepo/
 ├── cli-agent/            # Command-line agent for human interaction and simulations
 ├── llm-evaluator/        # Python service for semantic evaluation using LLMs (optional)
 ├── web-ui/               # Web interface to visualize artifacts, flows, and logs
-├── examples/             # Example SCL artifacts and test scenarios
+├── examples/             # Example SOL artifacts and test scenarios
 ├── test-suite/           # Automated tests for defined flows and rules
 ├── models/               # Local LLM models for offline environment evaluation
 └── docs/                 # Language documentation and runtime structure
@@ -73,14 +73,14 @@ pip install -r llm-evaluator/requirements.txt
 4. Run a test scenario
 
 ```bash
-cargo run --package cli-agent -- simulate examples/flujo_aprobacion.scl.yaml
+cargo run --package cli-agent -- simulate examples/flujo_aprobacion.SOL.yaml
 ```
 
 ---
 
 ## 🔍 Project Objective
 
-Transform the SCL language into a living and governed system that allows organizations to define their operational logic and execute it with traceability, validation, versioning, and human-in-the-loop control.
+Transform the SOL language into a living and governed system that allows organizations to define their operational logic and execute it with traceability, validation, versioning, and human-in-the-loop control.
 
 ---
 
@@ -101,6 +101,6 @@ MIT License
 ## 👥 Contributors
 
 This repository is part of the HEXY project led by Randy Gala.
-Contributions are made through PRs accompanied by SCL definitions.
+Contributions are made through PRs accompanied by SOL definitions.
 
-> The future of living organizations is written in SCL ✨
+> The future of living organizations is written in SOL ✨
