@@ -151,6 +151,7 @@ export class EventBus {
   private emitError(eventType: string, error: Error, originalEvent: DomainEvent): void {
     // Avoid infinite loops by not emitting error events for error events
     if (eventType === EventTypes.ERROR) {
+      console.error(`Error in event listener for ${eventType}:`, error);
       return;
     }
 
@@ -191,9 +192,21 @@ export const EventTypes = {
   PROCESS_STARTED: 'process.started',
   PROCESS_STEP_EXECUTED: 'process.step.executed',
   PROCESS_COMPLETED: 'process.completed',
-  RESULT_EMITTED: 'result.emitted',
+  PROCESS_FAILED: 'process.failed',
+  PROCESS_CANCELLED: 'process.cancelled',
+  
+  ARTIFACT_CREATED: 'artifact.created',
+  ARTIFACT_UPDATED: 'artifact.updated',
+  ARTIFACT_DELETED: 'artifact.deleted',
+  ARTIFACT_VALIDATED: 'artifact.validated',
+  
   POLICY_VIOLATED: 'policy.violated',
-  ERROR: 'error'
+  POLICY_EVALUATED: 'policy.evaluated',
+  
+  RESULT_EMITTED: 'result.emitted',
+  
+  ERROR: 'system.error',
+  WARNING: 'system.warning'
 };
 
 export type EventListener<T = unknown> = (event: DomainEvent<T>) => void | Promise<void>;

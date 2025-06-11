@@ -44,5 +44,5 @@
     }
   },
   "scopeName": "source.sol",
-  "scopeNameComment": "Syntax highlighting for Semantic Orchestration Language (.sol.yaml)"
+  "scopeNameComment": "Syntax highlighting for Semantic Operations Language (.sol.yaml)"
 }

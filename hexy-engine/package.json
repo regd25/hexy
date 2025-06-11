@@ -19,7 +19,15 @@
     "prebuild": "npm run clean",
     "validate": "npm run lint && npm run test",
     "prepare": "npm run build",
-    "demo": "ts-node demo/simple-demo.ts"
+    "demo": "npx ts-node src/cli/working-demo.ts",
+    "demo:basic": "npm test src/domain/entities/demo-day.test.ts",
+    "demo:enhanced": "npm test src/domain/entities/enhanced-demo.test.ts",
+    "demo:interactive": "npx ts-node src/cli/interactive-demo.ts",
+    "demo:coverage": "npm run test:coverage",
+    "demo:all": "npm run demo:basic && npm run demo:enhanced && npm run demo:coverage",
+    "demo:build": "npm run build && node dist/cli/demo.js",
+    "demo:simple": "npx ts-node src/cli/simple-demo.ts",
+    "demo:working": "npx ts-node src/cli/working-demo.ts"
   },
   "keywords": [
     "semantic-orchestration",
@@ -130,5 +138,8 @@
   "bugs": {
     "url": "https://github.com/hexy-platform/hexy-engine/issues"
   },
-  "homepage": "https://github.com/hexy-platform/hexy-engine#readme"
+  "homepage": "https://github.com/hexy-platform/hexy-engine#readme",
+  "bin": {
+    "hexy-demo": "./dist/cli/demo.js"
+  }
 }

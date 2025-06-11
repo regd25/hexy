@@ -1,7 +1,32 @@
+# SOL YAML Support
 
-# SOL YAML Support for VS Code / Cursor
+This extension provides syntax highlighting, schema validation, and language support for Semantic Operations Language (.sol.yaml) files.
 
-This extension provides syntax highlighting, schema validation, and structural support for `.sol.yaml` files written in **Semantic Orchestration Language (SOL)** —the operational language used by the HEXY Engine.
+## Features
+
+- Syntax highlighting for SOL keywords and semantic roles
+- YAML structure validation against SOL schema
+- Language support for .sol.yaml and .sol.yml files
+- IntelliSense support for SOL artifacts
+
+## Supported File Extensions
+
+- `.sol.yaml`
+- `.sol.yml`
+
+## Usage
+
+1. Install the extension
+2. Open any `.sol.yaml` or `.sol.yml` file
+3. Enjoy syntax highlighting and validation
+
+## Requirements
+
+- VS Code 1.70.0 or higher
+
+## License
+
+MIT
 
 ---
 
@@ -28,20 +53,11 @@ This extension provides syntax highlighting, schema validation, and structural s
 
 ---
 
-## 🔍 Features
-
-- ✅ YAML/JSON structure validation against SOL schema.
-- ✅ Syntax highlight for SOL keywords and semantic roles.
-- ✅ Structured support for key SOL artefacts (`Vision`, `Process`, `Policy`, `Actor`, `Result`, etc.)
-- ✅ Compatible with [Mermaid Live Editor](https://mermaid.live/) for graph rendering.
-
----
-
 ## 📁 Recommended File Structure
 
 ```
 project/
-├── sol/
+├── operations/
 │   ├── domain-model.sol.yaml
 │   ├── onboarding-process.sol.yaml
 │   └── observability.sol.yaml

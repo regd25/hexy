@@ -1,8 +1,47 @@
 {
+  "name": "sol-yaml-support",
+  "version": "0.1.2",
+  "publisher": "RandyGala",
+  "displayName": "SOL YAML Support",
+  "description": "VS Code extension providing syntax highlighting, schema validation and language support for Semantic Operations Language (.sol.yaml) files",
+  "author": {
+    "name": "Randy Gala",
+    "email": "randy@hexy.dev"
+  },
+  "license": "MIT",
+  "keywords": [
+    "sol",
+    "yaml",
+    "semantic",
+    "operations",
+    "language",
+    "syntax-highlighting",
+    "schema-validation"
+  ],
   "categories": [
     "Programming Languages",
-    "Other"
+    "Linters"
   ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:sol"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/regd25/hexy.git"
+  },
+  "homepage": "https://github.com/regd25/hexy#readme",
+  "bugs": {
+    "url": "https://github.com/regd25/hexy/issues"
+  },
   "contributes": {
     "commands": [
       {
@@ -15,56 +54,64 @@
         "language": "sol",
         "path": "./syntaxes/sol.tmLanguage.json",
         "scopeName": "source.sol"
+      },
+      {
+        "language": "omd",
+        "scopeName": "text.html.markdown",
+        "path": "./syntaxes/sol.tmLanguage.json"
       }
     ],
     "languages": [
       {
         "aliases": [
           "SOL",
-          "Semantic Orchestration Language"
+          "Semantic Operations Language"
         ],
         "configuration": "./language-configuration.json",
         "extensions": [
           ".sol.yaml",
-          ".sol.yml"
+          ".sol.yml",
+          ".sol"
         ],
         "id": "sol"
+      },
+      {
+        "aliases": [
+          "OMD",
+          "Operations Markdown"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".omd"
+        ],
+        "id": "omd",
+        "mimetypes": [
+          "text/markdown"
+        ]
       }
     ],
     "yamlValidation": [
       {
         "fileMatch": [
           "*.sol.yaml",
-          "*.sol.yml"
+          "*.sol.yml",
+          "*.sol"
         ],
         "url": "./schemas/sol-schema.json"
       }
     ]
   },
-  "description": "Provides syntax highlighting, schema validation and language support for Semantic Orchestration Language (.sol.yaml) files.",
-  "devDependencies": {
-    "@types/vscode": "^1.70.0",
-    "typescript": "^4.7.0",
-    "vscode-languageclient": "^8.0.0",
-    "vscode-languageserver": "^8.0.0",
-    "vscode-languageserver-textdocument": "^1.0.0"
-  },
-  "displayName": "SOL YAML Support",
-  "engines": {
-    "vscode": "^1.70.0"
-  },
-  "files": [
-    "syntaxes/sol.tmLanguage.json",
-    "schemas/sol-schema.json",
-    "language-configuration.json"
-  ],
-  "main": "./out/extension.js",
-  "name": "sol-yaml-support",
   "scripts": {
     "compile": "tsc -p ./",
     "compile-server": "tsc -p ./server",
     "vscode:prepublish": "npm run compile",
     "watch": "tsc -watch -p ./"
   },
-  "version": "0.1.0"
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "typescript": "^4.7.0",
+    "vscode-languageclient": "^8.0.0",
+    "vscode-languageserver": "^8.0.0",
+    "vscode-languageserver-textdocument": "^1.0.0"
+  }
 }

@@ -37,11 +37,11 @@ export class ValidateArtifactWithLLMUseCase {
         )
       }
 
-      // this.eventBus.emit(EventTypes.ARTIFACT_VALIDATED, {
-      //   artifactId: request.artifactId,
-      //   step: 'artifact_detected',
-      //   type: artifact.getType()
-      // })
+      this.eventBus.emit(EventTypes.ARTIFACT_VALIDATED, {
+        artifactId: request.artifactId,
+        step: 'artifact_detected',
+        type: artifact.getType()
+      })
 
       // Step 2: MotorHexy → Invocar ValidadorSemanticoLLM con artefacto en contexto
       const validationContext = await this.prepareValidationContext(artifact, request)
