@@ -1,177 +1,290 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SOL - Semantic Operations Language Schema",
+  "description": "JSON Schema for Semantic Operations Language artifacts following SOL principles: Semantic Coherence, Traceability, Simplicity, and Documentation",
+  "type": "object",
   "additionalProperties": false,
   "properties": {
+    "Vision": {
+      "description": "Strategic vision artifacts that define the high-level objectives and narrative coherence",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+              "description": "Unique identifier following SOL naming conventions"
+            },
+            "content": {
+              "type": "string", 
+              "description": "The vision statement content"
+            },
+            "author": {
+              "type": "string",
+              "description": "Author of the vision"
+            },
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "Date when the vision was created"
+            },
+            "language": {
+              "type": "string",
+              "description": "Language of the vision content"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags for categorization and traceability"
+            }
+          },
+          "required": ["id", "content"],
+          "additionalProperties": false
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "content": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "language": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": ["id", "content"],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    "Domain": {
+      "description": "Domain definition that maintains semantic coherence and strategic alignment",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+            },
+            "description": {
+              "type": "string"
+            },
+            "vision": {
+              "type": "string",
+              "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+              "description": "Reference to Vision artifact for traceability"
+            },
+            "indicators": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "description": "References to Indicator artifacts"
+            },
+            "policies": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "description": "References to Policy artifacts"
+            },
+            "processes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "description": "References to Process artifacts"
+            }
+          },
+          "required": ["id", "description", "vision"],
+          "additionalProperties": false
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "vision": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+              },
+              "indicators": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+                }
+              },
+              "policies": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+                }
+              },
+              "processes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+                }
+              }
+            },
+            "required": ["id", "description", "vision"],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
     "Actor": {
+      "description": "Actors that execute processes and maintain operational coherence",
+      "type": "array",
       "items": {
+        "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["Human", "System", "Organization", "Role"]
+          },
+          "domain": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+            "description": "Reference to Domain artifact for traceability"
+          },
           "capabilities": {
+            "type": "array",
             "items": {
               "type": "string"
             },
-            "type": "array"
-          },
-          "domain": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "type": "string"
+            "description": "List of actor capabilities"
+          }
         },
-        "required": [
-          "id",
-          "type"
-        ],
-        "type": "object"
-      },
-      "type": "array"
+        "required": ["id", "type"],
+        "additionalProperties": false
+      }
     },
-    "Domain": {
+    "Process": {
+      "description": "Processes that implement strategic vision through operational steps",
+      "type": "object",
       "properties": {
-        "description": {
-          "type": "string"
-        },
         "id": {
-          "type": "string"
-        },
-        "indicators": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "policies": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "processes": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9_]*$"
         },
         "vision": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+          "description": "Reference to Vision artifact for strategic alignment"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Process steps with semantic coherence"
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+          },
+          "minItems": 1,
+          "description": "References to Actor artifacts"
         }
       },
-      "required": [
-        "id",
-        "description",
-        "vision"
-      ],
-      "type": "object"
+      "required": ["id", "steps", "vision", "actors"],
+      "additionalProperties": false
+    },
+    "Policy": {
+      "description": "Policies that govern behavior and maintain narrative integrity",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+        },
+        "premise": {
+          "type": "string",
+          "description": "Policy premise or condition"
+        },
+        "vision": {
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+          "description": "Reference to Vision artifact for strategic alignment"
+        },
+        "version": {
+          "type": "string",
+          "description": "Policy version for traceability"
+        }
+      },
+      "required": ["id", "premise", "vision"],
+      "additionalProperties": false
     },
     "Indicator": {
+      "description": "Indicators that measure progress toward strategic objectives",
+      "type": "object",
       "properties": {
-        "description": {
-          "type": "string"
-        },
-        "goal": {
-          "type": "number"
-        },
         "id": {
+          "type": "string",
+          "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+        },
+        "description": {
           "type": "string"
         },
         "measurement": {
-          "type": "string"
+          "type": "string",
+          "description": "How the indicator is measured"
         },
         "unit": {
-          "type": "string"
+          "type": "string",
+          "description": "Unit of measurement"
+        },
+        "goal": {
+          "type": "number",
+          "description": "Target value for this indicator"
         }
       },
-      "required": [
-        "id",
-        "description",
-        "measurement"
-      ],
-      "type": "object"
-    },
-    "Policy": {
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "premise": {
-          "type": "string"
-        },
-        "version": {
-          "type": "string"
-        },
-        "vision": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "premise",
-        "vision"
-      ],
-      "type": "object"
-    },
-    "Process": {
-      "properties": {
-        "actors": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "id": {
-          "type": "string"
-        },
-        "steps": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "vision": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "steps",
-        "vision",
-        "actors"
-      ],
-      "type": "object"
-    },
-    "Vision": {
-      "properties": {
-        "author": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "date": {
-          "format": "date",
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "tags": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "id",
-        "content"
-      ],
-      "type": "object"
+      "required": ["id", "description", "measurement"],
+      "additionalProperties": false
     }
-  },
-  "title": "SOL Artifact",
-  "type": "object"
+  }
 }

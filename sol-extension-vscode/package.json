@@ -1,9 +1,9 @@
 {
   "name": "sol-yaml-support",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "publisher": "RandyGala",
-  "displayName": "SOL YAML Support",
-  "description": "VS Code extension providing syntax highlighting, schema validation and language support for Semantic Operations Language (.sol.yaml) files",
+  "displayName": "SOL - Semantic Operations Language Support",
+  "description": "VS Code extension providing comprehensive syntax highlighting, schema validation, semantic navigation and language support for Semantic Operations Language (.sol) files",
   "author": {
     "name": "Randy Gala",
     "email": "randy@hexy.dev"
@@ -11,16 +11,19 @@
   "license": "MIT",
   "keywords": [
     "sol",
+    "semantic operations language",
     "yaml",
     "semantic",
     "operations",
     "language",
     "syntax-highlighting",
-    "schema-validation"
+    "schema-validation",
+    "semantic-navigation"
   ],
   "categories": [
     "Programming Languages",
-    "Linters"
+    "Linters",
+    "Other"
   ],
   "galleryBanner": {
     "color": "#1e1e1e",
@@ -32,7 +35,8 @@
   },
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:sol"
+    "onLanguage:sol",
+    "onLanguage:sol-yaml"
   ],
   "repository": {
     "type": "git",
@@ -45,8 +49,19 @@
   "contributes": {
     "commands": [
       {
-        "command": "sol-yaml-support.helloWorld",
-        "title": "Hello World (SOL)"
+        "command": "sol.validateSemanticCoherence",
+        "title": "SOL: Validate Semantic Coherence",
+        "category": "SOL"
+      },
+      {
+        "command": "sol.showArtifactTraceability",
+        "title": "SOL: Show Artifact Traceability",
+        "category": "SOL"
+      },
+      {
+        "command": "sol.generateDocumentation",
+        "title": "SOL: Generate Documentation",
+        "category": "SOL"
       }
     ],
     "grammars": [
@@ -54,6 +69,11 @@
         "language": "sol",
         "path": "./syntaxes/sol.tmLanguage.json",
         "scopeName": "source.sol"
+      },
+      {
+        "language": "sol-yaml",
+        "path": "./syntaxes/sol-yaml.tmLanguage.json",
+        "scopeName": "source.sol.yaml"
       },
       {
         "language": "omd",
@@ -69,11 +89,25 @@
         ],
         "configuration": "./language-configuration.json",
         "extensions": [
-          ".sol.yaml",
-          ".sol.yml",
           ".sol"
         ],
-        "id": "sol"
+        "id": "sol",
+        "firstLine": "^#\\s*SOL\\s*-\\s*Semantic\\s*Operations\\s*Language",
+        "filenames": [
+          "*.sol"
+        ]
+      },
+      {
+        "aliases": [
+          "SOL YAML",
+          "Semantic Operations Language YAML"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [
+          ".sol.yaml",
+          ".sol.yml"
+        ],
+        "id": "sol-yaml"
       },
       {
         "aliases": [
@@ -94,7 +128,14 @@
       {
         "fileMatch": [
           "*.sol.yaml",
-          "*.sol.yml",
+          "*.sol.yml"
+        ],
+        "url": "./schemas/sol-schema.json"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": [
           "*.sol"
         ],
         "url": "./schemas/sol-schema.json"

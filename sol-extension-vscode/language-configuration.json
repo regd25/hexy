@@ -11,6 +11,16 @@
     {
       "close": ")",
       "open": "("
+    },
+    {
+      "close": "\"",
+      "open": "\"",
+      "notIn": ["string"]
+    },
+    {
+      "close": "'",
+      "open": "'",
+      "notIn": ["string"]
     }
   ],
   "brackets": [
@@ -28,6 +38,32 @@
     ]
   ],
   "comments": {
-    "lineComment": "#"
+    "lineComment": "#",
+    "blockComment": ["/*", "*/"]
+  },
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(.*:)\\s*$",
+    "decreaseIndentPattern": "^\\s*\\}\\s*$"
+  },
+  "wordPattern": "[A-Za-z0-9_]+",
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*#.*$",
+      "action": {
+        "indent": "none"
+      }
+    },
+    {
+      "beforeText": "^\\s*([A-Z][a-zA-Z0-9_]*):.*$",
+      "action": {
+        "indent": "indent"
+      }
+    }
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*([A-Z][a-zA-Z0-9_]*):.*$",
+      "end": "^\\s*$"
+    }
   }
 }

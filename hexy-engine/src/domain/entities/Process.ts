@@ -58,7 +58,7 @@ export class Process extends SOLArtifact {
     }
   }
 
-  public fail(reason?: string): void {
+  public fail(_reason?: string): void {
     if (this._status === ProcessStatus.RUNNING) {
       this._status = ProcessStatus.FAILED;
       // Could store reason in metadata
@@ -211,6 +211,18 @@ export class Process extends SOLArtifact {
     }
     
     return process;
+  }
+
+  /**
+   * Create Process from SOL YAML structure
+   */
+  public static fromSOL(data: SOLProcessData): Process {
+    return new Process(
+      data.id,
+      data.actors,
+      data.steps, // Steps are already strings in SOL format "Actor → Action"
+      data.vision || ''
+    );
   }
 }
 
