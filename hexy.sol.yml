@@ -59,7 +59,7 @@ Process:
 - actors:
   - SemanticAgent (IDE)
   - UsuarioAdministrador
-  id: GenerarBoilerplateArquitectura
+  id: GenerarBoilerpplateArquitectura
   steps:
   - SemanticAgent (IDE) → Analizar estructura definida en architecture-blueprint.md
   - 'SemanticAgent (IDE) → Generar estructura de directorios (Policy: ConformidadArquitectonica)'
