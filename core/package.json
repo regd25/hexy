@@ -1,19 +1,14 @@
 {
-  "name": "hexy-engine",
-  "version": "0.1.0",
-  "description": "Semantic Orchestration Language (SOL) execution engine for HEXY platform",
+  "name": "hexy-framework",
+  "version": "0.0.1",
+  "description": "Hexy Framework, a AI-first framework for building AI-first applications",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "start": "node dist/server.js",
-    "start:prod": "NODE_ENV=production node dist/server.js",
     "dev": "ts-node src/server.ts",
-    "dev:watch": "nodemon --exec ts-node src/server.ts",
-    "server": "npm run dev",
-    "server:build": "npm run build && npm run start",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -26,18 +21,18 @@
     "prepare": "npm run build"
   },
   "keywords": [
-    "semantic-orchestration",
+    "semantic-operations",
     "process-engine",
     "domain-driven-design",
     "hexagonal-architecture",
     "typescript",
-    "sol"
+    "sop"
   ],
-  "author": "HEXY Team",
+  "author": "Randy Gala",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   },
   "dependencies": {
     "apollo-server-express": "^3.12.1",
@@ -123,19 +118,16 @@
     "semi": true,
     "trailingComma": "es5",
     "singleQuote": true,
-    "printWidth": 100,
+    "printWidth": 120,
     "tabWidth": 2,
-    "useTabs": false
+    "useTabs": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hexy-platform/hexy-engine.git"
+    "url": "https://github.com/hexy-platform/hexy-framework.git"
   },
   "bugs": {
-    "url": "https://github.com/hexy-platform/hexy-engine/issues"
+    "url": "https://github.com/hexy-platform/hexy-framework/issues"
   },
-  "homepage": "https://github.com/hexy-platform/hexy-engine#readme",
-  "bin": {
-    "hexy-demo": "./dist/cli/demo.js"
-  }
+  "homepage": "https://github.com/hexy-platform/hexy-framework#readme"
 }

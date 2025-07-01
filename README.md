@@ -1,106 +1,110 @@
-# Hexy
+# 🧠 Hexy Framework
 
-This repository contains the complete implementation of the **HEXY Semantic Runtime**, the system responsible for interpreting, validating, and executing artifacts defined in SOL (Semantic Context Language).
-
----
-
-## 📋 Table of Contents
-
-- [Hexy](#hexy)
-  - [📋 Table of Contents](#-table-of-contents)
-  - [🏗️ Project Modules](#️-project-modules)
-  - [📦 Monorepo Structure](#-monorepo-structure)
-  - [🛠️ Core Technologies](#️-core-technologies)
-  - [🚀 Getting Started](#-getting-started)
-  - [🔍 Project Objective](#-project-objective)
-  - [🔐 Minimum Environment Requirements](#-minimum-environment-requirements)
-  - [📄 License](#-license)
-  - [👥 Contributors](#-contributors)
+**Hexy** es un framework semántico organizacional para backend, diseñado para alinear visión, reglas y procesos de negocio con su ejecución técnica. Permite construir sistemas AI-first, modulares y serverless, con trazabilidad total y validación contextual.
 
 ---
 
-## 🏗️ Project Modules
+## 🎯 Propósito
 
-| Module | Description |
-|--------|-------------|
-| **engine/** | Core semantic processing engine |
-| └── **semantic-kernel/** | Core semantic validation engine that ensures all SOL artifacts comply with language conventions, maintain explicit narratives, grammatical alignment, axiom consistency, and traceability |
-| **landing/** | Next.js web application providing the main user interface and landing page for the HEXY platform |
-| **roadmap/** | Project roadmap documentation and planning artifacts in SOL format |
-| **hexy_runtime.py** | Python runtime implementation for SOL artifact execution and validation |
-| **hexy.sol.yaml** | Main SOL configuration file defining the HEXY organization structure and rules |
-| **hexy-test.yaml** | Test scenarios and validation cases for SOL artifacts |
+Hexy transforma la manera en que las organizaciones definen y ejecutan sus operaciones. Lo hace mediante una capa de orquestación semántica basada en SOL (Semantic Operations Language), que permite describir intenciones, condiciones, actores y flujos de trabajo de forma estructurada y auditable.
 
 ---
 
-## 📦 Monorepo Structure
+## 🚀 Características principales
+
+- ⚙️ **Motor de orquestación semántica**  
+  Interpreta artefactos SOL y decide qué debe ejecutarse, validarse o rechazarse con base en reglas organizacionales.
+
+- 📦 **Execution Context**  
+  Contrato semántico vivo que transporta actor, propósito, inputs, eventos, resultados, observaciones y violaciones.
+
+- 🧠 **Agentes reflexivos**  
+  Detectan incoherencias, sugieren mejoras y versionan artefactos semánticos.
+
+- 🧩 **Sistema de plugins**  
+  Ejecutores o validadores semánticos que se conectan a servicios externos, LLMs, APIs u otros protocolos.
+
+- 📚 **Documentación viva**  
+  Generada automáticamente a partir de la ejecución y definición de artefactos SOL.
+
+- 🌐 **Integración extensible**  
+  Compatible con Jira, n8n, AWS Step Functions, GraphQL, REST APIs, modelos generativos y protocolos como MCP.
+
+---
+
+## 🧬 Arquitectura
+
+Hexy sigue principios de arquitectura hexagonal, DDD (Domain-Driven Design), y event-driven design. Funciona en dos modos operativos:
+
+1. **Modo Orquestador** – Hexy ejecuta paso a paso un proceso definido, evaluando condiciones semánticas entre nodos.
+2. **Modo Coreografiado Reactivo** – Hexy escucha eventos del sistema y valida si cada acción es coherente, permitida o necesita intervención.
+
+---
+
+## 📁 Estructura del repositorio
 
 ```
-hexy-monorepo/
-├── runtime-core/         # Core engine in Rust (parser, evaluator, governance, executor)
-├── cli-agent/            # Command-line agent for human interaction and simulations
-├── llm-evaluator/        # Python service for semantic evaluation using LLMs (optional)
-├── web-ui/               # Web interface to visualize artifacts, flows, and logs
-├── examples/             # Example SOL artifacts and test scenarios
-├── test-suite/           # Automated tests for defined flows and rules
-├── models/               # Local LLM models for offline environment evaluation
-└── docs/                 # Language documentation and runtime structure
+
+hexy-framework/
+├── core/ # Motor semántico y ejecución de contexto
+├── plugins/ # Adaptadores y conectores
+├── agents/ # Agentes reflexivos y validadores
+├── sol/ # Artefactos SOL de ejemplo
+├── docs/ # Documentación generada y guías
+├── examples/ # Casos de uso y aplicaciones demo
+├── scripts/ # Herramientas auxiliares (deploy, testing, CLI, etc.)
+└── README.md # Este archivo
+
 ```
 
 ---
 
-## 🛠️ Core Technologies
+## 📦 Instalación
 
-* **Rust** → runtime-core, CLI
-* **Python** → optional LLM service (`llama-cpp`, `FastAPI`, `langchain`)
-* **React + Tailwind** → administrative UI
-* **SQLite / JSON Logs** → local storage for execution and state
-
----
-
-## 🚀 Getting Started
-
-1. Clone the repository
-2. Make sure you have Rust and Python installed
-3. Install LLM service dependencies if you use them
+Próximamente disponible vía:
 
 ```bash
-cargo build
-python -m venv venv && source venv/bin/activate
-pip install -r llm-evaluator/requirements.txt
+npm install hexy-framework
+# o
+pip install hexy-framework
 ```
 
-4. Run a test scenario
-
-```bash
-cargo run --package cli-agent -- simulate examples/flujo_aprobacion.SOL.yaml
-```
+> El CLI (`hexi`) será opcional y servirá para facilitar generación de contextos, servicios y artefactos SOL.
 
 ---
 
-## 🔍 Project Objective
+## 🤖 Requisitos
 
-Transform the SOL language into a living and governed system that allows organizations to define their operational logic and execute it with traceability, validation, versioning, and human-in-the-loop control.
-
----
-
-## 🔐 Minimum Environment Requirements
-
-* CPU with AVX2 support for local models (optional)
-* 1 GB RAM to run rules without model
-* 8 GB RAM recommended if using local LLM
+- Node.js >= 18.x o Python >= 3.10
+- AWS SDK (opcional para integración serverless)
+- Docker (para pruebas locales de infraestructura)
 
 ---
 
-## 📄 License
 
-MIT License
+## 📡 Contribuciones
+
+Este proyecto se encuentra en etapa activa de desarrollo. Las contribuciones están abiertas bajo un esquema semántico: cada PR deberá incluir un archivo `.sop` que describa el artefacto o ajuste propuesto.
+
+Consulta la [guía de contribución](docs/CONTRIBUTING.md) para más detalles.
 
 ---
 
-## 👥 Contributors
+## 🧭 Visión a futuro
 
-This repository is part of the HEXY project led by Randy Gala.
-Contributions are made through PRs accompanied by SOL definitions.
+- Soporte completo para Semantic Feedback Loops ("Flywheel Semántico")
+- Conexión nativa con marketplaces de modelos (via MSPs)
+- Interfaz visual para edición y despliegue de artefactos SOL
+- Framework AI-First sin dependencias externas para validación
 
-> The future of living organizations is written in SOL ✨
+---
+
+## 🧠 ¿Quién está detrás?
+
+Hexy Framework es desarrollado por [Rednell Labs](https://github.com/regd25), como parte de su iniciativa de evolución organizacional AI-first.
+
+---
+
+## 📄 Licencia
+
+MIT License. Ver [LICENSE](./LICENSE) para más información.

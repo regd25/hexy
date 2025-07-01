@@ -9,20 +9,17 @@
 
     /* Modules */
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": "core",
     "paths": {
       "@/*": ["*"],
-      "@domain/*": ["domain/*"],
-      "@application/*": ["application/*"],
-      "@infrastructure/*": ["infrastructure/*"],
-      "@ports/*": ["ports/*"]
+      "@/core/*": ["core/*"]
     },
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
 
     /* Emit */
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "core",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -56,19 +53,12 @@
     /* Completeness */
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ],
+  "include": ["core/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
   "ts-node": {
     "esm": false,
     "compilerOptions": {
       "module": "commonjs"
     }
   }
-} 
+}
