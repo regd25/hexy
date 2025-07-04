@@ -1,0 +1,103 @@
+{
+  "autoClosingPairs": [
+    {
+      "close": "}",
+      "open": "{"
+    },
+    {
+      "close": "]",
+      "open": "["
+    },
+    {
+      "close": ")",
+      "open": "("
+    },
+    {
+      "close": "\"",
+      "open": "\"",
+      "notIn": ["string"]
+    },
+    {
+      "close": "'",
+      "open": "'",
+      "notIn": ["string"]
+    }
+  ],
+  "brackets": [
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ]
+  ],
+  "comments": {
+    "lineComment": "#",
+    "blockComment": ["/*", "*/"]
+  },
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(.*:)\\s*$",
+    "decreaseIndentPattern": "^\\s*\\}\\s*$"
+  },
+  "wordPattern": "[A-Za-z0-9_\\.]+",
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*#.*$",
+      "action": {
+        "indent": "none"
+      }
+    },
+    {
+      "beforeText": "^\\s*([A-Z][a-zA-Z0-9_]*):.*$",
+      "action": {
+        "indent": "indent"
+      }
+    },
+    {
+      "beforeText": "^\\s*(meta|intent|context|authority|evaluation|uses|relates):.*$",
+      "action": {
+        "indent": "indent"
+      }
+    },
+    {
+      "beforeText": "^\\s*(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area):.*$",
+      "action": {
+        "indent": "indent"
+      }
+    }
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*([A-Z][a-zA-Z0-9_]*):.*$",
+      "end": "^\\s*$"
+    }
+  },
+  "surroundingPairs": [
+    [
+      "{",
+      "}"
+    ],
+    [
+      "[",
+      "]"
+    ],
+    [
+      "(",
+      ")"
+    ],
+    [
+      "\"",
+      "\""
+    ],
+    [
+      "'",
+      "'"
+    ]
+  ]
+}

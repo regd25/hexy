@@ -1,0 +1,218 @@
+{
+  "name": "sol",
+  "scopeName": "source.sop",
+  "scopeNameComment": "Enhanced Syntax highlighting for Semantic Operations Language (.sop) files - Synth84 Optimized",
+  "patterns": [
+    {
+      "include": "#sol-header"
+    },
+    {
+      "include": "#sol-sections"
+    },
+    {
+      "include": "#sol-artifacts"
+    },
+    {
+      "include": "#sol-fields"
+    },
+    {
+      "include": "#sol-references"
+    },
+    {
+      "include": "#sol-values"
+    },
+    {
+      "include": "#sol-status"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#semantic-operators"
+    }
+  ],
+  "repository": {
+    "sol-header": {
+      "patterns": [
+        {
+          "comment": "SOL Header - Bright Yellow for Synth84",
+          "match": "^#\\s*(SOL)\\s*-\\s*(Semantic\\s*Operations\\s*Language).*$",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sop.header"
+            },
+            "2": {
+              "name": "string.quoted.double.sop.header"
+            }
+          }
+        }
+      ]
+    },
+    "sol-sections": {
+      "patterns": [
+        {
+          "comment": "SOL Section Headers with Unicode - Green Neon",
+          "match": "^\\s*#\\s*[─┌┐└┘├┤┬┴┼│╭╮╰╯╠╣╦╩╬║═].*$",
+          "name": "comment.line.sop.section"
+        },
+        {
+          "comment": "SOL Completion Checklist",
+          "match": "^\\s*#\\s*[├└]─\\s*(✅|❌|⚠️|🟡|🟢|🔴)\\s*(.*)$",
+          "captures": {
+            "1": {
+              "name": "constant.language.sop.status"
+            },
+            "2": {
+              "name": "comment.line.sop.checklist"
+            }
+          }
+        }
+      ]
+    },
+    "sol-artifacts": {
+      "patterns": [
+        {
+          "comment": "SOL Artifact Types at start of line - Neon Pink",
+          "match": "^\\s*(Area|Vision|Policy|Concept|Process|Actor|Indicator|Result|Event|Observation|Authority|Principle|Guideline|Intent|Context|Evaluation|Procedure)\\s*:",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sop.artifact"
+            }
+          }
+        }
+      ]
+    },
+    "sol-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Core Fields - Cyan Blue",
+          "match": "^\\s*(meta|id|version|created|lastModified|status|author|reviewedBy|intent|statement|mode|priority|context|scope|timeframe|stakeholders|conditions|authority|actor|basedOn|validFrom|validUntil|level|evaluation|expected|method|criteria|frequency|uses|relates|actors|content|description|steps|type|vision|premise|measurement|unit|goal|issuedBy|reason|timestamp|date|language|tags|capabilities|indicators|policies|processes|structure|responsibilities|interactions|communication|relationships|classification)\\s*:",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.sop"
+            }
+          }
+        },
+        {
+          "comment": "Additional SOL Fields",
+          "match": "^\\s*(category|size|maturity|teams|leadership|reportingStructure|core|strategic|operational|technical|business|internal|external|crossAreaEvents|inbound|outbound|coreProcesses|keyActors|keyConcepts|kpis|governance|supportsVisions)\\s*:",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.sop.extended"
+            }
+          }
+        }
+      ]
+    },
+    "sol-references": {
+      "patterns": [
+        {
+          "comment": "SOL Semantic References Type:Id - Electric Purple",
+          "match": "\\b(Area|Vision|Policy|Concept|Process|Actor|Indicator|Result|Event|Observation|Authority|Principle|Guideline|Intent|Context|Evaluation|Procedure)\\s*:\\s*([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sop.artifact"
+            },
+            "2": {
+              "name": "entity.name.function.sop.reference"
+            }
+          }
+        },
+        {
+          "comment": "SOL Legacy Reference Format",
+          "match": "\\((Area|Vision|Policy|Concept|Process|Actor|Indicator|Result|Event|Observation|Authority|Principle|Guideline|Intent|Context|Evaluation|Procedure):\\s*([A-Z][a-zA-Z0-9_]*)\\)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sop.artifact"
+            },
+            "2": {
+              "name": "entity.name.function.sop.reference"
+            }
+          }
+        }
+      ]
+    },
+    "sol-values": {
+      "patterns": [
+        {
+          "comment": "SOL Identifiers - Orange",
+          "match": "\\b([A-Z][a-zA-Z0-9_]*[a-zA-Z0-9])\\b",
+          "name": "constant.language.sop.identifier"
+        },
+        {
+          "comment": "Quoted Strings",
+          "match": "\"([^\"\\\\]|\\\\.)*\"",
+          "name": "string.quoted.double.sop"
+        },
+        {
+          "comment": "Single Quoted Strings",
+          "match": "'([^'\\\\]|\\\\.)*'",
+          "name": "string.quoted.single.sop"
+        }
+      ]
+    },
+    "sol-status": {
+      "patterns": [
+        {
+          "comment": "SOL Status Values - Hot Pink",
+          "match": "\\b(draft|active|deprecated|pending|complete|in-progress)\\b",
+          "name": "constant.language.sop.status"
+        },
+        {
+          "comment": "SOL Priority Levels - Red/Orange",
+          "match": "\\b(low|medium|high|critical)\\b",
+          "name": "constant.language.sop.priority"
+        },
+        {
+          "comment": "SOL Mode Values - Purple",
+          "match": "\\b(declare|execute|evaluate|monitor)\\b",
+          "name": "constant.language.sop.mode"
+        },
+        {
+          "comment": "SOL Level Values - Teal",
+          "match": "\\b(strategic|tactical|operational)\\b",
+          "name": "constant.language.sop.level"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "comment": "Regular Comments",
+          "begin": "#",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.sop"
+            }
+          },
+          "end": "$\\n?",
+          "name": "comment.line.number-sign.sop"
+        }
+      ]
+    },
+    "semantic-operators": {
+      "patterns": [
+        {
+          "comment": "Flow Operators",
+          "match": "->|→|=>|⇒|⟶",
+          "name": "keyword.operator.sop.flow"
+        },
+        {
+          "comment": "Actor Flow Patterns",
+          "match": "\\b([A-Z][a-zA-Z0-9_]*)\\s*(\\([^)]*\\))?\\s*([->→])",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.sop.actor"
+            },
+            "2": {
+              "name": "comment.block.sop.context"
+            },
+            "3": {
+              "name": "keyword.operator.sop.flow"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

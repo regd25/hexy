@@ -1,7 +1,7 @@
 {
-  "name": "hexy-scl-landing",
+  "name": "hexy-landing",
   "version": "1.0.0",
-  "description": "SCL (Semantic Context Language) Landing Page - Organization Framework",
+  "description": "Hexy Landing Page - Organization Framework",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -17,11 +17,11 @@
     "url": "git+https://github.com/regd25/hexy.git"
   },
   "keywords": [
-    "SCL",
-    "Semantic Context Language",
+    "Hexy",
     "Organization Framework",
     "DDD",
-    "Hexagonal Architecture"
+    "Hexagonal Architecture",
+    "SOL"
   ],
   "author": "HEXI Organization",
   "license": "MIT",
