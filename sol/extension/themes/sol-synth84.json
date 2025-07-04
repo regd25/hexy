@@ -1,0 +1,452 @@
+{
+  "name": "SOL Synth84",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#1a1a2e",
+    "editor.foreground": "#e94560",
+    "activityBar.background": "#16213e",
+    "sideBar.background": "#0f3460",
+    "statusBar.background": "#1a1a2e",
+    "titleBar.activeBackground": "#1a1a2e"
+  },
+  "tokenColors": [
+    {
+      "name": "SOL Header",
+      "scope": [
+        "keyword.control.sol.header.yaml",
+        "keyword.control.sol.header"
+      ],
+      "settings": {
+        "foreground": "#ffff00",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Header Content",
+      "scope": [
+        "string.quoted.double.sol.header.yaml",
+        "string.quoted.double.sol.header"
+      ],
+      "settings": {
+        "foreground": "#ffd700",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "SOL Foundational Artifacts",
+      "scope": [
+        "entity.name.type.sol.foundational.yaml",
+        "entity.name.type.sol.foundational",
+        "variable.parameter.sol.foundational.yaml"
+      ],
+      "settings": {
+        "foreground": "#00ffff",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Strategic Artifacts",
+      "scope": [
+        "entity.name.type.sol.strategic.yaml",
+        "entity.name.type.sol.strategic",
+        "variable.parameter.sol.strategic.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff00ff",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Operational Artifacts",
+      "scope": [
+        "entity.name.type.sol.operational.yaml",
+        "entity.name.type.sol.operational"
+      ],
+      "settings": {
+        "foreground": "#ff1493",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Organizational Artifacts",
+      "scope": [
+        "entity.name.type.sol.organizational.yaml",
+        "entity.name.type.sol.organizational"
+      ],
+      "settings": {
+        "foreground": "#ff8c00",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Legacy Artifacts",
+      "scope": [
+        "entity.name.type.sol.legacy.yaml"
+      ],
+      "settings": {
+        "foreground": "#ffff00",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "SOL Metadata",
+      "scope": [
+        "keyword.control.sol.metadata.yaml",
+        "variable.parameter.sol.metadata.yaml"
+      ],
+      "settings": {
+        "foreground": "#20b2aa",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "SOL Intent Fields",
+      "scope": [
+        "variable.parameter.sol.intent.yaml"
+      ],
+      "settings": {
+        "foreground": "#00ced1"
+      }
+    },
+    {
+      "name": "SOL Context Fields",
+      "scope": [
+        "variable.parameter.sol.context.yaml"
+      ],
+      "settings": {
+        "foreground": "#48d1cc"
+      }
+    },
+    {
+      "name": "SOL Authority Fields",
+      "scope": [
+        "variable.parameter.sol.authority.yaml"
+      ],
+      "settings": {
+        "foreground": "#40e0d0"
+      }
+    },
+    {
+      "name": "SOL Evaluation Fields",
+      "scope": [
+        "variable.parameter.sol.evaluation.yaml"
+      ],
+      "settings": {
+        "foreground": "#00ffff"
+      }
+    },
+    {
+      "name": "SOL Policy Fields",
+      "scope": [
+        "variable.parameter.sol.policy.yaml"
+      ],
+      "settings": {
+        "foreground": "#da70d6"
+      }
+    },
+    {
+      "name": "SOL Conceptual Fields",
+      "scope": [
+        "variable.parameter.sol.conceptual.yaml"
+      ],
+      "settings": {
+        "foreground": "#dda0dd"
+      }
+    },
+    {
+      "name": "SOL Indicator Fields",
+      "scope": [
+        "variable.parameter.sol.indicator.yaml"
+      ],
+      "settings": {
+        "foreground": "#ee82ee"
+      }
+    },
+    {
+      "name": "SOL Process Fields",
+      "scope": [
+        "variable.parameter.sol.process.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff69b4"
+      }
+    },
+    {
+      "name": "SOL Procedure Fields",
+      "scope": [
+        "variable.parameter.sol.procedure.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff1493"
+      }
+    },
+    {
+      "name": "SOL Event Fields",
+      "scope": [
+        "variable.parameter.sol.event.yaml"
+      ],
+      "settings": {
+        "foreground": "#db7093"
+      }
+    },
+    {
+      "name": "SOL Observation Fields",
+      "scope": [
+        "variable.parameter.sol.observation.yaml"
+      ],
+      "settings": {
+        "foreground": "#c71585"
+      }
+    },
+    {
+      "name": "SOL Result Fields",
+      "scope": [
+        "variable.parameter.sol.result.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff20b2"
+      }
+    },
+    {
+      "name": "SOL Actor Fields",
+      "scope": [
+        "variable.parameter.sol.actor.yaml",
+        "variable.parameter.sol.actor.sub.yaml"
+      ],
+      "settings": {
+        "foreground": "#ffa500"
+      }
+    },
+    {
+      "name": "SOL Area Fields",
+      "scope": [
+        "variable.parameter.sol.area.yaml",
+        "variable.parameter.sol.structure.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff7f50"
+      }
+    },
+    {
+      "name": "SOL Common Fields",
+      "scope": [
+        "variable.parameter.sol.common.yaml"
+      ],
+      "settings": {
+        "foreground": "#d3d3d3"
+      }
+    },
+    {
+      "name": "SOL Composition Fields",
+      "scope": [
+        "variable.parameter.sol.composition.yaml"
+      ],
+      "settings": {
+        "foreground": "#0080ff",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Communication Fields",
+      "scope": [
+        "variable.parameter.sol.communication.yaml"
+      ],
+      "settings": {
+        "foreground": "#4169e1"
+      }
+    },
+    {
+      "name": "SOL References",
+      "scope": [
+        "entity.name.function.sol.reference.yaml",
+        "entity.name.function.sol.reference",
+        "entity.name.function.sol.hierarchy.yaml",
+        "keyword.control.sol.artifact.yaml",
+        "keyword.control.sol.artifact"
+      ],
+      "settings": {
+        "foreground": "#00bfff",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Legacy References",
+      "scope": [
+        "entity.name.function.sol.reference.legacy.yaml"
+      ],
+      "settings": {
+        "foreground": "#ffff99",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "SOL Placeholders",
+      "scope": [
+        "variable.parameter.sol.placeholder.yaml"
+      ],
+      "settings": {
+        "foreground": "#ffa500",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "SOL Identifiers",
+      "scope": [
+        "constant.language.sol.identifier.yaml",
+        "constant.language.sol.identifier"
+      ],
+      "settings": {
+        "foreground": "#ff8c00"
+      }
+    },
+    {
+      "name": "SOL Status Values",
+      "scope": [
+        "constant.language.sol.status.yaml",
+        "constant.language.sol.status"
+      ],
+      "settings": {
+        "foreground": "#ff69b4",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Priority Values",
+      "scope": [
+        "constant.language.sol.priority.yaml",
+        "constant.language.sol.priority"
+      ],
+      "settings": {
+        "foreground": "#ff4500"
+      }
+    },
+    {
+      "name": "SOL Mode Values",
+      "scope": [
+        "constant.language.sol.mode.yaml",
+        "constant.language.sol.mode"
+      ],
+      "settings": {
+        "foreground": "#8a2be2"
+      }
+    },
+    {
+      "name": "SOL Level Values",
+      "scope": [
+        "constant.language.sol.level.yaml",
+        "constant.language.sol.level"
+      ],
+      "settings": {
+        "foreground": "#00ced1"
+      }
+    },
+    {
+      "name": "SOL Type Values",
+      "scope": [
+        "constant.language.sol.type.yaml"
+      ],
+      "settings": {
+        "foreground": "#32cd32"
+      }
+    },
+    {
+      "name": "SOL Frequency Values",
+      "scope": [
+        "constant.language.sol.frequency.yaml"
+      ],
+      "settings": {
+        "foreground": "#4169e1"
+      }
+    },
+    {
+      "name": "SOL Emoji Status",
+      "scope": [
+        "constant.character.sol.emoji.yaml",
+        "constant.character.sol.emoji",
+        "constant.language.sol.status.yaml",
+        "constant.character.sol.emoji.markdown"
+      ],
+      "settings": {
+        "foreground": "#ffff00"
+      }
+    },
+    {
+      "name": "SOL Section Headers",
+      "scope": [
+        "comment.line.sol.section.yaml",
+        "comment.line.sol.section"
+      ],
+      "settings": {
+        "foreground": "#00ff7f",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Required Comments",
+      "scope": [
+        "comment.line.sol.required.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff6347",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "SOL Recommended Comments",
+      "scope": [
+        "comment.line.sol.recommended.yaml"
+      ],
+      "settings": {
+        "foreground": "#ffd700"
+      }
+    },
+    {
+      "name": "SOL Example Comments",
+      "scope": [
+        "comment.line.sol.example.yaml"
+      ],
+      "settings": {
+        "foreground": "#90ee90"
+      }
+    },
+    {
+      "name": "SOL Instruction Comments",
+      "scope": [
+        "comment.line.sol.instruction.yaml"
+      ],
+      "settings": {
+        "foreground": "#00ffff"
+      }
+    },
+    {
+      "name": "SOL Validation Comments",
+      "scope": [
+        "comment.line.sol.validation.yaml"
+      ],
+      "settings": {
+        "foreground": "#ff69b4"
+      }
+    },
+    {
+      "name": "SOL Checklist",
+      "scope": [
+        "comment.line.sol.checklist.yaml"
+      ],
+      "settings": {
+        "foreground": "#ddd"
+      }
+    },
+    {
+      "name": "SOL Markdown Artifacts",
+      "scope": [
+        "entity.name.type.sol.artifact.markdown",
+        "keyword.control.sol.artifact.markdown",
+        "entity.name.function.sol.reference.markdown"
+      ],
+      "settings": {
+        "foreground": "#00bfff",
+        "fontStyle": "bold"
+      }
+    }
+  ]
+} 

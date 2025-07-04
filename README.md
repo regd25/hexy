@@ -49,7 +49,7 @@ hexy-framework/
 ├── core/ # Motor semántico y ejecución de contexto
 ├── plugins/ # Adaptadores y conectores
 ├── agents/ # Agentes reflexivos y validadores
-├── sol/ # Artefactos SOL de ejemplo
+├── sol/ # Definiciones SOL
 ├── docs/ # Documentación generada y guías
 ├── examples/ # Casos de uso y aplicaciones demo
 ├── scripts/ # Herramientas auxiliares (deploy, testing, CLI, etc.)
@@ -69,7 +69,7 @@ npm install hexy-framework
 pip install hexy-framework
 ```
 
-> El CLI (`hexi`) será opcional y servirá para facilitar generación de contextos, servicios y artefactos SOL.
+> El CLI (`hexy`) será opcional y servirá para facilitar generación de contextos, servicios y artefactos SOL.
 
 ---
 

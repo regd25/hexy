@@ -1,12 +1,12 @@
-# Hexy Framework - Semantic Context Language (SCL) Landing Page
+# Hexy Framework - Semantic Context Language (SOL) Landing Page
 
 > *"Un lenguaje operativo que conecte humanos, máquinas e inteligencia artificial desde el contexto."*
 
 ## 🎯 Descripción
 
-Esta es la landing page oficial del **Hexy Framework**, que presenta el **Semantic Context Language (SCL)** - un lenguaje de definición de contexto diseñado para modelar las interacciones, reglas, flujos y entidades que conforman sistemas vivos.
+Esta es la landing page oficial del **Hexy Framework**, que presenta el **Semantic Context Language (SOL)** - un lenguaje de definición de contexto diseñado para modelar las interacciones, reglas, flujos y entidades que conforman sistemas vivos.
 
-La landing page implementa todos los casos de uso definidos en el archivo `hexy.scl.yaml` y sigue las mejores prácticas de UX/UI modernas.
+La landing page implementa todos los casos de uso definidos en el archivo `hexy.sol.yaml` y sigue las mejores prácticas de UX/UI modernas.
 
 ## 🏗️ Arquitectura
 
@@ -36,12 +36,12 @@ hexy/
 │   ├── ArtifactLibrary.tsx     # Biblioteca de artefactos
 │   └── Footer.tsx         # Footer
 ├── types/                 # Definiciones TypeScript
-│   └── scl.ts            # Tipos SCL
+│   └── sol.ts            # Tipos SOL
 ├── lib/                   # Utilidades
-├── .hexy/                 # Configuraciones SCL
+├── .hexy/                 # Configuraciones SOL
 │   └── landing/
-│       └── landing_page.scl.yaml
-├── hexy.scl.yaml         # Definición principal SCL
+│       └── landing_page.sol.yaml
+├── hexy.sol.yaml         # Definición principal SOL
 └── README.md
 ```
 
@@ -68,7 +68,7 @@ El diseño sigue un esquema de colores moderno basado en tonos azul marino y tea
 
 ### 1. NavigateModules
 - **Componente**: `InteractiveSidebar`
-- **Descripción**: Navegación clara entre los 8 módulos de documentación SCL
+- **Descripción**: Navegación clara entre los 8 módulos de documentación SOL
 - **Regla**: `AllModulesMustBeAccessible` - Todos los módulos enlazados en navegación lateral
 
 ### 2. SearchWithinDocs
@@ -78,10 +78,10 @@ El diseño sigue un esquema de colores moderno basado en tonos azul marino y tea
 
 ### 3. BrowseArtifactLibrary
 - **Componente**: `ArtifactLibrary`
-- **Descripción**: Exploración de artefactos SCL de la comunidad
+- **Descripción**: Exploración de artefactos SOL de la comunidad
 - **Características**: Filtros, ordenamiento, ratings, descargas
 
-## 🧩 Conceptos SCL Implementados
+## 🧩 Conceptos SOL Implementados
 
 ### DocumentationModule
 - **Propósito**: Secciones organizadas de documentación del lenguaje
@@ -103,17 +103,17 @@ El diseño sigue un esquema de colores moderno basado en tonos azul marino y tea
 - **Implementación**: Grid con filtros y metadata
 - **Narrativa**: Los artefactos son conocimiento operativo vivo
 
-## 🎯 Agentes SCL
+## 🎯 Agentes SOL
 
 ### HexyOrganization
-- **Descripción**: Agente que interactúa en lenguaje natural para crear definiciones SCL
+- **Descripción**: Agente que interactúa en lenguaje natural para crear definiciones SOL
 - **Implementación**: Card interactivo en la sección Hero
 - **Capacidades**: Guiar decisiones organizacionales basadas en KPIs y OKRs
 
 ### HexyAid
 - **Descripción**: Agente que guía el desarrollo con código reutilizable
 - **Implementación**: Card interactivo en la sección Hero
-- **Capacidades**: Proporcionar código alineado con reglas SCL
+- **Capacidades**: Proporcionar código alineado con reglas SOL
 
 ## 🔧 Instalación y Desarrollo
 
@@ -170,18 +170,18 @@ npm run lint     # Linting con ESLint
 - Twitter Cards
 - Estructura semántica HTML5
 
-## 🌐 Integración SCL
+## 🌐 Integración SOL
 
 ### Exportación RDF/Turtle
-La landing page está preparada para exportar definiciones SCL a formatos semánticos:
+La landing page está preparada para exportar definiciones SOL a formatos semánticos:
 
 ```turtle
-@prefix scl: <http://hexy.org/scl#> .
+@prefix sol: <http://hexy.org/sol#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
-scl:HexyFramework a scl:Organization ;
-    scl:mission "Conectar humanos, máquinas e IA desde el contexto" ;
-    scl:hasAgent scl:HexyOrganization, scl:HexyAid .
+sol:HexyFramework a sol:Organization ;
+    sol:mission "Conectar humanos, máquinas e IA desde el contexto" ;
+    sol:hasAgent sol:HexyOrganization, sol:HexyAid .
 ```
 
 ### JSON-LD para SEO/AIO
@@ -189,7 +189,7 @@ Generación automática de structured data para motores de búsqueda y modelos d
 
 ## 🤝 Contribución
 
-### Proceso de Contribución SCL
+### Proceso de Contribución SOL
 
 1. **Context Kick-off**: Identificar problema y organización
 2. **Concept Mining**: Extraer conceptos esenciales
@@ -203,7 +203,7 @@ Generación automática de structured data para motores de búsqueda y modelos d
 
 - Seguir principios DDD y arquitectura hexagonal
 - Mantener tipado fuerte en TypeScript
-- Documentar nuevas funciones en formato SCL
+- Documentar nuevas funciones en formato SOL
 - Preservar narrativas para cada artefacto
 
 ## 📄 Licencia
@@ -219,4 +219,4 @@ MIT License - ver [LICENSE](LICENSE) para más detalles.
 
 ---
 
-**Narrativa SCL**: *Esta landing page es la manifestación digital del lenguaje SCL. Cada componente, cada interacción, cada decisión de diseño está alineada con los principios del framework. Es tanto documentación como demostración viva del poder del contexto semántico.*
+**Narrativa SOL**: *Esta landing page es la manifestación digital del lenguaje SOL. Cada componente, cada interacción, cada decisión de diseño está alineada con los principios del framework. Es tanto documentación como demostración viva del poder del contexto semántico.*

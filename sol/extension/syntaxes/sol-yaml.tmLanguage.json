@@ -1,0 +1,373 @@
+{
+  "name": "sol-yaml",
+  "scopeName": "source.sop.yaml",
+  "scopeNameComment": "Enhanced Syntax highlighting for Semantic Operations Language YAML (.sop/.yml/.mdop) files - Complete SOL v0.0.3-dev Support",
+  "patterns": [
+    {
+      "include": "source.yaml"
+    },
+    {
+      "include": "#sol-header"
+    },
+    {
+      "include": "#sol-sections"
+    },
+    {
+      "include": "#sol-artifacts"
+    },
+    {
+      "include": "#sol-metadata"
+    },
+    {
+      "include": "#sol-foundational-fields"
+    },
+    {
+      "include": "#sol-strategic-fields"
+    },
+    {
+      "include": "#sol-operational-fields"
+    },
+    {
+      "include": "#sol-organizational-fields"
+    },
+    {
+      "include": "#sol-common-fields"
+    },
+    {
+      "include": "#sol-references"
+    },
+    {
+      "include": "#sol-values"
+    },
+    {
+      "include": "#sol-status"
+    },
+    {
+      "include": "#sol-comments"
+    }
+  ],
+  "repository": {
+    "sol-header": {
+      "patterns": [
+        {
+          "comment": "SOL Header - Bright Yellow for Synth84",
+          "match": "^#\\s*(SOL)\\s*-\\s*(Semantic\\s*Operations\\s*Language).*$",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.header.yaml"
+            },
+            "2": {
+              "name": "string.quoted.double.sol.header.yaml"
+            }
+          }
+        }
+      ]
+    },
+    "sol-sections": {
+      "patterns": [
+        {
+          "comment": "SOL Section Headers with Unicode - Green Neon",
+          "match": "^\\s*#\\s*[─┌┐└┘├┤┬┴┼│╭╮╰╯╠╣╦╩╬║═].*$",
+          "name": "comment.line.sol.section.yaml"
+        },
+        {
+          "comment": "SOL Validation Status",
+          "match": "^\\s*#\\s*[├└]─\\s*(✅|❌|⚠️|🟡|🟢|🔴)\\s*(.*)$",
+          "captures": {
+            "1": {
+              "name": "constant.language.sol.status.yaml"
+            },
+            "2": {
+              "name": "comment.line.sol.checklist.yaml"
+            }
+          }
+        }
+      ]
+    },
+    "sol-artifacts": {
+      "patterns": [
+        {
+          "comment": "SOL Foundational Artifacts - Bright Cyan",
+          "match": "^\\s*(Intent|Context|Authority|Evaluation)(?=:)",
+          "name": "entity.name.type.sol.foundational.yaml"
+        },
+        {
+          "comment": "SOL Strategic Artifacts - Electric Purple",
+          "match": "^\\s*(Vision|Policy|Concept|Principle|Guideline|Indicator)(?=:)",
+          "name": "entity.name.type.sol.strategic.yaml"
+        },
+        {
+          "comment": "SOL Operational Artifacts - Hot Pink", 
+          "match": "^\\s*(Process|Procedure|Event|Observation|Result)(?=:)",
+          "name": "entity.name.type.sol.operational.yaml"
+        },
+                {
+          "comment": "SOL Organizational Artifacts - Orange",
+          "match": "^\\s*(Actor|Area)(?=:)",
+          "name": "entity.name.type.sol.organizational.yaml"
+        }
+      ]
+    },
+    "sol-metadata": {
+      "patterns": [
+        {
+          "comment": "SOL Metadata Block - Teal",
+          "match": "^\\s*(meta|metadata)(?=:)",
+          "name": "keyword.control.sol.metadata.yaml"
+        },
+        {
+          "comment": "SOL Metadata Fields - Light Blue",
+          "match": "^\\s{2,}(id|version|created|lastModified|status|author|reviewedBy|tags|notes|links|attachments)(?=:)",
+          "name": "variable.parameter.sol.metadata.yaml"
+        }
+      ]
+    },
+    "sol-foundational-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Foundational Blocks - Bright Cyan",
+          "match": "^\\s{2,}(intent|context|authority|evaluation)(?=:)",
+          "name": "variable.parameter.sol.foundational.yaml"
+        },
+        {
+          "comment": "SOL Intent Fields",
+          "match": "^\\s{2,}(statement|mode|priority)(?=:)",
+          "name": "variable.parameter.sol.intent.yaml"
+        },
+        {
+          "comment": "SOL Context Fields", 
+          "match": "^\\s{2,}(scope|timeframe|stakeholders|conditions|assumptions|constraints)(?=:)",
+          "name": "variable.parameter.sol.context.yaml"
+        },
+        {
+          "comment": "SOL Authority Fields",
+          "match": "^\\s{2,}(actor|basedOn|validFrom|validUntil|level)(?=:)",
+          "name": "variable.parameter.sol.authority.yaml"
+        },
+        {
+          "comment": "SOL Evaluation Fields",
+          "match": "^\\s{2,}(criteria|expected|method|frequency|baseline|target|threshold)(?=:)",
+          "name": "variable.parameter.sol.evaluation.yaml"
+        }
+      ]
+    },
+    "sol-strategic-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Strategic Content Fields - Electric Purple",
+          "match": "^\\s{2,}(aspirationalStatement|strategicObjective|premise|definition|rationale)(?=:)",
+          "name": "variable.parameter.sol.strategic.yaml"
+        },
+        {
+          "comment": "SOL Policy Fields",
+          "match": "^\\s{2,}(implications|guidelines|compliance|enforcement|penalties|applicability|exceptions)(?=:)",
+          "name": "variable.parameter.sol.policy.yaml"
+        },
+        {
+          "comment": "SOL Concept/Principle Fields",
+          "match": "^\\s{2,}(fundamentalPrinciple|justification|derivedPrinciples|applications)(?=:)",
+          "name": "variable.parameter.sol.conceptual.yaml"
+        },
+        {
+          "comment": "SOL Indicator Fields",
+          "match": "^\\s{2,}(measurement|unit|goal|source|calculationMethod|reportingFrequency)(?=:)",
+          "name": "variable.parameter.sol.indicator.yaml"
+        }
+      ]
+    },
+    "sol-operational-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Process Fields - Hot Pink",
+          "match": "^\\s{2,}(steps|flow|inputs|outputs|roles|resources|timing|dependencies)(?=:)",
+          "name": "variable.parameter.sol.process.yaml"
+        },
+        {
+          "comment": "SOL Procedure Fields",
+          "match": "^\\s{2,}(detailedSteps|prerequisites|materials|safety|qualityControls)(?=:)",
+          "name": "variable.parameter.sol.procedure.yaml"
+        },
+        {
+          "comment": "SOL Event Fields", 
+          "match": "^\\s{2,}(triggers|outcomes|data|participants|location|duration)(?=:)",
+          "name": "variable.parameter.sol.event.yaml"
+        },
+        {
+          "comment": "SOL Observation Fields",
+          "match": "^\\s{2,}(observations|findings|analysis|timestamp|observer)(?=:)",
+          "name": "variable.parameter.sol.observation.yaml"
+        },
+        {
+          "comment": "SOL Result Fields",
+          "match": "^\\s{2,}(produced|deliverables|artifacts|quality|validation)(?=:)",
+          "name": "variable.parameter.sol.result.yaml"
+        }
+      ]
+    },
+    "sol-organizational-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Actor Fields - Orange",
+          "match": "^\\s{2,}(capabilities|responsibilities|interactions|decisionAuthority|budgetAuthority)(?=:)",
+          "name": "variable.parameter.sol.actor.yaml"
+        },
+        {
+          "comment": "SOL Actor Sub-fields",
+          "match": "^\\s{4,}(primary|secondary|accountabilities|required|preferred|development|internal|external|crossArea)(?=:)",
+          "name": "variable.parameter.sol.actor.sub.yaml"
+        },
+        {
+          "comment": "SOL Area Fields",
+          "match": "^\\s{2,}(structure|hierarchy|reporting|coordination|governance|teams|leadership)(?=:)",
+          "name": "variable.parameter.sol.area.yaml"
+        },
+        {
+          "comment": "SOL Organizational Structure",
+          "match": "^\\s{4,}(core|strategic|operational|technical|business|size|maturity)(?=:)",
+          "name": "variable.parameter.sol.structure.yaml"
+        }
+      ]
+    },
+    "sol-common-fields": {
+      "patterns": [
+        {
+          "comment": "SOL Common Fields - Light Gray",
+          "match": "^\\s{2,}(description|type|name|value|category|classification)(?=:)",
+          "name": "variable.parameter.sol.common.yaml"
+        },
+        {
+          "comment": "SOL Composition Fields - Bright Blue",
+          "match": "^\\s{2,}(uses|relates|relationships|participatesIn|implementsPolicies|supportsVisions)(?=:)",
+          "name": "variable.parameter.sol.composition.yaml"
+        },
+        {
+          "comment": "SOL Communication Fields",
+          "match": "^\\s{2,}(communication|inbound|outbound|crossAreaEvents)(?=:)",
+          "name": "variable.parameter.sol.communication.yaml"
+        }
+      ]
+    },
+    "sol-references": {
+      "patterns": [
+        {
+          "comment": "SOL Semantic References Type:Id - Electric Blue",
+          "match": "\\b(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.yaml"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.yaml"
+            }
+          }
+        },
+        {
+          "comment": "SOL Hierarchical References Type.Sub.Item",
+          "match": "\\b(Area|Process|Actor)\\s*:\\s*([A-Z][a-zA-Z0-9_]*\\.[A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.yaml"
+            },
+            "2": {
+              "name": "entity.name.function.sol.hierarchy.yaml"
+            }
+          }
+        },
+        {
+          "comment": "SOL Legacy Reference Format in parentheses",
+          "match": "\\((Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)\\)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.yaml"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.legacy.yaml"
+            }
+          }
+        },
+        {
+          "comment": "SOL Placeholder References",
+          "match": "\\[([A-Z][a-zA-Z0-9_]*Id|[A-Z][a-zA-Z0-9_]*Name|[A-Z][a-zA-Z0-9_]*Type)\\]",
+          "name": "variable.parameter.sol.placeholder.yaml"
+        }
+      ]
+    },
+    "sol-values": {
+      "patterns": [
+        {
+          "comment": "SOL Identifiers - Bright Orange",
+          "match": "\\b([A-Z][a-zA-Z0-9_]*[a-zA-Z0-9])\\b",
+          "name": "constant.language.sol.identifier.yaml"
+        },
+        {
+          "comment": "SOL Status Values - Hot Pink",
+          "match": "\\b(draft|active|deprecated|pending|complete|in-progress|planned|reviewing)\\b",
+          "name": "constant.language.sol.status.yaml"
+        },
+        {
+          "comment": "SOL Priority Levels - Red Gradient",
+          "match": "\\b(low|medium|high|critical|urgent)\\b",
+          "name": "constant.language.sol.priority.yaml"
+        },
+        {
+          "comment": "SOL Mode Values - Purple Variants",
+          "match": "\\b(declare|execute|evaluate|monitor|observe|measure)\\b",
+          "name": "constant.language.sol.mode.yaml"
+        },
+        {
+          "comment": "SOL Level Values - Teal Gradient",
+          "match": "\\b(strategic|tactical|operational|enterprise|department|team|individual)\\b",
+          "name": "constant.language.sol.level.yaml"
+        },
+        {
+          "comment": "SOL Type Values - Green Variants",
+          "match": "\\b(internal|external|system|human|organization|role|individual|group|automated)\\b",
+          "name": "constant.language.sol.type.yaml"
+        },
+        {
+          "comment": "SOL Frequency Values - Blue Variants",
+          "match": "\\b(daily|weekly|monthly|quarterly|annually|continuously|asNeeded|onDemand)\\b",
+          "name": "constant.language.sol.frequency.yaml"
+        }
+      ]
+    },
+    "sol-status": {
+      "patterns": [
+        {
+          "comment": "SOL Emoji Status Indicators",
+          "match": "(✅|❌|⚠️|🟡|🟢|🔴|🔵|🟠|🟣|⭕|❗|❓)",
+          "name": "constant.character.sol.emoji.yaml"
+        }
+      ]
+    },
+    "sol-comments": {
+      "patterns": [
+        {
+          "comment": "SOL Template Requirements - Red Warning",
+          "match": "#\\s*(REQUIRED|MANDATORY|OBLIGATORIO).*$",
+          "name": "comment.line.sol.required.yaml"
+        },
+        {
+          "comment": "SOL Template Recommendations - Yellow Info",
+          "match": "#\\s*(OPTIONAL|RECOMMENDED|RECOMENDADO).*$", 
+          "name": "comment.line.sol.recommended.yaml"
+        },
+        {
+          "comment": "SOL Examples - Green Help",
+          "match": "#\\s*(Example|Ejemplo|e\\.g\\.|por ejemplo).*$",
+          "name": "comment.line.sol.example.yaml"
+        },
+        {
+          "comment": "SOL Instructions - Cyan Instructions",
+          "match": "#\\s*(Replace|Add|Define|Specify|Reemplaza|Añade|Define|Especifica).*$",
+          "name": "comment.line.sol.instruction.yaml"
+        },
+        {
+          "comment": "SOL Validation Comments",
+          "match": "#\\s*(VALIDATION|VALIDACIÓN|STATUS).*$",
+          "name": "comment.line.sol.validation.yaml"
+        }
+      ]
+    }
+  }
+} 

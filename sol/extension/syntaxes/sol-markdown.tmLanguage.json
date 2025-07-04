@@ -1,0 +1,121 @@
+{
+  "name": "sol-markdown",
+  "scopeName": "text.html.markdown.sol",
+  "scopeNameComment": "Enhanced Syntax highlighting for SOL Markdown Operations Documentation (.mdop) files",
+  "patterns": [
+    {
+      "include": "text.html.markdown"
+    },
+    {
+      "include": "#sol-artifacts-in-markdown"
+    },
+    {
+      "include": "#sol-references-in-markdown"
+    },
+    {
+      "include": "#sol-code-blocks"
+    },
+    {
+      "include": "#sol-inline-references"
+    },
+    {
+      "include": "#sol-status-indicators"
+    }
+  ],
+  "repository": {
+    "sol-artifacts-in-markdown": {
+      "patterns": [
+        {
+          "comment": "SOL Artifact Headers in Markdown",
+          "match": "^#{1,6}\\s+(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.sol.artifact.markdown"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.markdown"
+            }
+          }
+        }
+      ]
+    },
+    "sol-references-in-markdown": {
+      "patterns": [
+        {
+          "comment": "SOL References in Markdown Text",
+          "match": "\\*\\*(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)\\*\\*",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.markdown"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.markdown"
+            }
+          }
+        },
+        {
+          "comment": "SOL References in Code Spans",
+          "match": "`(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)`",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.markdown"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.markdown"
+            }
+          }
+        }
+      ]
+    },
+    "sol-code-blocks": {
+      "patterns": [
+        {
+          "comment": "SOL YAML Code Blocks",
+          "begin": "^```\\s*(sol|sop|yaml)\\s*$",
+          "end": "^```\\s*$",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.markdown.begin"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.markdown.end"
+            }
+          },
+          "contentName": "source.sop.yaml",
+          "patterns": [
+            {
+              "include": "source.sop.yaml"
+            }
+          ]
+        }
+      ]
+    },
+    "sol-inline-references": {
+      "patterns": [
+        {
+          "comment": "SOL Inline References",
+          "match": "\\[(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:\\s*([A-Z][a-zA-Z0-9_]*(?:\\.[A-Z][a-zA-Z0-9_]*)*)\\]",
+          "captures": {
+            "1": {
+              "name": "keyword.control.sol.artifact.markdown"
+            },
+            "2": {
+              "name": "entity.name.function.sol.reference.markdown"
+            }
+          }
+        }
+      ]
+    },
+    "sol-status-indicators": {
+      "patterns": [
+        {
+          "comment": "SOL Status Emojis in Markdown",
+          "match": "(✅|❌|⚠️|🟡|🟢|🔴|🔵|🟠|🟣|⭕|❗|❓)",
+          "name": "constant.character.sol.emoji.markdown"
+        }
+      ]
+    }
+  }
+} 
