@@ -16,19 +16,31 @@ import {
   OrchestrationModeFactory,
   OrchestrationModeConfigs,
 } from "./engine/orchestration/OrchestrationModeFactory"
+import {
+  ConcreteOrchestrationStrategyRegistry,
+  createDefaultOrchestrationRegistry,
+  OrchestrationStrategy,
+} from "./engine/orchestration"
 
 // Type imports
 import {
   SOLArtifact,
-  Actor,
-  Intent,
-  Context,
-  Authority,
-  Evaluation,
-} from "./artifacts/SOLArtifact"
+  ActorArtifact,
+  IntentArtifact,
+  ContextArtifact,
+  AuthorityArtifact,
+  EvaluationArtifact,
+} from "./artifacts"
+
+// Type aliases for compatibility
+type Actor = ActorArtifact
+type Intent = IntentArtifact
+type Context = ContextArtifact
+type Authority = AuthorityArtifact
+type Evaluation = EvaluationArtifact
 import { OrchestrationMode } from "./types/OrchestrationMode"
 import { SemanticDecision } from "./types/SemanticDecision"
-import { ValidationResult } from "./types/ValidationResult"
+import { ValidationResult } from "./types/Result"
 
 export interface CoreConfig {
   // Repository configuration

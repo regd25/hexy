@@ -4,14 +4,13 @@
  */
 
 import {
-  SOLArtifact,
-  Actor,
-  Intent,
-  Context,
-  Authority,
-  Evaluation,
+  ActorArtifact,
+  IntentArtifact,
+  ContextArtifact,
+  AuthorityArtifact,
+  EvaluationArtifact,
   Metadata,
-} from "../artifacts/SOLArtifact"
+} from "../artifacts"
 import { OrchestrationMode } from "../types/OrchestrationMode"
 
 export interface ExecutionState {
@@ -32,7 +31,7 @@ export interface SemanticState {
   startTime?: Date
   choreographyActive?: boolean
   coordinationMode?: "distributed" | "centralized" | "hybrid"
-  currentStepId?: string; // Added currentStepId
+  currentStepId?: string // Added currentStepId
 }
 
 export interface ExecutionEvent {
@@ -80,11 +79,11 @@ export class ExecutionContext {
   private readonly correlationId: string // Add correlationId
 
   // Semantic Components
-  private actor: Actor
-  private intent: Intent
-  private context: Context
-  private authority: Authority
-  private evaluation: Evaluation | undefined
+  private actor: ActorArtifact
+  private intent: IntentArtifact
+  private context: ContextArtifact
+  private authority: AuthorityArtifact
+  private evaluation: EvaluationArtifact | undefined
 
   // Execution State
   private executionState: ExecutionState
@@ -102,11 +101,11 @@ export class ExecutionContext {
 
   constructor(
     id: string,
-    actor: Actor,
-    intent: Intent,
-    context: Context,
-    authority: Authority,
-    evaluation?: Evaluation,
+    actor: ActorArtifact,
+    intent: IntentArtifact,
+    context: ContextArtifact,
+    authority: AuthorityArtifact,
+    evaluation?: EvaluationArtifact,
     correlationId?: string // Optional correlationId in constructor
   ) {
     this.id = id
@@ -116,7 +115,7 @@ export class ExecutionContext {
       created: new Date(),
       lastModified: new Date(),
       status: "active",
-      author: actor.name,
+      author: actor.content.name,
       reviewedBy: [],
       tags: ["execution-context"],
     }
@@ -142,28 +141,30 @@ export class ExecutionContext {
   getId(): string {
     return this.id
   }
-  getExecutionId(): string { // Alias for getId for clarity
+  getExecutionId(): string {
+    // Alias for getId for clarity
     return this.id
   }
-  getCorrelationId(): string { // Getter for correlationId
+  getCorrelationId(): string {
+    // Getter for correlationId
     return this.correlationId
   }
   getMetadata(): Metadata {
     return this.metadata
   }
-  getActor(): Actor {
+  getActor(): ActorArtifact {
     return this.actor
   }
-  getIntent(): Intent {
+  getIntent(): IntentArtifact {
     return this.intent
   }
-  getContext(): Context {
+  getContext(): ContextArtifact {
     return this.context
   }
-  getAuthority(): Authority {
+  getAuthority(): AuthorityArtifact {
     return this.authority
   }
-  getEvaluation(): Evaluation | undefined {
+  getEvaluation(): EvaluationArtifact | undefined {
     return this.evaluation
   }
   getExecutionState(): ExecutionState {
@@ -301,17 +302,17 @@ export class ExecutionContext {
     if (!this.authority) return false
 
     // Check if authority is active and has required permissions
-    if (!this.authority.isActive) return false
+    if (!this.authority.isValid) return false
 
     // Check if authority has permission for this action
     const hasPermission =
-      this.authority.permissions.includes(requiredAction) ||
-      this.authority.permissions.includes("*")
+      this.authority.content.permissions.includes(requiredAction) ||
+      this.authority.content.permissions.includes("*")
 
     // Check if authority has jurisdiction over current context
     const hasJurisdiction =
-      this.authority.jurisdiction.includes(this.context.scope) ||
-      this.authority.jurisdiction.includes("*")
+      this.authority.content.jurisdiction.includes(this.context.content.scope) ||
+      this.authority.content.jurisdiction.includes("*")
 
     return hasPermission && hasJurisdiction
   }
@@ -319,18 +320,18 @@ export class ExecutionContext {
   // Intent Validation
   validateIntent(proposedAction: string): boolean {
     // Check if proposed action aligns with current intent
-    return this.intent.mode === "declare" || this.intent.mode === "require"
+    return this.intent.content.mode === "declare" || this.intent.content.mode === "require"
   }
 
   // Context Validation
   isWithinContext(scope: string): boolean {
     // Check if current execution is within specified scope
-    return this.context.scope === scope || this.context.scope === "*"
+    return this.context.content.scope === scope || this.context.content.scope === "*"
   }
 
   // Evaluation
   canEvaluate(): boolean {
-    return this.evaluation !== undefined
+      return this.evaluation !== undefined
   }
 
   // Serialization

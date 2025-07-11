@@ -1,56 +1,58 @@
 /**
- * Orchestration modes for Hexy Framework
- * Defines how the semantic engine executes processes
+ * Orchestration Mode Enum
+ * Defines the different modes of orchestration available
  */
 
 export enum OrchestrationMode {
   /**
-   * Orchestrator Mode - Hexy executes step by step a defined process, 
-   * evaluating semantic conditions between nodes
+   * Orchestrator mode - Centralized orchestration with deterministic execution
    */
-  ORCHESTRATOR = 'orchestrator',
-  
+  ORCHESTRATOR = "orchestrator",
+
   /**
-   * Reactive Mode - Hexy listens to system events and validates 
-   * if each action is coherent, allowed, or needs intervention
+   * Reactive mode - Event-driven reactive orchestration
    */
-  REACTIVE = 'reactive',
-  
+  REACTIVE = "reactive",
+
   /**
-   * Choreographed Mode - Hexy coordinates distributed execution 
-   * without central control, actors self-organize
+   * Choreographed mode - Distributed choreography (future implementation)
    */
-  CHOREOGRAPHED = 'choreographed'
+  CHOREOGRAPHED = "choreographed",
+
+  /**
+   * Hybrid mode - Combination of orchestration and choreography (future implementation)
+   */
+  HYBRID = "hybrid",
 }
 
 export interface OrchestrationConfig {
-  mode: OrchestrationMode;
-  timeout?: number;
-  retryStrategy?: RetryStrategy;
-  fallbackMode?: OrchestrationMode;
-  monitoring?: MonitoringConfig;
+  mode: OrchestrationMode
+  timeout?: number
+  retryStrategy?: RetryStrategy
+  fallbackMode?: OrchestrationMode
+  monitoring?: MonitoringConfig
 }
 
 export interface RetryStrategy {
-  maxRetries: number;
-  backoffType: 'linear' | 'exponential' | 'custom';
-  baseDelay: number;
-  maxDelay: number;
-  retryCondition?: (error: Error) => boolean;
+  maxRetries: number
+  backoffType: "linear" | "exponential" | "custom"
+  baseDelay: number
+  maxDelay: number
+  retryCondition?: (error: Error) => boolean
 }
 
 export interface MonitoringConfig {
-  enableMetrics: boolean;
-  enableTracing: boolean;
-  enableLogging: boolean;
-  metricsInterval: number;
+  enableMetrics: boolean
+  enableTracing: boolean
+  enableLogging: boolean
+  metricsInterval: number
 }
 
 export type OrchestrationResult = {
-  mode: OrchestrationMode;
-  success: boolean;
-  duration: number;
-  steps: number;
-  errors: Error[];
-  metadata: Record<string, any>;
-}; 
+  mode: OrchestrationMode
+  success: boolean
+  duration: number
+  steps: number
+  errors: Error[]
+  metadata: Record<string, any>
+}

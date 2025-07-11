@@ -13,11 +13,7 @@ import {
   SemanticEvent,
 } from "../events/EventSystem"
 import { OrchestrationMode } from "../types/OrchestrationMode"
-import {
-  SOLArtifact,
-  OperationalArtifact,
-  FlowStep,
-} from "../artifacts/SOLArtifact"
+import { SOLArtifact } from "../artifacts"
 import { SemanticDecision } from "../types/SemanticDecision"
 
 export class SemanticEngine {

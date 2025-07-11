@@ -3,8 +3,8 @@
  * Represents the outcome of semantic interpretation and decision making
  */
 
-import { SOLArtifact } from "../artifacts/SOLArtifact"
-import { ValidationResult } from "./ValidationResult"
+import { SOLArtifact } from "../artifacts"
+import { ValidationResult } from "./Result"
 
 export interface SemanticDecision {
   artifact: SOLArtifact

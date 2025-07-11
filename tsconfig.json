@@ -4,14 +4,16 @@
     "target": "ES2022",
     "module": "commonjs",
     "lib": ["ES2022"],
+    "types": ["node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
 
     /* Modules */
     "moduleResolution": "node",
-    "baseUrl": "core",
+    "baseUrl": "./",
+    "typeRoots": ["./node_modules/@types", "./core/node_modules/@types"],
     "paths": {
-      "@/*": ["*"],
+      "@/*": ["core/*"],
       "@/core/*": ["core/*"]
     },
     "resolveJsonModule": true,
@@ -19,7 +21,7 @@
 
     /* Emit */
     "outDir": "./dist",
-    "rootDir": "core",
+    "rootDir": "./core",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -33,7 +35,6 @@
 
     /* Type Checking */
     "strict": true,
-    "exactOptionalPropertyTypes": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
