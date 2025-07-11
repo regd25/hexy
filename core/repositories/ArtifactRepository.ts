@@ -48,6 +48,11 @@ export interface ArtifactRepository {
   // Health and maintenance
   cleanup(): Promise<void>;
   getStatistics(): Promise<RepositoryStatistics>;
+  
+  /**
+   * ✅ Batch method for finding multiple references efficiently
+   */
+  findByReferences(references: string[]): Promise<Map<string, SOLArtifact>>;
 }
 
 export interface ArtifactSearchQuery {
@@ -625,6 +630,27 @@ export class InMemoryArtifactRepository implements ArtifactRepository {
       areas: Array.from(areaCounts.entries()).map(([area, count]) => ({ area, count })),
       validationStatus: Array.from(validationCounts.entries()).map(([status, count]) => ({ status, count }))
     };
+  }
+
+  /**
+   * ✅ Batch method for finding multiple references efficiently
+   */
+  async findByReferences(references: string[]): Promise<Map<string, SOLArtifact>> {
+    const results = new Map<string, SOLArtifact>()
+    
+    // This would be optimized based on the storage backend
+    // For database: single query with IN clause
+    // For file system: parallel file reads
+    // For memory: direct lookup
+    
+    for (const reference of references) {
+      const artifact = await this.findByReference(reference)
+      if (artifact) {
+        results.set(reference, artifact)
+      }
+    }
+    
+    return results
   }
 }
 

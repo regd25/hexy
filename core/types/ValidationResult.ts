@@ -56,8 +56,10 @@ export interface ValidationRule {
   category: ValidationCategory;
   severity: 'critical' | 'high' | 'medium' | 'low';
   applicableArtifacts: string[];
-  validate: (artifact: any) => ValidationRuleResult;
+  validate: (artifact: any, context?: ValidationContext) => ValidationRuleResult | Promise<ValidationRuleResult>;
   autoFix?: (artifact: any) => any;
+  requiresRepository?: boolean;
+  cacheable?: boolean;
 }
 
 export interface ValidationRuleResult {
@@ -86,6 +88,8 @@ export interface ValidationContext {
   validationConfig: ValidationConfig;
   currentArtifact: any;
   relatedArtifacts: any[];
+  referenceCache: Map<string, boolean>;
+  repository?: any;
 }
 
 export interface ValidationConfig {
@@ -199,4 +203,19 @@ export function isValidationSuccessful(result: ValidationResult): boolean {
 
 export function hasCriticalErrors(result: ValidationResult): boolean {
   return result.errors.some(error => error.severity === 'critical');
+}
+
+// ✅ Nuevos tipos para manejo asíncrono
+export interface AsyncValidationResult extends ValidationResult {
+  pendingValidations: Promise<ValidationRuleResult>[]
+  cacheHits: number
+  cacheMisses: number
+  totalQueries: number
+}
+
+export interface ReferenceValidationBatch {
+  references: string[]
+  results: Map<string, boolean>
+  errors: ValidationError[]
+  executionTime: number
 } 

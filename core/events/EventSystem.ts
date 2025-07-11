@@ -28,6 +28,12 @@ export interface EventMetadata {
   signature?: string;
   classification: 'public' | 'internal' | 'confidential' | 'restricted';
   tags?: string[];
+  sourceArtifactId?: string; // ID of the artifact that generated the event
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  automated?: boolean; // Whether the action was automated or manual
+  requiresResponse?: boolean; // Whether a manual response is required
+  correlationId?: string; // Add correlationId to EventMetadata
+  choreographyId?: string; // Add choreographyId to EventMetadata
 }
 
 export enum EventPriority {
@@ -62,6 +68,7 @@ export interface SubscriptionMetadata {
   maxRetries: number;
   retryDelay: number;
   deadLetterQueue?: string;
+  choreographyId?: string; // Add choreographyId to SubscriptionMetadata
 }
 
 export type EventHandler = (event: SemanticEvent) => Promise<EventHandlerResult>;
