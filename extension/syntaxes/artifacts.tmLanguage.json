@@ -1,0 +1,209 @@
+{
+  "name": "artifacts",
+  "scopeName": "source.artifacts",
+  "fileTypes": ["sop"],
+  "patterns": [
+    {
+      "include": "#artifacts-header"
+    },
+    {
+      "include": "#artifacts-sections"
+    },
+    {
+      "include": "#artifacts-artifacts"
+    },
+    {
+      "include": "#artifacts-fields"
+    },
+    {
+      "include": "#artifacts-references"
+    },
+    {
+      "include": "#artifacts-values"
+    },
+    {
+      "include": "#artifacts-status"
+    }
+  ],
+  "repository": {
+    "artifacts-header": {
+      "patterns": [
+        {
+          "name": "keyword.control.artifacts.header",
+          "comment": "Artifacts Header - Bright Yellow for Synth84",
+          "match": "^#\\s*(Artifacts)\\s*-\\s*(Semantic\\s*Operations\\s*Language).*$",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.artifacts.header"
+            },
+            "2": {
+              "name": "string.quoted.double.artifacts.header"
+            }
+          }
+        }
+      ]
+    },
+    "artifacts-sections": {
+      "patterns": [
+        {
+          "name": "keyword.control.artifacts.section",
+          "comment": "Artifacts Section Headers with Unicode - Green Neon",
+          "match": "^\\s*([A-Z][a-zA-Z]+)\\s*:",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.artifacts.section"
+            }
+          }
+        },
+        {
+          "name": "comment.line.artifacts.completion",
+          "comment": "Artifacts Completion Checklist",
+          "match": "^\\s*#\\s*✅\\s*.*$"
+        }
+      ]
+    },
+    "artifacts-artifacts": {
+      "patterns": [
+        {
+          "name": "entity.name.type.artifacts.artifact",
+          "comment": "Artifacts Artifact Types at start of line - Neon Pink",
+          "match": "^\\s*(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area)\\s*:",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.artifacts.artifact"
+            }
+          }
+        }
+      ]
+    },
+    "artifacts-fields": {
+      "patterns": [
+        {
+          "name": "variable.parameter.artifacts.field",
+          "comment": "Artifacts Core Fields - Cyan Blue",
+          "match": "^\\s*(statement|mode|priority|scope|timeframe|stakeholders|conditions|actor|legitimacy|decisionBoundaries|expected|method|criteria|thresholds|aspirationalStatement|businessImpact|strategicPillars|stakeholderValue|rules|compliance|definition|attributes|types|businessRelationships|measurement|targets|dataSource|reporting|actors|flow|governance|qualityControls|steps|roles|resources|exceptions|structure|responsibilities|capabilities|interactions|communication)\\s*:",
+          "captures": {
+            "1": {
+              "name": "keyword.control.artifacts.field"
+            }
+          }
+        },
+        {
+          "name": "variable.parameter.artifacts.additional",
+          "comment": "Additional Artifacts Fields",
+          "match": "^\\s*(uses|primary|support|external|inputs|outputs|dependsOn|preparation|execution|finalization|triggers|subscribers|publishers|dataStructure|patterns|observationPoints|metrics|events|patterns|analysis|insights|lifecycle|outcomes|acceptance|validation|generators|definition|responsibilities|capabilities|interactions|decisionAuthority|hierarchy|crossArea|leadership|teams|reporting|core|strategic|operational|technical|business|internal|external|incoming|outgoing)\\s*:",
+          "captures": {
+            "1": {
+              "name": "keyword.control.artifacts.additional"
+            }
+          }
+        }
+      ]
+    },
+    "artifacts-references": {
+      "patterns": [
+        {
+          "name": "entity.name.function.artifacts.reference",
+          "comment": "Artifacts Semantic References Type:Id - Electric Purple",
+          "match": "\\b(Intent|Context|Authority|Evaluation|Vision|Policy|Concept|Principle|Guideline|Indicator|Process|Procedure|Event|Observation|Result|Actor|Area):([A-Z][a-zA-Z0-9]*)\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.control.artifacts.reference"
+            },
+            "2": {
+              "name": "entity.name.function.artifacts.reference"
+            }
+          }
+        },
+        {
+          "name": "entity.name.function.artifacts.legacy",
+          "comment": "Artifacts Legacy Reference Format",
+          "match": "\\b[A-Z][a-zA-Z0-9]*\\.[A-Z][a-zA-Z0-9]*\\b",
+          "captures": {
+            "0": {
+              "name": "entity.name.function.artifacts.legacy"
+            }
+          }
+        }
+      ]
+    },
+    "artifacts-values": {
+      "patterns": [
+        {
+          "name": "constant.character.artifacts.identifier",
+          "comment": "Artifacts Identifiers - Orange",
+          "match": "\\b[A-Z][a-zA-Z0-9]*\\b",
+          "captures": {
+            "0": {
+              "name": "constant.character.artifacts.identifier"
+            }
+          }
+        },
+        {
+          "name": "string.quoted.double.artifacts.string",
+          "comment": "Artifacts String Values",
+          "match": "\"[^\"]*\"",
+          "captures": {
+            "0": {
+              "name": "string.quoted.double.artifacts.string"
+            }
+          }
+        },
+        {
+          "name": "string.quoted.single.artifacts.string",
+          "comment": "Artifacts Single Quoted Strings",
+          "match": "'[^']*'",
+          "captures": {
+            "0": {
+              "name": "string.quoted.single.artifacts.string"
+            }
+          }
+        }
+      ]
+    },
+    "artifacts-status": {
+      "patterns": [
+        {
+          "name": "constant.character.artifacts.status",
+          "comment": "Artifacts Status Values - Hot Pink",
+          "match": "\\b(draft|review|approved|implemented|deprecated|archived)\\b",
+          "captures": {
+            "1": {
+              "name": "constant.character.artifacts.status"
+            }
+          }
+        },
+        {
+          "name": "constant.character.artifacts.priority",
+          "comment": "Artifacts Priority Levels - Red/Orange",
+          "match": "\\b(low|medium|high|critical|urgent)\\b",
+          "captures": {
+            "1": {
+              "name": "constant.character.artifacts.priority"
+            }
+          }
+        },
+        {
+          "name": "constant.character.artifacts.mode",
+          "comment": "Artifacts Mode Values - Purple",
+          "match": "\\b(declare|require|propose|prohibit)\\b",
+          "captures": {
+            "1": {
+              "name": "constant.character.artifacts.mode"
+            }
+          }
+        },
+        {
+          "name": "constant.character.artifacts.level",
+          "comment": "Artifacts Level Values - Teal",
+          "match": "\\b(strategic|tactical|operational)\\b",
+          "captures": {
+            "1": {
+              "name": "constant.character.artifacts.level"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

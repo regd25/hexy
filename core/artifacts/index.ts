@@ -1,214 +1,161 @@
 /**
- * SOL Artifacts Index
- * Centralized exports for all SOL artifact types and utilities
+ * Artifacts Index
+ * Centralized exports for all artifacts types and utilities
  */
 
-// ============================================================================
-// BASE ARTIFACT EXPORTS
-// ============================================================================
-
+// Core artifact types
 export type {
+  ArtifactType,
+  ArtifactUses,
+  ArtifactRelationships,
+  ArtifactOrganizational,
+  ArtifactContentMap,
+  Artifact,
   Metadata,
-  SOLArtifactType,
-  SOLArtifactUses,
-  SOLArtifactRelationships,
-  SOLArtifactOrganizational,
-  SOLArtifactContentMap,
-  SOLArtifact,
-  ArtifactValidationRule,
-  ArtifactReference,
-  FlowDefinition,
-  FlowStep,
-  ErrorHandling,
-  ParallelismConfig,
-  RetryConfig,
-  LifecycleDefinition,
-  LifecycleTransition,
-  WorkflowStep,
-} from "./BaseArtifact"
+  ValidationResult
+} from './BaseArtifact'
 
-export { getTypedContent, createArtifact } from "./BaseArtifact"
-
-// ============================================================================
-// FOUNDATIONAL ARTIFACTS
-// ============================================================================
-
+// Foundational artifacts
 export type {
-  IntentContent,
-  ContextContent,
-  AuthorityContent,
-  EvaluationContent,
-  EvaluationCriteria,
-  EvaluationQualitativeCriteria,
-  EvaluationQuantitativeCriteria,
   IntentArtifact,
   ContextArtifact,
   AuthorityArtifact,
-  EvaluationArtifact,
-} from "./FoundationalArtifacts"
+  EvaluationArtifact
+} from './FoundationalArtifacts'
 
-export {
-  isIntentArtifact,
-  isContextArtifact,
-  isAuthorityArtifact,
-  isEvaluationArtifact,
-  isFoundationalArtifact,
-  createIntentArtifact,
-  createContextArtifact,
-  createAuthorityArtifact,
-  createEvaluationArtifact,
-} from "./FoundationalArtifacts"
-
-// ============================================================================
-// ORGANIZATIONAL ARTIFACTS
-// ============================================================================
-
+// Strategic artifacts
 export type {
-  ActorContent,
-  AreaContent,
-  ActorArtifact,
-  AreaArtifact,
-} from "./OrganizationalArtifacts"
-
-export {
-  isActorArtifact,
-  isAreaArtifact,
-  isOrganizationalArtifact,
-  createActorArtifact,
-  createAreaArtifact,
-  validateActorContent,
-  validateAreaContent,
-} from "./OrganizationalArtifacts"
-
-// ============================================================================
-// OPERATIONAL ARTIFACTS
-// ============================================================================
-
-export type {
-  ProcessContent,
-  ProcedureContent,
-  ProcedureStep,
-  EventContent,
-  ResultContent,
-  ObservationContent,
-  ProcessArtifact,
-  ProcedureArtifact,
-  EventArtifact,
-  ResultArtifact,
-  ObservationArtifact,
-} from "./OperationalArtifacts"
-
-export {
-  isProcessArtifact,
-  isProcedureArtifact,
-  isEventArtifact,
-  isResultArtifact,
-  isObservationArtifact,
-  isOperationalArtifact,
-  createProcessArtifact,
-  createProcedureArtifact,
-  createEventArtifact,
-  createResultArtifact,
-  createObservationArtifact,
-  validateProcessContent,
-  validateProcedureContent,
-  validateEventContent,
-  validateResultContent,
-  validateObservationContent,
-} from "./OperationalArtifacts"
-
-// ============================================================================
-// STRATEGIC ARTIFACTS
-// ============================================================================
-
-export type {
-  VisionContent,
-  PolicyContent,
-  PolicyRule,
-  PolicyException,
-  ConceptContent,
-  PrincipleContent,
-  GuidelineContent,
-  IndicatorContent,
   VisionArtifact,
   PolicyArtifact,
   ConceptArtifact,
   PrincipleArtifact,
   GuidelineArtifact,
-  IndicatorArtifact,
-} from "./StrategicArtifacts"
+  IndicatorArtifact
+} from './StrategicArtifacts'
 
+// Operational artifacts
+export type {
+  ProcessArtifact,
+  ProcedureArtifact,
+  EventArtifact,
+  ObservationArtifact,
+  ResultArtifact
+} from './OperationalArtifacts'
+
+// Organizational artifacts
+export type {
+  ActorArtifact,
+  AreaArtifact
+} from './OrganizationalArtifacts'
+
+// Utility functions
 export {
-  isVisionArtifact,
-  isPolicyArtifact,
-  isConceptArtifact,
-  isPrincipleArtifact,
-  isGuidelineArtifact,
-  isIndicatorArtifact,
+  isFoundationalArtifact,
   isStrategicArtifact,
-  createVisionArtifact,
-  createPolicyArtifact,
-  createConceptArtifact,
-  createPrincipleArtifact,
-  createGuidelineArtifact,
-  createIndicatorArtifact,
-  validateVisionContent,
-  validatePolicyContent,
-  validateConceptContent,
-  validatePrincipleContent,
-  validateGuidelineContent,
-  validateIndicatorContent,
-} from "./StrategicArtifacts"
+  isOperationalArtifact,
+  isOrganizationalArtifact,
+  getArtifactType,
+  validateArtifactStructure,
+  createArtifactReference,
+  parseArtifactReference
+} from './BaseArtifact'
 
-// ============================================================================
-// ARTIFACT STATISTICS
-// ============================================================================
+// Validation utilities
+export {
+  validateSemanticReferences,
+  validateCompositionStructure,
+  validateHierarchyRules,
+  validateFlowSemantics
+} from '../validation/ValidationRuleEngine'
 
-export const ARTIFACT_STATS = {
-  foundational: 4,
-  organizational: 2,
-  operational: 5,
-  strategic: 6,
-  total: 17,
-} as const
+// Interpreter utilities
+export {
+  interpretArtifact,
+  interpretIntent,
+  interpretContext,
+  interpretAuthority,
+  interpretEvaluation,
+  interpretVision,
+  interpretPolicy,
+  interpretProcess,
+  interpretActor
+} from '../interpreters'
 
-export const ARTIFACT_TYPES_BY_CATEGORY = {
-  foundational: ["Intent", "Context", "Authority", "Evaluation"] as const,
-  organizational: ["Actor", "Area"] as const,
-  operational: [
-    "Process",
-    "Procedure",
-    "Event",
-    "Result",
-    "Observation",
-  ] as const,
-  strategic: [
-    "Vision",
-    "Policy",
-    "Concept",
-    "Principle",
-    "Guideline",
-    "Indicator",
-  ] as const,
-} as const
+// Repository utilities
+export {
+  ArtifactRepository,
+  InMemoryArtifactRepository,
+  FileSystemArtifactRepository
+} from '../repositories/ArtifactRepository'
+
+// Plugin system
+export {
+  PluginManager,
+  PluginCapability,
+  PluginCapabilityRegistry
+} from '../plugins'
+
+// Engine system
+export {
+  SemanticEngine,
+  OrchestrationMode,
+  OrchestrationStrategy,
+  OrchestrationModeFactory,
+  OrchestrationStrategyRegistry
+} from '../engine'
+
+// Decision framework
+export {
+  SemanticDecisionFramework,
+  ConditionEvaluator,
+  DecisionResult
+} from '../decision'
+
+// Event system
+export {
+  EventSystem,
+  EventHandler,
+  EventEmitter
+} from '../events'
 
 /**
- * SOL Artifacts Architecture Summary
- *
- * This module provides a complete, modular architecture for SOL artifacts:
- *
- * 📁 BaseArtifact.ts - Common interfaces and utilities
- * 📁 FoundationalArtifacts.ts - Core artifacts (4 types)
- * 📁 OrganizationalArtifacts.ts - Structure artifacts (2 types)
- * 📁 OperationalArtifacts.ts - Execution artifacts (5 types)
- * 📁 StrategicArtifacts.ts - Planning artifacts (6 types)
- * 📁 index.ts - Centralized exports
- *
- * Total: 17 artifact types with dedicated interfaces
- *
- * Each file follows the Single Responsibility Principle:
- * - One responsibility per file
- * - Clear separation of concerns
- * - Extensible without modification
- * - Type-safe throughout
+ * Artifacts Architecture Summary
+ * 
+ * This module provides a complete, modular architecture for artifacts:
+ * 
+ * 🧱 **Foundational Layer** (BaseArtifact.ts)
+ * - Core artifact interface and metadata
+ * - Type definitions and validation utilities
+ * - Reference parsing and creation
+ * 
+ * 🏗️ **Strategic Layer** (StrategicArtifacts.ts)
+ * - Vision, Policy, Concept artifacts
+ * - Strategic planning and governance
+ * - Business rules and principles
+ * 
+ * ⚡ **Operational Layer** (OperationalArtifacts.ts)
+ * - Process, Procedure, Event artifacts
+ * - Workflow and execution logic
+ * - Event-driven architecture
+ * 
+ * 🏢 **Organizational Layer** (OrganizationalArtifacts.ts)
+ * - Actor, Area artifacts
+ * - Roles and responsibilities
+ * - Organizational structure
+ * 
+ * 🔧 **Supporting Systems**
+ * - Validation: Semantic and structural validation
+ * - Interpretation: Artifact processing and analysis
+ * - Repository: Storage and retrieval
+ * - Plugins: Extensibility system
+ * - Engine: Execution orchestration
+ * - Events: Event-driven communication
+ * - Decisions: Semantic decision framework
+ * 
+ * **Key Principles:**
+ * - Composition over inheritance
+ * - Semantic coherence
+ * - Traceability to vision
+ * - Modular extensibility
+ * - Type safety throughout
  */

@@ -1,225 +1,190 @@
 /**
- * Validation System for SOL Artifacts
- * Provides comprehensive validation rules and integrity checks
+ * Validation System for Artifacts
+ * Provides comprehensive validation for artifact structure and semantics
  */
 
-import { SOLArtifact, isFoundationalArtifact } from "../artifacts"
-import { ArtifactRepository } from "../repositories/ArtifactRepository"
-import {
-  ValidationResult,
-  ValidationRule,
-  ValidationRuleResult,
-  ValidationCategory,
-  createValidationResult,
-} from "../types/Result"
+import { Artifact, isFoundationalArtifact } from "../artifacts"
+import { ValidationRuleEngine } from "./ValidationRuleEngine"
+
+export interface ValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings?: string[]
+  metadata?: {
+    validatedAt: Date
+    validatorVersion: string
+    rulesApplied: string[]
+  }
+}
+
+export interface ValidationRule {
+  name: string
+  description: string
+  validate: (artifact: Artifact) => Promise<ValidationResult>
+  priority: 'critical' | 'high' | 'medium' | 'low'
+  category: 'structural' | 'semantic' | 'business' | 'compliance'
+}
 
 export class ValidationSystem {
-  private readonly repository: ArtifactRepository
-  private readonly rules: Map<ValidationCategory, ValidationRule[]>
-  private readonly customRules: ValidationRule[]
+  private ruleEngine: ValidationRuleEngine
+  private validators: Map<string, ValidationRule> = new Map()
 
-  constructor(repository: ArtifactRepository) {
-    this.repository = repository
-    this.rules = new Map()
-    this.customRules = []
+  constructor() {
+    this.ruleEngine = new ValidationRuleEngine()
     this.initializeDefaultRules()
   }
 
-  /**
-   * Validates a single artifact
-   */
-  async validateArtifact(artifact: SOLArtifact): Promise<ValidationResult> {
-    const allRules = this.getAllApplicableRules(artifact)
-    const results: ValidationRuleResult[] = []
-
-    for (const rule of allRules) {
-      try {
-        const result = await rule.validate(artifact)
-        results.push(result)
-      } catch (error) {
-        results.push({
-          passed: false,
-          errors: [
-            {
-              code: "VALIDATION_ERROR",
-              message: `Validation rule ${rule.id} failed: ${error}`,
-              severity: "high",
-              rule: rule.id,
-            },
-          ],
-          warnings: [],
-          suggestions: [],
-        })
-      }
-    }
-
-    // Aggregate results
-    const errors = results.flatMap((r) => r.errors)
-    const warnings = results.flatMap((r) => r.warnings)
-    const suggestions = results.flatMap((r) => r.suggestions)
-    const isValid = results.every((r) => r.passed)
-
-    return createValidationResult(isValid, errors, warnings, suggestions)
-  }
-
-  /**
-   * Validates multiple artifacts and their relationships
-   */
-  async validateArtifacts(
-    artifacts: SOLArtifact[]
-  ): Promise<Map<string, ValidationResult>> {
-    const results = new Map<string, ValidationResult>()
-
-    // Validate individual artifacts
-    for (const artifact of artifacts) {
-      const result = await this.validateArtifact(artifact)
-      results.set(artifact.metadata.id, result)
-    }
-
-    return results
-  }
-
-  /**
-   * Adds a custom validation rule
-   */
-  addCustomRule(rule: ValidationRule): void {
-    this.customRules.push(rule)
-  }
-
-  /**
-   * Removes a custom validation rule
-   */
-  removeCustomRule(ruleId: string): boolean {
-    const index = this.customRules.findIndex((rule) => rule.id === ruleId)
-    if (index >= 0) {
-      this.customRules.splice(index, 1)
-      return true
-    }
-    return false
-  }
-
-  /**
-   * Gets rules for a specific category
-   */
-  getRulesByCategory(category: ValidationCategory): ValidationRule[] {
-    return this.rules.get(category) || []
-  }
-
-  /**
-   * Toggle a rule on/off
-   */
-  toggleRule(_ruleId: string, _enabled: boolean): void {
-    // Implementation for toggling rules
-  }
-
-  /**
-   * Initialize default validation rules
-   */
-  private initializeDefaultRules(): void {
-    // Basic foundational artifact rule
-    this.addRule("semantic-coherence", {
-      id: "foundational-no-uses",
-      name: "Foundational artifacts cannot use other artifacts",
-      description:
-        "Intent, Context, Authority, and Evaluation artifacts must be independent",
-      category: "semantic-coherence",
-      severity: "critical",
-      applicableArtifacts: ["Intent", "Context", "Authority", "Evaluation"],
-      validate: async (artifact: SOLArtifact) => {
-        if (isFoundationalArtifact(artifact) && artifact.uses) {
-          return {
-            passed: false,
-            errors: [
-              {
-                code: "FOUNDATIONAL_USES_VIOLATION",
-                message: `Foundational artifact ${artifact.type} cannot use other artifacts`,
-                severity: "critical",
-                rule: "foundational-no-uses",
-              },
-            ],
-            warnings: [],
-            suggestions: [],
-          }
-        }
-        return { passed: true, errors: [], warnings: [], suggestions: [] }
-      },
-    })
-
-    // Basic metadata validation
-    this.addRule("semantic-coherence", {
-      id: "required-metadata",
-      name: "Required metadata fields must be present",
-      description: "All artifacts must have required metadata fields",
-      category: "semantic-coherence",
-      severity: "critical",
-      applicableArtifacts: ["*"],
-      validate: async (artifact: SOLArtifact) => {
-        const errors = []
-
-        if (!artifact.metadata.id) {
-          errors.push({
-            code: "MISSING_METADATA",
-            message: "Artifact must have an ID",
-            severity: "critical" as const,
-            rule: "required-metadata",
-          })
-        }
-
-        if (!artifact.metadata.version) {
-          errors.push({
-            code: "MISSING_METADATA",
-            message: "Artifact must have a version",
-            severity: "critical" as const,
-            rule: "required-metadata",
-          })
+  private initializeDefaultRules() {
+    // Structural validation rules
+    this.addRule({
+      name: 'artifact-structure',
+      description: 'Validates basic artifact structure',
+      priority: 'critical',
+      category: 'structural',
+      validate: async (artifact: Artifact) => {
+        const errors: string[] = []
+        
+        if (!artifact.type) errors.push('Missing artifact type')
+        if (!artifact.metadata) errors.push('Missing metadata')
+        if (!artifact.content) errors.push('Missing content')
+        
+        if (artifact.metadata) {
+          if (!artifact.metadata.id) errors.push('Missing artifact ID')
+          if (!artifact.metadata.version) errors.push('Missing version')
+          if (!artifact.metadata.author) errors.push('Missing author')
         }
 
         return {
-          passed: errors.length === 0,
+          isValid: errors.length === 0,
           errors,
-          warnings: [],
-          suggestions: [],
+          metadata: {
+            validatedAt: new Date(),
+            validatorVersion: '1.0.0',
+            rulesApplied: ['artifact-structure']
+          }
         }
-      },
+      }
+    })
+
+    // Semantic validation rules
+    this.addRule({
+      name: 'semantic-references',
+      description: 'Validates semantic references in artifacts',
+      priority: 'high',
+      category: 'semantic',
+      validate: async (artifact: Artifact) => {
+        const errors: string[] = []
+        
+        // Validate uses references
+        if (artifact.uses) {
+          const requiredUses = ['intent', 'context', 'authority', 'evaluation']
+          for (const use of requiredUses) {
+            if (artifact.uses[use as keyof typeof artifact.uses]) {
+              const reference = artifact.uses[use as keyof typeof artifact.uses]
+              if (!this.isValidReference(reference)) {
+                errors.push(`Invalid ${use} reference: ${reference}`)
+              }
+            }
+          }
+        }
+
+        return {
+          isValid: errors.length === 0,
+          errors,
+          metadata: {
+            validatedAt: new Date(),
+            validatorVersion: '1.0.0',
+            rulesApplied: ['semantic-references']
+          }
+        }
+      }
+    })
+
+    // Business validation rules
+    this.addRule({
+      name: 'business-coherence',
+      description: 'Validates business logic coherence',
+      priority: 'medium',
+      category: 'business',
+      validate: async (artifact: Artifact) => {
+        const errors: string[] = []
+        
+        // Validate foundational artifacts have required content
+        if (isFoundationalArtifact(artifact)) {
+          if (!artifact.content.statement && artifact.type !== 'Context') {
+            errors.push('Foundational artifacts must have a statement')
+          }
+        }
+
+        return {
+          isValid: errors.length === 0,
+          errors,
+          metadata: {
+            validatedAt: new Date(),
+            validatorVersion: '1.0.0',
+            rulesApplied: ['business-coherence']
+          }
+        }
+      }
     })
   }
 
-  private addRule(category: ValidationCategory, rule: ValidationRule): void {
-    if (!this.rules.has(category)) {
-      this.rules.set(category, [])
-    }
-    this.rules.get(category)!.push(rule)
+  private isValidReference(reference: string): boolean {
+    // Basic reference validation: Type:Id format
+    const pattern = /^[A-Z][a-zA-Z]+:[A-Z][a-zA-Z0-9]*$/
+    return pattern.test(reference)
   }
 
-  private getAllApplicableRules(artifact: SOLArtifact): ValidationRule[] {
-    const applicable: ValidationRule[] = []
+  public addRule(rule: ValidationRule): void {
+    this.validators.set(rule.name, rule)
+  }
 
-    // Add rules from all categories
-    for (const categoryRules of this.rules.values()) {
-      for (const rule of categoryRules) {
-        if (this.isRuleApplicable(rule, artifact)) {
-          applicable.push(rule)
+  public async validateArtifact(artifact: Artifact): Promise<ValidationResult> {
+    const results: ValidationResult[] = []
+    const allErrors: string[] = []
+    const allWarnings: string[] = []
+    const rulesApplied: string[] = []
+
+    // Run all validation rules
+    for (const rule of this.validators.values()) {
+      try {
+        const result = await rule.validate(artifact)
+        results.push(result)
+        
+        if (result.errors) allErrors.push(...result.errors)
+        if (result.warnings) allWarnings.push(...result.warnings)
+        if (result.metadata?.rulesApplied) {
+          rulesApplied.push(...result.metadata.rulesApplied)
         }
+      } catch (error) {
+        allErrors.push(`Validation rule '${rule.name}' failed: ${error}`)
       }
     }
 
-    // Add custom rules
-    for (const rule of this.customRules) {
-      if (this.isRuleApplicable(rule, artifact)) {
-        applicable.push(rule)
+    // Determine overall validity
+    const isValid = allErrors.length === 0
+
+    return {
+      isValid,
+      errors: allErrors,
+      warnings: allWarnings.length > 0 ? allWarnings : undefined,
+      metadata: {
+        validatedAt: new Date(),
+        validatorVersion: '1.0.0',
+        rulesApplied: [...new Set(rulesApplied)]
       }
     }
-
-    return applicable
   }
 
-  private isRuleApplicable(
-    rule: ValidationRule,
-    artifact: SOLArtifact
-  ): boolean {
-    return (
-      rule.applicableArtifacts.includes("*") ||
-      rule.applicableArtifacts.includes(artifact.type)
-    )
+  public async validateArtifacts(artifacts: Artifact[]): Promise<ValidationResult[]> {
+    return Promise.all(artifacts.map(artifact => this.validateArtifact(artifact)))
+  }
+
+  public getValidationRules(): ValidationRule[] {
+    return Array.from(this.validators.values())
+  }
+
+  public getRuleByName(name: string): ValidationRule | undefined {
+    return this.validators.get(name)
   }
 }

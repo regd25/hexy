@@ -141,12 +141,7 @@ export class ExecutionContext {
   getId(): string {
     return this.id
   }
-  getExecutionId(): string {
-    // Alias for getId for clarity
-    return this.id
-  }
   getCorrelationId(): string {
-    // Getter for correlationId
     return this.correlationId
   }
   getMetadata(): Metadata {

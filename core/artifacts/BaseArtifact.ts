@@ -1,236 +1,171 @@
 /**
- * Base Artifact - Foundation interfaces for all SOL artifacts
- * Contains common types, metadata, and base interfaces
+ * Base Artifact - Core interfaces and utilities for artifacts
+ * Provides the foundation for all artifact types in the system
  */
 
+import { ValidationResult } from '../validation/ValidationSystem'
+
 // ============================================================================
-// METADATA AND COMMON TYPES
+// CORE TYPES
 // ============================================================================
+
+export type ArtifactType = 
+  | 'Intent' | 'Context' | 'Authority' | 'Evaluation'
+  | 'Vision' | 'Policy' | 'Concept' | 'Principle' | 'Guideline' | 'Indicator'
+  | 'Process' | 'Procedure' | 'Event' | 'Observation' | 'Result'
+  | 'Actor' | 'Area'
 
 export interface Metadata {
   id: string
   version: string
   created: Date
   lastModified: Date
-  status: string
+  status: 'draft' | 'review' | 'approved' | 'implemented' | 'deprecated' | 'archived'
   author: string
-  reviewedBy: string[]
-  tags: string[]
+  reviewedBy?: string
+  tags?: string[]
+  notes?: string
 }
 
-export interface SOLArtifactUses {
-  intent?: string // Reference to Intent:Id
-  context?: string // Reference to Context:Id
-  authority?: string // Reference to Authority:Id
-  evaluation?: string // Reference to Evaluation:Id
+export interface ArtifactUses {
+  intent?: string
+  context?: string
+  authority?: string
+  evaluation?: string
 }
 
-export interface SOLArtifactRelationships {
-  dependsOn?: string[] // Other artifacts this depends on
-  supports?: string[] // Other artifacts this supports
-  implements?: string[] // Other artifacts this implements
-  measuredBy?: string[] // Indicators that measure this
-  composedOf?: string[] // Sub-artifacts that compose this
+export interface ArtifactRelationships {
+  relates?: string[]
+  participatesIn?: string[]
+  implementsPolicies?: string[]
+  supportsVisions?: string[]
 }
 
-export interface SOLArtifactOrganizational {
-  area?: string // Area:Id reference
-  level: "strategic" | "tactical" | "operational"
-  canReference?: string[] // What this artifact can reference
+export interface ArtifactOrganizational {
+  area?: string
+  actor?: string
+  stakeholders?: string[]
 }
 
-// ============================================================================
-// ARTIFACT TYPES
-// ============================================================================
-
-export type SOLArtifactType =
-  // Foundational Artifacts
-  | "Intent"
-  | "Context"
-  | "Authority"
-  | "Evaluation"
-  // Strategic Artifacts
-  | "Vision"
-  | "Policy"
-  | "Concept"
-  | "Principle"
-  | "Guideline"
-  | "Indicator"
-  // Operational Artifacts
-  | "Process"
-  | "Procedure"
-  | "Event"
-  | "Result"
-  | "Observation"
-  // Organizational Artifacts
-  | "Actor"
-  | "Area"
-
-// ============================================================================
-// FLOW AND LIFECYCLE DEFINITIONS
-// ============================================================================
-
-export interface FlowDefinition {
-  steps: FlowStep[]
-  errorHandling?: ErrorHandling
-  parallelism?: ParallelismConfig
-}
-
-export interface FlowStep {
-  id: string
-  actor: string // Actor:Id reference
-  action: string // Human-readable action
-  inputs?: string[] // Expected inputs
-  outputs?: string[] // Expected outputs
-  conditions?: string[] // Conditions for execution
-  timeout?: number
-  retryConfig?: RetryConfig
-}
-
-export interface ErrorHandling {
-  onError: "stop" | "continue" | "retry" | "escalate"
-  escalationPath?: string[]
-  fallbackActions?: string[]
-}
-
-export interface ParallelismConfig {
-  maxConcurrency: number
-  parallelSteps?: string[][]
-  synchronizationPoints?: string[]
-}
-
-export interface RetryConfig {
-  maxRetries: number
-  backoffStrategy: "linear" | "exponential"
-  retryConditions?: string[]
-}
-
-export interface LifecycleDefinition {
-  states: string[]
-  transitions: LifecycleTransition[]
-  initialState: string
-  finalStates: string[]
-}
-
-export interface LifecycleTransition {
-  from: string
-  to: string
-  trigger: string
-  conditions?: string[]
-  actions?: string[]
-}
-
-// ============================================================================
-// WORKFLOW STEP DEFINITION
-// ============================================================================
-
-export interface WorkflowStep {
-  id: string
-  name: string
-  actor: string
-  action: string
-  inputs?: string[]
-  outputs?: string[]
-  conditions?: string[]
-  timeout?: number
-  retryConfig?: {
-    maxRetries: number
-    backoffDelay: number
-  }
-}
-
-// ============================================================================
-// CONTENT TYPE MAPPING (will be extended by specific artifact files)
-// ============================================================================
-
-export interface SOLArtifactContentMap {
-  // Will be populated by specific artifact files
+export interface ArtifactContentMap {
   [key: string]: any
 }
 
-// ============================================================================
-// BASE SOL ARTIFACT INTERFACE
-// ============================================================================
-
-export interface SOLArtifact<T extends SOLArtifactType = SOLArtifactType> {
-  // Core Properties
+export interface Artifact<T extends ArtifactType = ArtifactType> {
   type: T
   metadata: Metadata
-
-  // Semantic Composition (v2025.07)
-  uses?: SOLArtifactUses
-
-  // Hierarchical Organization
-  organizational?: SOLArtifactOrganizational
-
-  // Semantic Relationships
-  relationships?: SOLArtifactRelationships
-
-  // Type-safe content based on artifact type
-  content: T extends keyof SOLArtifactContentMap
-    ? SOLArtifactContentMap[T]
-    : Record<string, any>
-
-  // Validation State
-  isValid?: boolean
-  validationErrors?: string[]
-  lastValidated?: Date
-
-  // Execution State
-  isExecutable?: boolean
-  executionStrategy?: string
-  executionDependencies?: string[]
+  uses?: ArtifactUses
+  relationships?: ArtifactRelationships
+  organizational?: ArtifactOrganizational
+  content: ArtifactContentMap
 }
 
 // ============================================================================
-// UTILITY TYPES
+// UTILITY FUNCTIONS
 // ============================================================================
 
-export type ArtifactValidationRule = {
-  name: string
-  description: string
-  validate: (artifact: SOLArtifact) => boolean
-  errorMessage: string
+export function isFoundationalArtifact(artifact: Artifact): boolean {
+  return ['Intent', 'Context', 'Authority', 'Evaluation'].includes(artifact.type)
 }
 
-export type ArtifactReference = {
-  type: SOLArtifactType
-  id: string
-  resolved?: SOLArtifact
+export function isStrategicArtifact(artifact: Artifact): boolean {
+  return ['Vision', 'Policy', 'Concept', 'Principle', 'Guideline', 'Indicator'].includes(artifact.type)
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-export function getTypedContent<T extends SOLArtifactType>(
-  artifact: SOLArtifact<T>
-): T extends keyof SOLArtifactContentMap
-  ? SOLArtifactContentMap[T]
-  : Record<string, any> {
-  return artifact.content as any
+export function isOperationalArtifact(artifact: Artifact): boolean {
+  return ['Process', 'Procedure', 'Event', 'Observation', 'Result'].includes(artifact.type)
 }
 
-export function createArtifact<T extends SOLArtifactType>(
-  type: T,
-  metadata: Metadata,
-  content: T extends keyof SOLArtifactContentMap
-    ? SOLArtifactContentMap[T]
-    : Record<string, any>,
-  options?: {
-    uses?: SOLArtifactUses
-    organizational?: SOLArtifactOrganizational
-    relationships?: SOLArtifactRelationships
+export function isOrganizationalArtifact(artifact: Artifact): boolean {
+  return ['Actor', 'Area'].includes(artifact.type)
+}
+
+export function getArtifactType(artifact: Artifact): ArtifactType {
+  return artifact.type
+}
+
+export function validateArtifactStructure(artifact: Artifact): ValidationResult {
+  // Basic structure validation
+  if (!artifact.type || !artifact.metadata || !artifact.content) {
+    return {
+      isValid: false,
+      errors: ['Missing required artifact properties: type, metadata, or content']
+    }
   }
-): SOLArtifact<T> {
+
+  // Validate metadata
+  if (!artifact.metadata.id || !artifact.metadata.version) {
+    return {
+      isValid: false,
+      errors: ['Missing required metadata: id or version']
+    }
+  }
+
+  return { isValid: true, errors: [] }
+}
+
+export function createArtifactReference(type: ArtifactType, id: string): string {
+  return `${type}:${id}`
+}
+
+export function parseArtifactReference(reference: string): { type: ArtifactType; id: string } | null {
+  const match = reference.match(/^([A-Z][a-zA-Z]+):([A-Z][a-zA-Z0-9]*)$/)
+  if (!match) return null
+  
+  const [, type, id] = match
+  return { type: type as ArtifactType, id }
+}
+
+// ============================================================================
+// TYPE GUARDS
+// ============================================================================
+
+export function isArtifact(obj: any): obj is Artifact {
+  return obj && 
+         typeof obj.type === 'string' &&
+         obj.metadata &&
+         obj.content
+}
+
+export function isMetadata(obj: any): obj is Metadata {
+  return obj &&
+         typeof obj.id === 'string' &&
+         typeof obj.version === 'string' &&
+         obj.created instanceof Date &&
+         obj.lastModified instanceof Date &&
+         typeof obj.status === 'string' &&
+         typeof obj.author === 'string'
+}
+
+// ============================================================================
+// FACTORY FUNCTIONS
+// ============================================================================
+
+export function createArtifact<T extends ArtifactType>(
+  type: T,
+  id: string,
+  content: ArtifactContentMap,
+  metadata?: Partial<Metadata>
+): Artifact<T> {
+  const now = new Date()
+  
+  const defaultMetadata: Metadata = {
+    id,
+    version: '1.0.0',
+    created: now,
+    lastModified: now,
+    status: 'draft',
+    author: 'system',
+    ...metadata
+  }
+
   return {
     type,
-    metadata,
-    content,
-    uses: options?.uses,
-    organizational: options?.organizational,
-    relationships: options?.relationships,
-    isValid: false,
-    isExecutable: false,
-  } as SOLArtifact<T>
+    metadata: defaultMetadata,
+    content
+  }
+}
+
+export function getTypedContent<T>(artifact: Artifact): T {
+  return artifact.content as T
 }
