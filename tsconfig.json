@@ -11,17 +11,13 @@
     /* Modules */
     "moduleResolution": "node",
     "baseUrl": "./",
-    "typeRoots": ["./node_modules/@types", "./core/node_modules/@types"],
-    "paths": {
-      "@/*": ["core/*"],
-      "@/core/*": ["core/*"]
-    },
+    "typeRoots": ["./node_modules/@types", "./dashboard/node_modules/@types"],
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
 
     /* Emit */
     "outDir": "./dist",
-    "rootDir": "./core",
+    "rootDir": "./dashboard",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -54,7 +50,7 @@
     /* Completeness */
     "skipLibCheck": true
   },
-  "include": ["core/**/*"],
+  "include": ["dashboard/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
   "ts-node": {
     "esm": false,
