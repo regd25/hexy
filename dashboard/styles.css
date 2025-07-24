@@ -1,0 +1,132 @@
+.link {
+    stroke: #90a4ae;
+    stroke-opacity: .7;
+}
+
+.node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    cursor: pointer;
+    transition: fill 0.5s ease-in-out;
+}
+
+.node text {
+    pointer-events: none;
+    font-size: 12px;
+    font-weight: 600;
+    fill: #e5e7eb; /* gray-200 */
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 10;
+    min-width: 200px;
+    max-width: 320px;
+    background: #1f2937; /* gray-800 */
+    border: 1px solid #4b5563; /* gray-600 */
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #e5e7eb; /* gray-200 */
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.menu {
+    position: absolute;
+    background: #1f2937; /* gray-800 */
+    border: 1px solid #4b5563; /* gray-600 */
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    font-size: 13px;
+    display: none;
+}
+
+.menu div {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.menu div:hover {
+    background: #374151; /* gray-700 */
+}
+
+#config-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #4b5563;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #2d3748; /* gray-800 */
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #4a5568; /* gray-600 */
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    color: #e2e8f0; /* gray-200 */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#color-config-inputs label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#color-config-inputs input {
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+#save-colors {
+    background-color: #4f46e5; /* indigo-600 */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#save-colors:hover {
+    background-color: #4338ca; /* indigo-700 */
+}

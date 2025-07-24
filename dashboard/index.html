@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexy Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans">
+    <div id="container" class="flex h-screen">
+        <div id="graph-container" class="flex-1 relative overflow-hidden">
+            <svg id="graph" class="w-full h-full bg-gray-800"></svg>
+            <div id="tooltip" class="tooltip"></div>
+            <div id="menu" class="menu"></div>
+        </div>
+        <div id="editor-container" class="w-1/3 bg-gray-900 flex flex-col border-l border-gray-700">
+            <textarea id="editor" spellcheck="false" class="flex-1 w-full bg-gray-900 text-gray-200 p-4 font-mono text-sm resize-none outline-none whitespace-pre"></textarea>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

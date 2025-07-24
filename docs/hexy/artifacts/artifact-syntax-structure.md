@@ -1,10 +1,9 @@
-# Sintaxis y Estructura de Artefactos Semánticos Hexy
+# Sintaxis y Estructura de Artefactos
 
 ## Principios Fundamentales
 - Todo artefacto es **semántico**: su representación es puramente narrativa/descriptiva, sin campos extra ni metadatos estructurados.
 - Un artefacto solo puede tener su propia representación semántica, nunca una estructura de campos.
-- Las referencias a otros artefactos se hacen usando `@NombreDelArtefacto`.
-- Las referencias se parsean automaticamente a PascalCase ya sean archivos o nombres de artefactos.
+- Las referencias a otros artefactos se hacen usando `@nombre-del-artefacto`.
 
 ---
 
@@ -114,12 +113,12 @@ El proceso de onboarding guía desde la selección hasta la integración emocion
 
 Archivo: `contexto-latam.md`
 ```markdown
-# Contexto LATAM
+# LATAM
 Aplica a operaciones en Latinoamérica entre 2024–2028.
 
 ## Propositos
-- Transparencia Radical: Transformar la cultura organizacional hacia la transparencia radical.
+Transparencia Radical: Transformar la cultura organizacional hacia la transparencia radical.
 
 ## Procesos
-- Onboarding: El proceso de onboarding guía desde la selección hasta la integración emocional del nuevo miembro.
+Onboarding: El proceso de onboarding guía desde la selección hasta la integración emocional del nuevo miembro.
 ``` 
