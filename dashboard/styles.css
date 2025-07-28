@@ -207,3 +207,86 @@ textarea.form-control {
     resize: vertical;
     min-height: 80px;
 }
+
+/* Estilos para el autocompletado de referencias */
+.autocomplete-dropdown {
+    position: absolute;
+    background: #1f2937;
+    border: 1px solid #4b5563;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 200px;
+}
+
+.autocomplete-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #374151;
+    display: flex;
+    align-items: center;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover {
+    background: #374151;
+}
+
+.autocomplete-item-type {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.autocomplete-item-name {
+    font-weight: 500;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Estilos para el resaltado de referencias en el texto */
+.reference-highlight {
+    font-weight: bold;
+    color: #9ca3af;
+}
+
+/* Estilos para los indicadores de modo */
+.editor-mode {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(31, 41, 55, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: white;
+    z-index: 1000;
+}
+
+.mode-text #editor {
+    border: 2px solid #3b82f6;
+}
+
+.mode-relate #editor {
+    border: 2px solid #10b981;
+}
+
+.mode-type #editor {
+    border: 2px solid #f59e0b;
+}
+
+/* Estilos para los nodos pendientes */
+.node.pending circle {
+    stroke-dasharray: 4;
+    stroke: #f59e0b;
+    stroke-width: 2px;
+}
