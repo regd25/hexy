@@ -2,7 +2,7 @@ import { GraphService } from '../graph/GraphService.js';
 import { ConfigService } from '../graph/ConfigService.js';
 import { EditorService } from '../editor/EditorService.js';
 import { ArtifactParser } from '../services/ArtifactParser.js';
-import { Artifact } from '../models/Artifact.js';
+import { Artifact, Link } from '../models/Artifact.js';
 import { COLORS, TYPE_MAP, REVERSE_TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
 
 /**
@@ -80,7 +80,7 @@ export class Dashboard {
     this.configBtn.addEventListener('click', () => this.showConfig());
     this.createBtn.addEventListener('click', () => this.createArtifact());
     this.cancelBtn.addEventListener('click', () => this.toggleArtifactForm());
-
+    
     this.searchInput.addEventListener('input', (e) => {
       this.searchQuery = e.target.value;
       this.filterArtifacts();
@@ -89,13 +89,19 @@ export class Dashboard {
     this.artifactNameInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') this.createArtifact();
     });
+
+    // Event listener para resize de ventana
+    window.addEventListener('resize', () => {
+      if (this.graphService) {
+        this.graphService.resize();
+      }
+    });
   }
 
   /**
    * Carga datos por defecto
    */
   loadDefaultData() {
-    
     // Cargar el texto por defecto en el editor
     this.editorService.setContent(DEFAULT_TEXT);
     
@@ -114,9 +120,12 @@ export class Dashboard {
 
     this.artifacts = defaultArtifacts;
     this.renderArtifacts();
-    this.updateGraph();
     this.updateArtifactCount();
     
+    // Delay para asegurar que el DOM esté completamente cargado
+    setTimeout(() => {
+      this.updateGraph();
+    }, 200);
   }
 
   /**
@@ -407,11 +416,17 @@ export class Dashboard {
       id: artifact.id,
       name: artifact.name,
       type: artifact.type,
-      description: artifact.description
+      description: artifact.description,
+      info: artifact.description
     }));
 
     const links = this.generateLinks(nodes);
-    this.graphService.refresh(nodes, links, true);
+    
+    // Forzar el resize del grafo para asegurar dimensiones
+    setTimeout(() => {
+      this.graphService.resize();
+      this.graphService.refresh(nodes, links, true);
+    }, 100);
   }
 
   /**
@@ -459,11 +474,7 @@ export class Dashboard {
     };
 
     if (relationships[node1.type] && relationships[node1.type].includes(node2.type)) {
-      return {
-        source: node1.id,
-        target: node2.id,
-        type: `${node1.type}-${node2.type}`
-      };
+      return new Link(node1, node2);
     }
 
     return null;

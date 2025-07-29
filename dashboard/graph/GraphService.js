@@ -181,11 +181,16 @@ export class GraphService {
       .on('contextmenu', (e, d) => this.showContextMenu(e, d))
       .on('mouseover', (e, d) => {
         this.tooltip.style.display = 'block';
-        this.tooltip.textContent = d.info;
+        this.tooltip.innerHTML = `
+          <h3>${d.name}</h3>
+          <p><strong>Tipo:</strong> ${d.type.toUpperCase()}</p>
+          <p>${d.info}</p>
+        `;
+        // Posicionar inmediatamente al mostrar
+        this.updateTooltipPosition(e);
       })
       .on('mousemove', e => {
-        this.tooltip.style.left = `${e.pageX + 10}px`;
-        this.tooltip.style.top = `${e.pageY + 10}px`;
+        this.updateTooltipPosition(e);
       })
       .on('mouseout', () => {
         this.tooltip.style.display = 'none';
@@ -208,6 +213,43 @@ export class GraphService {
     if (restart) {
       this.simulation.alpha(0.3).restart();
     }
+  }
+
+  /**
+   * Actualiza la posición del tooltip
+   * @param {Event} e - Evento del mouse
+   */
+  updateTooltipPosition(e) {
+    const tooltipWidth = 250;
+    const tooltipHeight = 120;
+    const offset = 15;
+    
+    // Posición inicial junto al mouse
+    let x = e.clientX + offset;
+    let y = e.clientY + offset;
+    
+    // Verificar si se sale por la derecha
+    if (x + tooltipWidth > window.innerWidth - 20) {
+      x = e.clientX - tooltipWidth - offset;
+    }
+    
+    // Verificar si se sale por abajo
+    if (y + tooltipHeight > window.innerHeight - 20) {
+      y = e.clientY - tooltipHeight - offset;
+    }
+    
+    // Verificar si se sale por la izquierda
+    if (x < 20) {
+      x = 20;
+    }
+    
+    // Verificar si se sale por arriba
+    if (y < 20) {
+      y = 20;
+    }
+    
+    this.tooltip.style.left = `${x}px`;
+    this.tooltip.style.top = `${y}px`;
   }
 
   /**
