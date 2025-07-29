@@ -17,7 +17,7 @@ export class NavigateModules {
 
   async execute(request: NavigateModulesRequest): Promise<NavigateModulesResponse> {
     try {
-      // Rule: AllModulesMustBeAccessible validation
+
       const navigation = await this.navigationRepository.findAll()
       const moduleId = NavigationItemId.create(request.moduleId)
       
@@ -30,7 +30,7 @@ export class NavigateModules {
         }
       }
 
-      // Save the updated navigation state
+
       await this.navigationRepository.save(navigation)
 
       return {
@@ -45,6 +45,3 @@ export class NavigateModules {
     }
   }
 }
-
-// Narrative: NavigateModules use case implements the core navigation functionality
-// ensuring users can access all SCL documentation modules seamlessly 

@@ -347,7 +347,7 @@ El Comité de Cultura es el actor encargado de cuidar que toda política refleje
 - Proponer ajustes
 ```
 
-###**** Area
+### Area
 
 **Definición**: Representa un dominio operativo con identidad, propósito y procesos propios.
 

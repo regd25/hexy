@@ -23,6 +23,3 @@ export class NavigationService {
     return navigation.getNavigationState()
   }
 }
-
-// Narrative: NavigationService acts as the application layer coordinator,
-// orchestrating domain use cases and providing a clean interface for the UI layer 

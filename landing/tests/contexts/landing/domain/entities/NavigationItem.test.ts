@@ -52,7 +52,7 @@ describe('NavigationItem Entity', () => {
 
   describe('external URL detection', () => {
     it('should detect external URLs', () => {
-      const externalItem = NavigationItem.create('external', 'External', 'https://example.com')
+      const externalItem = NavigationItem.create('external', 'External', 'https:
       const internalItem = NavigationItem.create('internal', 'Internal', '/internal')
       const hashItem = NavigationItem.create('hash', 'Hash', '#section')
 
@@ -83,7 +83,7 @@ describe('NavigationItem Entity', () => {
       const item = NavigationItem.create(
         'test',
         'Test Item',
-        'https://example.com',
+        'https:
         'Test description',
         '🧪',
         5
@@ -95,7 +95,7 @@ describe('NavigationItem Entity', () => {
       expect(plainObject).toEqual({
         id: 'test',
         name: 'Test Item',
-        url: 'https://example.com',
+        url: 'https:
         description: 'Test description',
         icon: '🧪',
         isActive: true,
@@ -105,6 +105,3 @@ describe('NavigationItem Entity', () => {
     })
   })
 })
-
-// Narrative: These tests ensure NavigationItem entity maintains its invariants
-// and behaves correctly according to SCL domain rules 

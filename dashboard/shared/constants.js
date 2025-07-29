@@ -10,7 +10,7 @@ export const COLORS = {
   actor: '#43a047',
   concept: '#ff7043',
   process: '#26c6da',
-  reference: '#9e9e9e' // Color gris para nodos referenciados pero no definidos
+  reference: '#9e9e9e',
 };
 
 /**
@@ -31,7 +31,7 @@ export const REVERSE_TYPE_MAP = {
   actor: 'Actores',
   concept: 'Conceptos',
   process: 'Procesos',
-  reference: 'Referencias' // Categoría para nodos referenciados pero no definidos
+  reference: 'Referencias',
 };
 
 /**

@@ -7,7 +7,7 @@ export class InMemoryNavigationRepository implements NavigationRepository {
   private navigation: Navigation
 
   constructor() {
-    // Initialize with SCL modules as defined in hexy.scl.yaml
+
     const moduleItems = [
       NavigationItem.create(
         'introduction',

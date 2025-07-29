@@ -13,7 +13,7 @@ export class Artifact {
     this.name = name;
     this.type = type;
     this.info = info;
-    // Propiedades para D3.js
+
     this.x = undefined;
     this.y = undefined;
     this.vx = undefined;

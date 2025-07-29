@@ -12,14 +12,22 @@ export class GraphService {
    * @param {Function} onNodeNameChange - Función a llamar cuando cambia el nombre de un nodo
    * @param {Function} onNodeDescriptionChange - Función a llamar cuando cambia la descripción de un nodo
    */
-  constructor(svgElement, tooltipElement, menuElement, onNodeTypeChange, onNodeNameChange, onNodeDescriptionChange) {
+  constructor(
+    svgElement,
+    tooltipElement,
+    menuElement,
+    onNodeTypeChange,
+    onNodeNameChange,
+    onNodeDescriptionChange
+  ) {
     this.svg = d3.select(svgElement);
     this.svgEl = svgElement;
     this.tooltip = tooltipElement;
     this.menu = menuElement;
     this.onNodeTypeChange = onNodeTypeChange;
     this.onNodeNameChange = onNodeNameChange || this.onNodeNameChange;
-    this.onNodeDescriptionChange = onNodeDescriptionChange || this.onNodeDescriptionChange;
+    this.onNodeDescriptionChange =
+      onNodeDescriptionChange || this.onNodeDescriptionChange;
     this.width = this.svgEl.clientWidth;
     this.height = this.svgEl.clientHeight;
     this.nodes = [];
@@ -28,7 +36,7 @@ export class GraphService {
     this.g = null;
     this.linkGroup = null;
     this.nodeGroup = null;
-    
+
     this.setupGraph();
   }
 
@@ -36,12 +44,12 @@ export class GraphService {
    * Configura el grafo D3.js
    */
   setupGraph() {
-    // Crear grupos para nodos y enlaces
+
     this.g = this.svg.append('g');
     this.linkGroup = this.g.append('g');
     this.nodeGroup = this.g.append('g');
 
-    // Configurar zoom
+
     this.svg.call(
       d3
         .zoom()
@@ -49,7 +57,7 @@ export class GraphService {
         .on('zoom', ({ transform }) => this.g.attr('transform', transform))
     );
 
-    // Configurar marcador de flecha
+
     this.svg
       .append('defs')
       .append('marker')
@@ -65,21 +73,21 @@ export class GraphService {
       .attr('fill', '#90a4ae')
       .attr('opacity', 0.9);
 
-    // Configurar simulación
+
     this.simulation = d3
       .forceSimulation(this.nodes)
       .force(
         'link',
         d3
           .forceLink(this.links)
-          .id((d) => d.id)
+          .id(d => d.id)
           .distance(120)
           .strength(0.7)
       )
       .force('charge', d3.forceManyBody().strength(-400))
       .force('center', d3.forceCenter(this.width / 2, this.height / 2));
 
-    // Configurar evento de tick
+
     this.simulation.on('tick', () => this.onTick());
   }
 
@@ -89,11 +97,50 @@ export class GraphService {
   onTick() {
     this.linkGroup
       .selectAll('line')
-      .attr('x1', (d) => d.source.x)
-      .attr('y1', (d) => d.source.y)
-      .attr('x2', (d) => d.target.x)
-      .attr('y2', (d) => d.target.y);
-    this.nodeGroup.selectAll('g').attr('transform', (d) => `translate(${d.x},${d.y})`);
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
+    this.nodeGroup
+      .selectAll('g')
+      .attr('transform', d => `translate(${d.x},${d.y})`);
+  }
+
+  /**
+   * Actualiza solo un nodo específico sin recargar todo el grafo
+   * @param {Object} node - Nodo a actualizar
+   * @param {string} property - Propiedad que cambió ('type', 'name', 'description')
+   * @param {string} oldValue - Valor anterior
+   * @param {string} newValue - Nuevo valor
+   */
+  updateNode(node, property, oldValue, newValue) {
+    if (oldValue === newValue) {
+      return;
+    }
+
+    const nodeElement = this.nodeGroup.selectAll('g').filter(d => d.id === node.id);
+    
+    if (property === 'type') {
+
+      node.type = newValue;
+
+      nodeElement
+        .select('circle')
+        .transition()
+        .duration(300)
+        .style('fill', COLORS[newValue]);
+    } else if (property === 'name') {
+
+      node.id = newValue.replace(/\s+/g, '');
+      node.name = newValue;
+
+      nodeElement
+        .select('text')
+        .text(newValue);
+    } else if (property === 'description') {
+
+      node.info = newValue;
+    }
   }
 
   /**
@@ -106,26 +153,27 @@ export class GraphService {
     this.nodes = nodes;
     this.links = links;
 
-    // Links
+
     const lk = this.linkGroup
       .selectAll('line')
-      .data(this.links, (d) => d.getId());
+      .data(this.links, d => d.getId());
     lk.exit().remove();
     lk.enter()
       .append('line')
       .attr('class', 'link')
       .attr('marker-end', 'url(#arrow)')
-      .attr('stroke-width', (d) => d.weight);
+      .attr('stroke-width', d => d.weight);
 
-    // Nodes
-    const nd = this.nodeGroup.selectAll('g').data(this.nodes, (d) => d.id);
+
+    const nd = this.nodeGroup.selectAll('g').data(this.nodes, d => d.id);
     nd.exit().remove();
     const ne = nd
       .enter()
       .append('g')
       .attr('class', 'node')
       .call(
-        d3.drag()
+        d3
+          .drag()
           .on('start', (e, d) => this.dragStart(e, d))
           .on('drag', (e, d) => this.dragging(e, d))
           .on('end', (e, d) => this.dragEnd(e, d))
@@ -135,7 +183,7 @@ export class GraphService {
         this.tooltip.style.display = 'block';
         this.tooltip.textContent = d.info;
       })
-      .on('mousemove', (e) => {
+      .on('mousemove', e => {
         this.tooltip.style.left = `${e.pageX + 10}px`;
         this.tooltip.style.top = `${e.pageY + 10}px`;
       })
@@ -144,15 +192,15 @@ export class GraphService {
       });
 
     ne.append('circle')
-      .attr('r', d => d.type === 'reference' ? 20 : 28) // Nodos de referencia más pequeños
-      .attr('fill', (d) => COLORS[d.type] || '#ccc')
-      .attr('stroke', d => d.type === 'reference' ? '#616161' : 'none') // Borde para nodos de referencia
-      .attr('stroke-width', d => d.type === 'reference' ? 2 : 0)
-      .attr('stroke-dasharray', d => d.type === 'reference' ? '3,3' : 'none'); // Borde punteado para referencias
+      .attr('r', d => (d.type === 'reference' ? 20 : 28))
+      .attr('fill', d => COLORS[d.type] || '#ccc')
+      .attr('stroke', d => (d.type === 'reference' ? '#616161' : 'none'))
+      .attr('stroke-width', d => (d.type === 'reference' ? 2 : 0))
+      .attr('stroke-dasharray', d => (d.type === 'reference' ? '3,3' : 'none'));
     ne.append('text')
       .attr('y', 4)
       .attr('text-anchor', 'middle')
-      .text((d) => d.id);
+      .text(d => d.id);
 
     this.simulation.nodes(this.nodes);
     this.simulation.force('link').links(this.links);
@@ -175,37 +223,37 @@ export class GraphService {
     this.menu.style.left = `${event.pageX}px`;
     this.menu.style.top = `${event.pageY}px`;
 
-    // Sección para cambiar el tipo de nodo
+
     const typeSection = document.createElement('div');
     typeSection.className = 'menu-section';
     typeSection.innerHTML = '<h3>Cambiar tipo</h3>';
     this.menu.appendChild(typeSection);
 
-    Object.keys(COLORS).forEach((type) => {
+    Object.keys(COLORS).forEach(type => {
       const item = document.createElement('div');
       item.textContent = type;
       item.className = 'menu-item';
       item.onclick = () => {
         const oldType = d.type;
-        d.type = type;
-        d3.select(nodeElement)
-          .select('circle')
-          .transition()
-          .duration(500)
-          .style('fill', COLORS[type]);
-        this.menu.style.display = 'none';
-        this.onNodeTypeChange(d, oldType, type);
+        
+
+        if (oldType !== type) {
+          this.menu.style.display = 'none';
+          this.onNodeTypeChange(d, oldType, type);
+        } else {
+          this.menu.style.display = 'none';
+        }
       };
       typeSection.appendChild(item);
     });
 
-    // Sección para editar el nodo
+
     const editSection = document.createElement('div');
     editSection.className = 'menu-section';
     editSection.innerHTML = '<h3>Editar nodo</h3>';
     this.menu.appendChild(editSection);
 
-    // Opción para editar nombre
+
     const editNameItem = document.createElement('div');
     editNameItem.textContent = 'Editar nombre';
     editNameItem.className = 'menu-item';
@@ -215,7 +263,7 @@ export class GraphService {
     };
     editSection.appendChild(editNameItem);
 
-    // Opción para editar descripción
+
     const editDescItem = document.createElement('div');
     editDescItem.textContent = 'Editar descripción';
     editDescItem.className = 'menu-item';
@@ -225,9 +273,13 @@ export class GraphService {
     };
     editSection.appendChild(editDescItem);
 
-    document.addEventListener('click', () => (this.menu.style.display = 'none'), {
-      once: true,
-    });
+    document.addEventListener(
+      'click',
+      () => (this.menu.style.display = 'none'),
+      {
+        once: true,
+      }
+    );
   }
 
   /**
@@ -278,7 +330,10 @@ export class GraphService {
   resize() {
     this.width = this.svgEl.clientWidth;
     this.height = this.svgEl.clientHeight;
-    this.simulation.force('center', d3.forceCenter(this.width / 2, this.height / 2));
+    this.simulation.force(
+      'center',
+      d3.forceCenter(this.width / 2, this.height / 2)
+    );
     this.simulation.alpha(0.3).restart();
   }
 
@@ -288,7 +343,7 @@ export class GraphService {
    * @param {Element} nodeElement - Elemento DOM del nodo
    */
   showEditNameDialog(node, nodeElement) {
-    // Crear el diálogo modal
+
     const dialog = document.createElement('div');
     dialog.className = 'edit-dialog modal';
     dialog.style.display = 'block';
@@ -305,7 +360,7 @@ export class GraphService {
     `;
     document.body.appendChild(dialog);
 
-    // Configurar eventos
+
     const closeBtn = dialog.querySelector('.close-button');
     const saveBtn = dialog.querySelector('#save-node-name');
     const input = dialog.querySelector('#node-name');
@@ -319,24 +374,24 @@ export class GraphService {
       if (newName && newName !== node.name) {
         const oldName = node.name;
         node.name = newName;
-        
-        // Actualizar el texto del nodo en el SVG
+
+
         d3.select(nodeElement).select('text').text(newName);
-        
-        // Notificar al editor para actualizar el texto
+
+
         this.onNodeNameChange(node, oldName, newName);
       }
       document.body.removeChild(dialog);
     };
 
-    // Cerrar al hacer clic fuera
-    window.onclick = (event) => {
+
+    window.onclick = event => {
       if (event.target === dialog) {
         document.body.removeChild(dialog);
       }
     };
 
-    // Enfocar el input
+
     input.focus();
     input.select();
   }
@@ -347,7 +402,7 @@ export class GraphService {
    * @param {Element} nodeElement - Elemento DOM del nodo
    */
   showEditDescriptionDialog(node, nodeElement) {
-    // Crear el diálogo modal
+
     const dialog = document.createElement('div');
     dialog.className = 'edit-dialog modal';
     dialog.style.display = 'block';
@@ -364,7 +419,7 @@ export class GraphService {
     `;
     document.body.appendChild(dialog);
 
-    // Configurar eventos
+
     const closeBtn = dialog.querySelector('.close-button');
     const saveBtn = dialog.querySelector('#save-node-description');
     const textarea = dialog.querySelector('#node-description');
@@ -378,21 +433,21 @@ export class GraphService {
       if (newDescription !== node.info) {
         const oldDescription = node.info;
         node.info = newDescription;
-        
-        // Notificar al editor para actualizar el texto
+
+
         this.onNodeDescriptionChange(node, oldDescription, newDescription);
       }
       document.body.removeChild(dialog);
     };
 
-    // Cerrar al hacer clic fuera
-    window.onclick = (event) => {
+
+    window.onclick = event => {
       if (event.target === dialog) {
         document.body.removeChild(dialog);
       }
     };
 
-    // Enfocar el textarea
+
     textarea.focus();
   }
 
@@ -403,7 +458,7 @@ export class GraphService {
    * @param {string} newName - Nuevo nombre
    */
   onNodeNameChange(node, oldName, newName) {
-    // Este método debe ser sobrescrito por el controlador
+
     console.log(`Nombre del nodo cambiado: ${oldName} -> ${newName}`);
   }
 
@@ -414,7 +469,7 @@ export class GraphService {
    * @param {string} newDescription - Nueva descripción
    */
   onNodeDescriptionChange(node, oldDescription, newDescription) {
-    // Este método debe ser sobrescrito por el controlador
+
     console.log(`Descripción del nodo cambiada`);
   }
 }

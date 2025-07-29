@@ -20,14 +20,14 @@ export default function DualEditor() {
     `Policy:\n  id: StockBajo\n  premise: >\n    Si Concepto:Producto tiene unidades < 5, emitir alerta a equipo de compras.`
   )
 
-  // --- naïve converters (placeholders) ---
+
   const narrativeToYaml = (text: string) => {
-    // ¡Stub! Replace with real NLP + template logic
+
     return `# Generado automáticamente\nPolicy:\n  id: Auto\n  premise: >\n    ${text}`
   }
 
   const yamlToNarrative = (code: string) => {
-    // ¡Stub! Simple extractor of YAML premise line
+
     const match = code.match(/premise:\s*>\s*([\s\S]*)/)
     return match ? match[1].trim() : ""
   }

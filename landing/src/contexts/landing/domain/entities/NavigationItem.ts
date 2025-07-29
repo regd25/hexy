@@ -86,8 +86,8 @@ export class NavigationItem extends Entity<NavigationItemId> {
     return this._url.isExternal()
   }
 
-  // Narrative: NavigationItem preserves the semantic structure of navigation elements
-  // ensuring consistency and validation across the landing page interface
+
+
   toPlainObject() {
     return {
       id: this.id.value,

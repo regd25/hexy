@@ -1,7 +1,6 @@
 import { NavigationService } from '../../application/services/NavigationService'
 import { InMemoryNavigationRepository } from '../repositories/InMemoryNavigationRepository'
 
-// Adapter pattern to connect domain layer with React UI
 export class NavigationAdapter {
   private navigationService: NavigationService
 
@@ -29,8 +28,4 @@ export class NavigationAdapter {
   }
 }
 
-// Singleton instance for React components
 export const navigationAdapter = new NavigationAdapter()
-
-// Narrative: NavigationAdapter bridges the gap between domain logic and React UI,
-// following hexagonal architecture principles by keeping UI concerns separate from business logic 

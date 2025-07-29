@@ -20,13 +20,13 @@ export class ConfigService {
    * Configura el modal de configuración
    */
   setupConfigModal() {
-    // Crear botón de configuración
+
     this.configBtn = document.createElement('button');
     this.configBtn.id = 'config-btn';
     this.configBtn.textContent = '⚙️';
     this.graphContainer.appendChild(this.configBtn);
 
-    // Crear modal
+
     this.modal = document.createElement('div');
     this.modal.id = 'config-modal';
     this.modal.className = 'modal';
@@ -40,9 +40,9 @@ export class ConfigService {
     `;
     document.body.appendChild(this.modal);
 
-    // Configurar inputs de colores
+
     const colorConfigInputs = document.getElementById('color-config-inputs');
-    Object.keys(COLORS).forEach((type) => {
+    Object.keys(COLORS).forEach(type => {
       const label = document.createElement('label');
       label.textContent = type;
       const input = document.createElement('input');
@@ -53,20 +53,20 @@ export class ConfigService {
       colorConfigInputs.appendChild(label);
     });
 
-    // Configurar eventos
+
     this.configBtn.onclick = () => (this.modal.style.display = 'block');
     document.querySelector('.close-button').onclick = () =>
       (this.modal.style.display = 'none');
     document.getElementById('save-colors').onclick = () => {
       const newColors = {};
-      Object.keys(COLORS).forEach((type) => {
+      Object.keys(COLORS).forEach(type => {
         newColors[type] = document.getElementById(`color-${type}`).value;
       });
       this.onColorsChange(newColors);
       this.modal.style.display = 'none';
     };
 
-    window.onclick = (event) => {
+    window.onclick = event => {
       if (event.target == this.modal) {
         this.modal.style.display = 'none';
       }
