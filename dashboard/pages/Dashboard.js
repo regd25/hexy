@@ -2,136 +2,641 @@ import { GraphService } from '../graph/GraphService.js';
 import { ConfigService } from '../graph/ConfigService.js';
 import { EditorService } from '../editor/EditorService.js';
 import { ArtifactParser } from '../services/ArtifactParser.js';
-import { COLORS, DEFAULT_TEXT } from '../shared/constants.js';
+import { Artifact } from '../models/Artifact.js';
+import { COLORS, TYPE_MAP, REVERSE_TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
 
 /**
- * Clase principal que integra todos los componentes del dashboard
+ * Clase principal del Dashboard
  */
 export class Dashboard {
-  /**
-   * Inicializa el dashboard
-   */
   constructor() {
+    this.artifacts = [];
+    this.selectedArtifact = null;
+    this.searchQuery = '';
+    this.isSearchVisible = false;
+    
+    this.initializeServices();
+    this.initializeElements();
+    this.setupEventListeners();
+    this.loadDefaultData();
+    this.updateArtifactCount();
+  }
 
-    this.svgElement = document.getElementById('graph');
-    this.tooltipElement = document.getElementById('tooltip');
-    this.menuElement = document.getElementById('menu');
-    this.editorElement = document.getElementById('editor');
-    this.graphContainer = document.getElementById('graph-container');
-
+  /**
+   * Inicializa los servicios
+   */
+  initializeServices() {
+    const svgElement = document.getElementById('graph');
+    const tooltipElement = document.getElementById('tooltip');
+    const menuElement = document.getElementById('menu');
+    const editor = document.getElementById('editor');
+    const graphContainer = document.getElementById('graph-container');
 
     this.graphService = new GraphService(
-      this.svgElement,
-      this.tooltipElement,
-      this.menuElement,
-      this.handleNodeTypeChange.bind(this),
-      this.handleNodeNameChange.bind(this),
-      this.handleNodeDescriptionChange.bind(this)
+      svgElement,
+      tooltipElement,
+      menuElement,
+      this.onNodeTypeChange.bind(this),
+      this.onNodeNameChange.bind(this),
+      this.onNodeDescriptionChange.bind(this)
     );
+    this.configService = new ConfigService(graphContainer, this.onColorsChange.bind(this));
+    this.editorService = new EditorService(editor, this.onEditorContentChange.bind(this));
+  }
 
-    this.editorService = new EditorService(
-      this.editorElement,
-      this.handleContentChange.bind(this)
-    );
+  /**
+   * Inicializa los elementos del DOM
+   */
+  initializeElements() {
+    this.addArtifactBtn = document.getElementById('add-artifact-btn');
+    this.artifactForm = document.getElementById('artifact-form');
+    this.artifactsContainer = document.getElementById('artifacts-container');
+    this.searchBtn = document.getElementById('search-btn');
+    this.searchContainer = document.getElementById('search-container');
+    this.searchInput = document.getElementById('search-input');
+    this.exportBtn = document.getElementById('export-btn');
+    this.importBtn = document.getElementById('import-btn');
+    this.configBtn = document.getElementById('config-btn');
+    this.editBtn = document.getElementById('edit-btn');
+    this.visualizeBtn = document.getElementById('visualize-btn');
+    this.artifactCount = document.getElementById('artifact-count');
+    this.createBtn = document.getElementById('create-btn');
+    this.cancelBtn = document.getElementById('cancel-btn');
+    this.artifactNameInput = document.getElementById('artifact-name');
+    this.artifactTypeSelect = document.getElementById('artifact-type');
+    this.artifactDescriptionInput = document.getElementById('artifact-description');
+  }
 
-    this.configService = new ConfigService(
-      this.graphContainer,
-      this.handleColorsChange.bind(this)
-    );
+  /**
+   * Configura los event listeners
+   */
+  setupEventListeners() {
+    this.addArtifactBtn.addEventListener('click', () => this.toggleArtifactForm());
+    this.searchBtn.addEventListener('click', () => this.toggleSearch());
+    this.exportBtn.addEventListener('click', () => this.exportData());
+    this.importBtn.addEventListener('click', () => this.importData());
+    this.editBtn.addEventListener('click', () => this.editorService.showEditModal());
+    this.visualizeBtn.addEventListener('click', () => this.editorService.showVisualizeModal());
+    this.configBtn.addEventListener('click', () => this.showConfig());
+    this.createBtn.addEventListener('click', () => this.createArtifact());
+    this.cancelBtn.addEventListener('click', () => this.toggleArtifactForm());
 
+    this.searchInput.addEventListener('input', (e) => {
+      this.searchQuery = e.target.value;
+      this.filterArtifacts();
+    });
 
+    this.artifactNameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.createArtifact();
+    });
+  }
+
+  /**
+   * Carga datos por defecto
+   */
+  loadDefaultData() {
+    
+    // Cargar el texto por defecto en el editor
     this.editorService.setContent(DEFAULT_TEXT);
+    
+    // Por ahora, usar directamente los artefactos por defecto
+    const defaultArtifacts = [
+      new Artifact('hexy-framework', 'Hexy Framework', 'purpose', 'Hexy es un framework de contexto organizacional, ayuda a los LLMs a apegarse fuertemente a la lógica de operación del negocio de manera optimizado, escalable y ejecutable'),
+      new Artifact('development-environment', 'Development Environment', 'context', 'Entorno de desarrollo para crear y gestionar artefactos semánticos'),
+      new Artifact('organizational-context', 'Organizational Context', 'context', 'Contexto organizacional donde se aplican los artefactos'),
+      new Artifact('developer', 'Developer', 'actor', 'Desarrollador que utiliza el framework Hexy'),
+      new Artifact('operator', 'Operator', 'actor', 'Operador que interactúa con las interfaces de Hexy'),
+      new Artifact('agent', 'Agent', 'actor', 'Agente de onboarding encargado de realizar el onboarding a la ontología organizacional'),
+      new Artifact('artifact', 'Artifact', 'concept', 'Objetos semánticos en la ontología organizacional'),
+      new Artifact('semantic-model', 'Semantic Model', 'concept', 'Modelo semántico que representa la lógica de negocio'),
+      new Artifact('organizational-logic', 'Organizational Logic', 'concept', 'Lógica operativa del negocio')
+    ];
 
+    this.artifacts = defaultArtifacts;
+    this.renderArtifacts();
+    this.updateGraph();
+    this.updateArtifactCount();
+    
+  }
 
-    window.addEventListener('resize', () => {
-      this.graphService.resize();
+  /**
+   * Alterna la visibilidad del formulario de artefactos
+   */
+  toggleArtifactForm() {
+    const isVisible = !this.artifactForm.classList.contains('hidden');
+
+    if (isVisible) {
+      this.artifactForm.classList.add('hidden');
+      this.addArtifactBtn.innerHTML = `
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Nuevo Artefacto
+      `;
+    } else {
+      this.artifactForm.classList.remove('hidden');
+      this.addArtifactBtn.innerHTML = `
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Cancelar
+      `;
+      this.artifactNameInput.focus();
+    }
+  }
+
+  /**
+   * Alterna la visibilidad de la búsqueda
+   */
+  toggleSearch() {
+    const isVisible = !this.searchContainer.classList.contains('hidden');
+
+    if (isVisible) {
+      this.searchContainer.classList.add('hidden');
+      this.searchQuery = '';
+      this.searchInput.value = '';
+      this.filterArtifacts();
+    } else {
+      this.searchContainer.classList.remove('hidden');
+      this.searchInput.focus();
+    }
+  }
+
+  /**
+ * Crea un nuevo artefacto
+ */
+  createArtifact() {
+    const name = this.artifactNameInput.value.trim();
+    const type = this.artifactTypeSelect.value;
+    const description = this.artifactDescriptionInput.value.trim();
+
+    if (!name) {
+      this.showNotification('El nombre es requerido', 'error');
+      return;
+    }
+
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    const artifact = new Artifact(id, name, type, description);
+    this.addArtifact(artifact);
+
+    this.artifactNameInput.value = '';
+    this.artifactDescriptionInput.value = '';
+    this.toggleArtifactForm();
+
+    this.showNotification('Artefacto creado exitosamente', 'success');
+  }
+
+  /**
+   * Agrega un artefacto a la lista
+   */
+  addArtifact(artifact) {
+    this.artifacts.push(artifact);
+    this.renderArtifacts();
+    this.updateGraph();
+    this.updateArtifactCount();
+  }
+
+  /**
+   * Renderiza la lista de artefactos
+   */
+  renderArtifacts() {
+    this.artifactsContainer.innerHTML = '';
+    
+    const filteredArtifacts = this.searchQuery 
+      ? this.artifacts.filter(artifact => 
+          artifact.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          artifact.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          artifact.type.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+      : this.artifacts;
+
+    filteredArtifacts.forEach(artifact => {
+      const artifactElement = this.createArtifactElement(artifact);
+      this.artifactsContainer.appendChild(artifactElement);
     });
+    
   }
 
   /**
-   * Maneja el cambio de contenido en el editor
-   * @param {Array} nodes - Lista de nodos
-   * @param {Array} links - Lista de enlaces
+   * Crea un elemento de artefacto
    */
-  handleContentChange(nodes, links) {
-    this.graphService.refresh(nodes, links);
+  createArtifactElement(artifact) {
+    const div = document.createElement('div');
+    div.className = 'artifact-item';
+    div.innerHTML = `
+      <h4>${artifact.name}</h4>
+      <p>${artifact.description}</p>
+      <span class="artifact-type ${artifact.type}">${artifact.type}</span>
+    `;
+
+    div.addEventListener('click', () => this.selectArtifact(artifact));
+    div.addEventListener('contextmenu', (e) => this.showContextMenu(e, artifact));
+
+    return div;
   }
 
   /**
-   * Maneja el cambio de tipo de un nodo
-   * @param {Object} node - Nodo que ha cambiado
-   * @param {string} oldType - Tipo anterior
-   * @param {string} newType - Nuevo tipo
+   * Selecciona un artefacto
    */
-  handleNodeTypeChange(node, oldType, newType) {
+  selectArtifact(artifact) {
+    this.selectedArtifact = artifact;
 
-    this.graphService.updateNode(node, 'type', oldType, newType);
+    document.querySelectorAll('.artifact-item').forEach(item => {
+      item.classList.remove('selected');
+    });
 
-    this.editorService.updateEditorText(node, oldType, newType);
+    event.target.closest('.artifact-item').classList.add('selected');
   }
 
   /**
-   * Maneja el cambio de nombre de un nodo
-   * @param {Object} node - Nodo que ha cambiado
-   * @param {string} oldName - Nombre anterior
-   * @param {string} newName - Nuevo nombre
+   * Muestra el menú contextual
    */
-  handleNodeNameChange(node, oldName, newName) {
+  showContextMenu(event, artifact) {
+    event.preventDefault();
 
-    this.graphService.updateNode(node, 'name', oldName, newName);
+    const menu = document.getElementById('menu');
+    menu.innerHTML = `
+      <div class="menu-item" onclick="window.dashboard.changeArtifactType('${artifact.id}')">Change Type</div>
+      <div class="menu-item" onclick="window.dashboard.editArtifact('${artifact.id}')">Edit</div>
+      <div class="menu-item danger" onclick="window.dashboard.deleteArtifact('${artifact.id}')">Delete</div>
+    `;
 
-    this.editorService.updateNodeName(node, oldName, newName);
+    menu.style.display = 'block';
+    menu.style.left = event.pageX + 'px';
+    menu.style.top = event.pageY + 'px';
+
+    setTimeout(() => {
+      document.addEventListener('click', () => {
+        menu.style.display = 'none';
+      }, { once: true });
+    }, 0);
   }
 
   /**
-   * Maneja el cambio de descripción de un nodo
-   * @param {Object} node - Nodo que ha cambiado
-   * @param {string} oldDescription - Descripción anterior
-   * @param {string} newDescription - Nueva descripción
+   * Cambia el tipo de un artefacto
    */
-  handleNodeDescriptionChange(node, oldDescription, newDescription) {
+  changeArtifactType(artifactId) {
+    const artifact = this.artifacts.find(a => a.id === artifactId);
+    if (!artifact) return;
 
-    this.graphService.updateNode(node, 'description', oldDescription, newDescription);
+    const currentIndex = Object.values(TYPE_MAP).indexOf(artifact.type);
+    const nextIndex = (currentIndex + 1) % Object.values(TYPE_MAP).length;
+    artifact.type = Object.values(TYPE_MAP)[nextIndex];
 
-    this.editorService.updateNodeDescription(
-      node,
-      oldDescription,
-      newDescription
-    );
+    this.renderArtifacts();
+    this.updateGraph();
+    this.showNotification('Tipo de artefacto cambiado', 'success');
   }
 
   /**
-   * Maneja el cambio de colores en la configuración
-   * @param {Object} newColors - Nuevos colores
+   * Edita un artefacto
    */
-  handleColorsChange(newColors) {
+  editArtifact(artifactId) {
+    const artifact = this.artifacts.find(a => a.id === artifactId);
+    if (!artifact) return;
 
+    this.showModal(`
+      <div class="modal-header">
+        <h3 class="modal-title">Editar Artefacto</h3>
+        <span class="modal-close" onclick="this.closest('.modal-overlay').classList.add('hidden')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="edit-name" class="form-input" value="${artifact.name}">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="edit-type" class="form-input">
+            ${Object.entries(TYPE_MAP).map(([key, value]) =>
+      `<option value="${value}" ${artifact.type === value ? 'selected' : ''}>${key}</option>`
+    ).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="edit-description" class="form-input" rows="3">${artifact.description}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="primary-btn" onclick="window.dashboard.saveArtifactEdit('${artifactId}')">Guardar</button>
+        <button class="secondary-btn" onclick="this.closest('.modal-overlay').classList.add('hidden')">Cancelar</button>
+      </div>
+    `);
+  }
+
+  /**
+   * Guarda la edición de un artefacto
+   */
+  saveArtifactEdit(artifactId) {
+    const artifact = this.artifacts.find(a => a.id === artifactId);
+    if (!artifact) return;
+
+    const name = document.getElementById('edit-name').value.trim();
+    const type = document.getElementById('edit-type').value;
+    const description = document.getElementById('edit-description').value.trim();
+
+    if (!name) {
+      this.showNotification('El nombre es requerido', 'error');
+      return;
+    }
+
+    artifact.name = name;
+    artifact.type = type;
+    artifact.description = description;
+
+    this.renderArtifacts();
+    this.updateGraph();
+    this.hideModal();
+    this.showNotification('Artefacto actualizado', 'success');
+  }
+
+  /**
+   * Elimina un artefacto
+   */
+  deleteArtifact(artifactId) {
+    const artifact = this.artifacts.find(a => a.id === artifactId);
+    if (!artifact) return;
+
+    this.showModal(`
+      <div class="modal-header">
+        <h3 class="modal-title">Eliminar Artefacto</h3>
+        <span class="modal-close" onclick="this.closest('.modal-overlay').classList.add('hidden')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar "${artifact.name}"?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="primary-btn" onclick="window.dashboard.confirmDeleteArtifact('${artifactId}')">Confirm</button>
+        <button class="secondary-btn" onclick="this.closest('.modal-overlay').classList.add('hidden')">Cancelar</button>
+      </div>
+    `);
+  }
+
+  /**
+   * Confirma la eliminación de un artefacto
+   */
+  confirmDeleteArtifact(artifactId) {
+    this.artifacts = this.artifacts.filter(a => a.id !== artifactId);
+    this.renderArtifacts();
+    this.updateGraph();
+    this.updateArtifactCount();
+    this.hideModal();
+    this.showNotification('Artefacto eliminado', 'success');
+  }
+
+  /**
+   * Filtra los artefactos según la búsqueda
+   */
+  filterArtifacts() {
+    this.renderArtifacts();
+  }
+
+  /**
+   * Actualiza el contador de artefactos
+   */
+  updateArtifactCount() {
+    this.artifactCount.textContent = this.artifacts.length;
+  }
+
+  /**
+   * Actualiza el grafo
+   */
+  updateGraph() {
+    const nodes = this.artifacts.map(artifact => ({
+      id: artifact.id,
+      name: artifact.name,
+      type: artifact.type,
+      description: artifact.description
+    }));
+
+    const links = this.generateLinks(nodes);
+    this.graphService.refresh(nodes, links, true);
+  }
+
+  /**
+   * Genera enlaces entre artefactos
+   */
+  generateLinks(nodes) {
+    const links = [];
+    const processed = new Set();
+
+    nodes.forEach((node, i) => {
+      nodes.forEach((otherNode, j) => {
+        if (i !== j && !processed.has(`${i}-${j}`)) {
+          const link = this.createLink(node, otherNode);
+          if (link) {
+            links.push(link);
+            processed.add(`${i}-${j}`);
+            processed.add(`${j}-${i}`);
+          }
+        }
+      });
+    });
+
+    return links;
+  }
+
+  /**
+   * Crea un enlace entre dos nodos
+   */
+  createLink(node1, node2) {
+    const relationships = {
+      purpose: ['context', 'actor'],
+      context: ['actor', 'process'],
+      actor: ['process', 'area'],
+      process: ['procedure', 'event'],
+      procedure: ['event', 'result'],
+      event: ['result', 'observation'],
+      result: ['evaluation'],
+      evaluation: ['policy', 'principle'],
+      policy: ['guideline'],
+      principle: ['guideline'],
+      guideline: ['concept'],
+      concept: ['indicator'],
+      indicator: ['vision'],
+      vision: ['purpose']
+    };
+
+    if (relationships[node1.type] && relationships[node1.type].includes(node2.type)) {
+      return {
+        source: node1.id,
+        target: node2.id,
+        type: `${node1.type}-${node2.type}`
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Callback cuando se actualiza el grafo
+   */
+  onGraphUpdate() {
+    
+  }
+
+  /**
+   * Callback cuando cambia el tipo de un nodo
+   */
+  onNodeTypeChange(node, oldType, newType) {
+    const artifact = this.artifacts.find(a => a.id === node.id);
+    if (artifact) {
+      artifact.type = newType;
+      this.renderArtifacts();
+    }
+  }
+
+  /**
+   * Callback cuando cambia el nombre de un nodo
+   */
+  onNodeNameChange(node, oldName, newName) {
+    const artifact = this.artifacts.find(a => a.id === node.id);
+    if (artifact) {
+      artifact.name = newName;
+      this.renderArtifacts();
+    }
+  }
+
+  /**
+   * Callback cuando cambia la descripción de un nodo
+   */
+  onNodeDescriptionChange(node, oldDescription, newDescription) {
+    const artifact = this.artifacts.find(a => a.id === node.id);
+    if (artifact) {
+      artifact.description = newDescription;
+      this.renderArtifacts();
+    }
+  }
+
+  /**
+   * Callback cuando cambian los colores
+   */
+  onColorsChange(newColors) {
+    // Actualizar los colores globales
     Object.keys(newColors).forEach(type => {
-      COLORS[type] = newColors[type];
+      if (COLORS[type]) {
+        COLORS[type] = newColors[type];
+      }
     });
-
-
-    const { nodes, links } = ArtifactParser.parseArtifacts(
-      this.editorService.getContent()
-    );
-    const validLinks = ArtifactParser.getValidLinks(links);
-    this.graphService.refresh(nodes, validLinks);
+    
+    // Refrescar el grafo con los nuevos colores
+    this.updateGraph();
+    this.showNotification('Colores actualizados', 'success');
   }
 
   /**
-   * Inicializa la aplicación
+ * Callback cuando cambia el contenido del editor
+ */
+  onEditorContentChange(content) {
+    const { nodes, links } = ArtifactParser.parseArtifacts(content);
+
+    if (nodes.length > 0) {
+      this.artifacts = nodes;
+      this.renderArtifacts();
+      this.updateGraph();
+      this.updateArtifactCount();
+    }
+  }
+
+  /**
+   * Muestra la configuración
    */
-  static init() {
+  showConfig() {
+    this.configService.showConfigModal();
+  }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const dashboard = new Dashboard();
+  /**
+   * Exporta los datos
+   */
+  exportData() {
+    const data = {
+      artifacts: this.artifacts,
+      timestamp: new Date().toISOString()
+    };
 
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hexy-artifacts-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
 
-      const { nodes, links } = ArtifactParser.parseArtifacts(DEFAULT_TEXT);
-      const validLinks = ArtifactParser.getValidLinks(links);
+    this.showNotification('Datos exportados exitosamente', 'success');
+  }
 
-      dashboard.graphService.refresh(nodes, validLinks, false);
-      dashboard.graphService.runSimulation(300);
-    });
+  /**
+   * Importa los datos
+   */
+  importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data.artifacts && Array.isArray(data.artifacts)) {
+              this.artifacts = data.artifacts.map(a => new Artifact(a.id || a.name.toLowerCase().replace(/\s+/g, '-'), a.name, a.type, a.description || a.info));
+              this.renderArtifacts();
+              this.updateGraph();
+              this.updateArtifactCount();
+              this.showNotification('Datos importados exitosamente', 'success');
+            }
+          } catch (error) {
+            this.showNotification('Error al importar datos', 'error');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  }
+
+  /**
+   * Muestra un modal
+   */
+  showModal(content) {
+    const modalContent = document.getElementById('modal-content');
+    modalContent.innerHTML = content;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  }
+
+  /**
+   * Oculta el modal
+   */
+  hideModal() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  }
+
+  /**
+   * Muestra una notificación
+   */
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      z-index: 1000;
+      background: ${type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#3b82f6'};
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   }
 }

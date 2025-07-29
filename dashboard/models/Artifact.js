@@ -13,6 +13,7 @@ export class Artifact {
     this.name = name;
     this.type = type;
     this.info = info;
+    this.description = info;
 
     this.x = undefined;
     this.y = undefined;

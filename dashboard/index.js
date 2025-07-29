@@ -1,3 +1,6 @@
 import { Dashboard } from './pages/Dashboard.js';
 
-Dashboard.init();
+// Inicializar el dashboard cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+  window.dashboard = new Dashboard();
+});

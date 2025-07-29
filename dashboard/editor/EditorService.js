@@ -7,7 +7,6 @@ import { REVERSE_TYPE_MAP, COLORS } from '../shared/constants.js';
 export class EditorService {
   /**
    * @param {HTMLTextAreaElement} editorElement - Elemento del editor
-   * @param {HTMLButtonElement} visualizeButton - Botón para visualizar el documento
    * @param {Function} onContentChange - Función a llamar cuando cambia el contenido
    */
   constructor(editorElement, onContentChange) {
@@ -19,8 +18,6 @@ export class EditorService {
     this.autocompleteDropdown = null;
     this.editorMode = 'text';
     this.editorModeIndicator = null;
-    this.setupVisualizeModal();
-    this.setupEditModal();
     this.setupAutocompleteDropdown();
     this.setupEditorMode();
     this.setupEventListeners();
@@ -28,44 +25,58 @@ export class EditorService {
   }
 
   /**
-   * Configura el modal de visualización
+   * Configura el modal de visualización solo cuando es necesario
    */
   setupVisualizeModal() {
+    if (this.modal) return;
 
     this.modal = document.createElement('div');
     this.modal.id = 'visualize-modal';
-    this.modal.className = 'modal';
+    this.modal.className = 'modal-overlay hidden';
     this.modal.innerHTML = `
-      <div class="modal-content">
-          <span class="close-button">&times;</span>
-          <h2>Visualizar Documento</h2>
-          <p>¿Estás seguro de que deseas visualizar el documento actual?</p>
-          <button id="confirm-visualize" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Visualizar</button>
+      <div class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Visualizar Documento</h3>
+            <span class="modal-close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <p>¿Estás seguro de que deseas visualizar el documento actual?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm-visualize" class="btn-primary">Visualizar</button>
+          </div>
+        </div>
       </div>
     `;
     document.body.appendChild(this.modal);
   }
 
   /**
-   * Configura el modal de edición
+   * Configura el modal de edición solo cuando es necesario
    */
   setupEditModal() {
+    if (this.editModal) return;
 
     this.editModal = document.createElement('div');
     this.editModal.id = 'edit-modal';
-    this.editModal.className = 'modal';
+    this.editModal.className = 'modal-overlay hidden';
     this.editModal.innerHTML = `
-      <div class="modal-content edit-modal-content">
-          <span class="close-button">&times;</span>
-          <h2>Editar Documento</h2>
-          <textarea id="modal-editor" spellcheck="false" class="w-full bg-gray-900 text-gray-200 p-4 font-mono text-sm resize-none outline-none whitespace-pre" rows="20"></textarea>
-          <div class="flex justify-between mt-4">
-            <button id="visualize-edit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Visualizar</button>
-            <div>
-              <button id="cancel-edit" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">Cancelar</button>
-              <button id="confirm-edit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
-            </div>
+      <div class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Editar Documento</h3>
+            <span class="modal-close">&times;</span>
           </div>
+          <div class="modal-body">
+            <textarea id="modal-editor" spellcheck="false" class="editor-textarea" rows="20"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button id="visualize-edit" class="btn-secondary">Visualizar</button>
+            <button id="cancel-edit" class="btn-secondary">Cancelar</button>
+            <button id="confirm-edit" class="btn-primary">Guardar</button>
+          </div>
+        </div>
       </div>
     `;
     document.body.appendChild(this.editModal);
@@ -75,10 +86,10 @@ export class EditorService {
    * Configura el dropdown de autocompletado
    */
   setupAutocompleteDropdown() {
-
     this.autocompleteDropdown = document.createElement('div');
     this.autocompleteDropdown.className = 'autocomplete-dropdown';
     this.autocompleteDropdown.style.display = 'none';
+    this.autocompleteDropdown.style.position = 'absolute';
     this.autocompleteDropdown.style.color = '#e5e7eb';
     this.autocompleteDropdown.style.backgroundColor = 'rgba(31, 41, 55, 0.95)';
     this.autocompleteDropdown.style.border = '1px solid #4b5563';
@@ -86,10 +97,8 @@ export class EditorService {
     this.autocompleteDropdown.style.padding = '5px 0';
     this.autocompleteDropdown.style.maxHeight = '200px';
     this.autocompleteDropdown.style.overflowY = 'auto';
-    this.autocompleteDropdown.style.boxShadow =
-      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+    this.autocompleteDropdown.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
     this.autocompleteDropdown.style.zIndex = '1000';
-
 
     const dropdownHeader = document.createElement('div');
     dropdownHeader.className = 'autocomplete-header';
@@ -98,34 +107,10 @@ export class EditorService {
     dropdownHeader.style.fontSize = '0.8em';
     dropdownHeader.style.color = '#9ca3af';
     dropdownHeader.style.fontWeight = 'bold';
-    dropdownHeader.style.display = 'flex';
-    dropdownHeader.style.justifyContent = 'space-between';
-    dropdownHeader.style.alignItems = 'center';
-
-    const headerTitle = document.createElement('span');
-    headerTitle.textContent = 'Referencias de artefactos';
-
-    const keyboardHint = document.createElement('span');
-    keyboardHint.textContent = '↑↓: navegar, Enter: seleccionar, Esc: cerrar';
-    keyboardHint.style.fontSize = '0.75em';
-
-    dropdownHeader.appendChild(headerTitle);
-    dropdownHeader.appendChild(keyboardHint);
+    dropdownHeader.textContent = 'Referencias disponibles:';
 
     this.autocompleteDropdown.appendChild(dropdownHeader);
-
-
-    const itemsContainer = document.createElement('div');
-    itemsContainer.className = 'autocomplete-items-container';
-    itemsContainer.style.maxHeight = '200px';
-    itemsContainer.style.overflowY = 'auto';
-    this.autocompleteDropdown.appendChild(itemsContainer);
-
     document.body.appendChild(this.autocompleteDropdown);
-    console.log('Dropdown de autocompletado configurado');
-
-
-    this.setupKeyboardNavigation();
   }
 
   /**
@@ -319,242 +304,134 @@ export class EditorService {
    * Configura el indicador de modo del editor
    */
   setupEditorMode() {
-
     this.editorModeIndicator = document.createElement('div');
-    this.editorModeIndicator.className = 'editor-mode';
-    this.editorModeIndicator.textContent = 'Modo: Texto';
-    this.editorModeIndicator.style.color = '#e5e7eb';
-    this.editorModeIndicator.style.position = 'fixed';
+    this.editorModeIndicator.className = 'editor-mode-indicator';
+    this.editorModeIndicator.style.position = 'absolute';
     this.editorModeIndicator.style.bottom = '10px';
     this.editorModeIndicator.style.left = '10px';
-    this.editorModeIndicator.style.padding = '5px 10px';
-    this.editorModeIndicator.style.backgroundColor = 'rgba(31, 41, 55, 0.9)';
-    this.editorModeIndicator.style.borderRadius = '4px';
-    this.editorModeIndicator.style.zIndex = '1000';
-    document.body.appendChild(this.editorModeIndicator);
-    console.log('Indicador de modo configurado');
-
-
-    const container = document.getElementById('container');
-    if (container) {
-      container.classList.add('mode-text');
-      console.log('Modo texto aplicado al contenedor:', container);
-    } else {
-      console.error('No se encontró el contenedor del editor (#container)');
+    this.editorModeIndicator.style.fontSize = '0.75rem';
+    this.editorModeIndicator.style.color = '#9ca3af';
+    this.editorModeIndicator.style.pointerEvents = 'none';
+    this.editorModeIndicator.textContent = 'Modo: Texto';
+    
+    if (this.editor.parentElement) {
+      this.editor.parentElement.style.position = 'relative';
+      this.editor.parentElement.appendChild(this.editorModeIndicator);
     }
   }
 
   /**
-   * Configura los event listeners del editor y los botones
+   * Configura los event listeners
    */
   setupEventListeners() {
-
-    const editBtn = document.getElementById('edit-btn');
-    if (editBtn) {
-      editBtn.addEventListener('click', () => {
-        const modalEditor = document.getElementById('modal-editor');
-        modalEditor.value = this.editor.value;
-        this.editModal.style.display = 'block';
-      });
-    }
-
-
-    const visualizeBtn = document.getElementById('visualize-btn');
-    if (visualizeBtn) {
-      visualizeBtn.addEventListener('click', () => {
-        this.modal.style.display = 'block';
-      });
-    }
-
-
-    document.querySelector('#visualize-modal .close-button').onclick = () => {
-      this.modal.style.display = 'none';
-    };
-
-    document.getElementById('confirm-visualize').onclick = () => {
-      const { nodes, links } = ArtifactParser.parseArtifacts(this.editor.value);
-      const validLinks = ArtifactParser.getValidLinks(links);
-      if (this.onContentChange) {
-        this.onContentChange(nodes, validLinks);
-      }
-      this.modal.style.display = 'none';
-    };
-
-
-    document.querySelector('#edit-modal .close-button').onclick = () => {
-      this.editModal.style.display = 'none';
-    };
-
-    document.getElementById('cancel-edit').onclick = () => {
-      this.editModal.style.display = 'none';
-    };
-
-    document.getElementById('visualize-edit').onclick = () => {
-      const modalEditor = document.getElementById('modal-editor');
-      const { nodes, links } = ArtifactParser.parseArtifacts(modalEditor.value);
-      const validLinks = ArtifactParser.getValidLinks(links);
-      if (this.onContentChange) {
-        this.onContentChange(nodes, validLinks);
-      }
-    };
-
-    document.getElementById('confirm-edit').onclick = () => {
-      const modalEditor = document.getElementById('modal-editor');
-      this.editor.value = modalEditor.value;
-      this.lastText = this.editor.value;
-      const { nodes, links } = ArtifactParser.parseArtifacts(this.editor.value);
-      const validLinks = ArtifactParser.getValidLinks(links);
-      if (this.onContentChange) {
-        this.onContentChange(nodes, validLinks);
-      }
-      this.editModal.style.display = 'none';
-    };
-
-
-    window.addEventListener('click', event => {
-      if (event.target == this.modal) {
-        this.modal.style.display = 'none';
-      }
-      if (event.target == this.editModal) {
-        this.editModal.style.display = 'none';
-      }
-
-      if (
-        !this.autocompleteDropdown.contains(event.target) &&
-        event.target !== this.editor
-      ) {
-        this.autocompleteDropdown.style.display = 'none';
-      }
-    });
-
+    if (!this.editor) return;
 
     this.editor.addEventListener('input', () => {
-      console.log('Evento input detectado');
-
-      const text = this.editor.value;
-      const cursorPosition = this.editor.selectionStart;
-      console.log('Posición del cursor:', cursorPosition);
-
-
-      if (this.isWritingReference(text, cursorPosition)) {
-        console.log('Escribiendo referencia, mostrando dropdown');
-        this.showAutocompleteDropdown(text, cursorPosition);
-        return;
-      } else {
-        console.log('No escribiendo referencia, ocultando dropdown');
-        this.autocompleteDropdown.style.display = 'none';
-      }
-
-
-      if (this.justCompletedReference(text, cursorPosition)) {
-        const { nodes, links } = ArtifactParser.parseArtifacts(text);
-        const validLinks = ArtifactParser.getValidLinks(links);
-        if (this.onContentChange) {
-          this.onContentChange(nodes, validLinks);
-        }
-
-
-        this.highlightReferences();
-      }
-
-
-      if (this.onContentChange && text !== this.lastText) {
-        const { nodes, links } = ArtifactParser.parseArtifacts(text);
-        const validLinks = ArtifactParser.getValidLinks(links);
-        this.onContentChange(nodes, validLinks);
-        this.lastText = text;
+      const content = this.editor.value;
+      if (content !== this.lastText) {
+        this.lastText = content;
+        this.onContentChange(content);
       }
     });
 
-
-    this.setupEditorKeyboardNavigation();
-
-
-    this.editor.addEventListener('keydown', event => {
-      if (this.autocompleteDropdown.style.display === 'block') {
-
-        return;
-      }
-
-      if (event.ctrlKey || event.metaKey) return;
-
-      switch (event.key.toUpperCase()) {
-        case 'E':
-
-          if (document.activeElement === this.editor) {
-            event.preventDefault();
-            const modalEditor = document.getElementById('modal-editor');
-            modalEditor.value = this.editor.value;
-            this.editModal.style.display = 'block';
-            this.showToast('Modo de edición activado');
-          }
-          break;
-        case 'T':
-
-          if (document.activeElement === this.editor) {
-            event.preventDefault();
-            this.setEditorMode('type');
-            this.showToast('Modo de cambio de tipo activado');
-          }
-          break;
-        case 'R':
-
-          if (document.activeElement === this.editor) {
-            event.preventDefault();
-            this.setEditorMode('relate');
-            this.showToast('Modo de creación de relaciones activado');
-          }
-          break;
-        case 'ESCAPE':
-
-          if (this.editorMode !== 'text') {
-            event.preventDefault();
-            this.setEditorMode('text');
-            this.showToast('Modo de texto activado');
-          }
-          break;
+    this.editor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.editor.selectionStart;
+        const end = this.editor.selectionEnd;
+        this.editor.value = this.editor.value.substring(0, start) + '  ' + this.editor.value.substring(end);
+        this.editor.selectionStart = this.editor.selectionEnd = start + 2;
       }
     });
+  }
 
+  /**
+   * Muestra el modal de visualización
+   */
+  showVisualizeModal() {
+    this.setupVisualizeModal();
+    this.modal.classList.remove('hidden');
+    
+    const closeBtn = this.modal.querySelector('.modal-close');
+    const confirmBtn = this.modal.querySelector('#confirm-visualize');
+    
+    closeBtn.onclick = () => this.hideVisualizeModal();
+    confirmBtn.onclick = () => {
+      this.hideVisualizeModal();
+      this.visualizeDocument();
+    };
+  }
 
-    const modalEditor = document.getElementById('modal-editor');
-    modalEditor.addEventListener('input', () => {
-      const text = modalEditor.value;
-      const cursorPosition = modalEditor.selectionStart;
+  /**
+   * Oculta el modal de visualización
+   */
+  hideVisualizeModal() {
+    if (this.modal) {
+      this.modal.classList.add('hidden');
+    }
+  }
 
+  /**
+   * Muestra el modal de edición
+   */
+  showEditModal() {
+    this.setupEditModal();
+    this.editModal.classList.remove('hidden');
+    
+    const modalEditor = this.editModal.querySelector('#modal-editor');
+    modalEditor.value = this.editor.value;
+    
+    const closeBtn = this.editModal.querySelector('.modal-close');
+    const cancelBtn = this.editModal.querySelector('#cancel-edit');
+    const confirmBtn = this.editModal.querySelector('#confirm-edit');
+    const visualizeBtn = this.editModal.querySelector('#visualize-edit');
+    
+    closeBtn.onclick = () => this.hideEditModal();
+    cancelBtn.onclick = () => this.hideEditModal();
+    confirmBtn.onclick = () => {
+      this.editor.value = modalEditor.value;
+      this.hideEditModal();
+      this.onContentChange(modalEditor.value);
+    };
+    visualizeBtn.onclick = () => {
+      this.hideEditModal();
+      this.visualizeDocument();
+    };
+  }
 
-      if (this.isWritingReference(text, cursorPosition)) {
-        this.showAutocompleteDropdown(text, cursorPosition, modalEditor);
-        return;
-      } else {
-        this.autocompleteDropdown.style.display = 'none';
-      }
-    });
+  /**
+   * Oculta el modal de edición
+   */
+  hideEditModal() {
+    if (this.editModal) {
+      this.editModal.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Visualiza el documento actual
+   */
+  visualizeDocument() {
+    const content = this.editor.value;
+    console.log('Visualizando documento:', content);
+    // Aquí puedes implementar la lógica de visualización
   }
 
   /**
    * Establece el contenido del editor
-   * @param {string} text - Texto a establecer
    */
   setContent(text) {
-    this.editor.value = text;
-
-    this.lastText = text;
-
-
-    const { nodes, links } = ArtifactParser.parseArtifacts(text);
-    const validLinks = ArtifactParser.getValidLinks(links);
-    if (this.onContentChange) {
-      this.onContentChange(nodes, validLinks);
+    if (this.editor) {
+      this.editor.value = text;
+      this.lastText = text;
     }
   }
 
   /**
-   * Obtiene el contenido actual del editor
-   * @returns {string} - Contenido del editor
+   * Obtiene el contenido del editor
    */
   getContent() {
-    return this.editor.value;
+    return this.editor ? this.editor.value : '';
   }
 
   /**
@@ -1500,6 +1377,6 @@ export class EditorService {
    * @returns {string} - Color en formato hexadecimal
    */
   getNodeColor(type) {
-    return COLORS[type] || COLORS.reference;
+    return COLORS[type] || '#6b7280';
   }
 }
