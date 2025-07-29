@@ -119,7 +119,7 @@ export class GraphService {
     }
 
     const nodeElement = this.nodeGroup.selectAll('g').filter(d => d.id === node.id);
-    
+
     if (property === 'type') {
 
       node.type = newValue;
@@ -223,31 +223,31 @@ export class GraphService {
     const tooltipWidth = 250;
     const tooltipHeight = 120;
     const offset = 15;
-    
+
     // Posición inicial junto al mouse
     let x = e.clientX + offset;
     let y = e.clientY + offset;
-    
+
     // Verificar si se sale por la derecha
     if (x + tooltipWidth > window.innerWidth - 20) {
       x = e.clientX - tooltipWidth - offset;
     }
-    
+
     // Verificar si se sale por abajo
     if (y + tooltipHeight > window.innerHeight - 20) {
       y = e.clientY - tooltipHeight - offset;
     }
-    
+
     // Verificar si se sale por la izquierda
     if (x < 20) {
       x = 20;
     }
-    
+
     // Verificar si se sale por arriba
     if (y < 20) {
       y = 20;
     }
-    
+
     this.tooltip.style.left = `${x}px`;
     this.tooltip.style.top = `${y}px`;
   }
@@ -277,7 +277,7 @@ export class GraphService {
       item.className = 'menu-item';
       item.onclick = () => {
         const oldType = d.type;
-        
+
 
         if (oldType !== type) {
           this.menu.style.display = 'none';
