@@ -2,8 +2,9 @@ import { GraphService } from '../graph/GraphService.js';
 import { ConfigService } from '../graph/ConfigService.js';
 import { EditorService } from '../editor/EditorService.js';
 import { ArtifactParser } from '../services/ArtifactParser.js';
+import { SemanticService } from '../services/SemanticService.js';
 import { Artifact, Link } from '../models/Artifact.js';
-import { COLORS, TYPE_MAP, REVERSE_TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
+import { COLORS, TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
 
 /**
  * Clase principal del Dashboard
@@ -14,12 +15,14 @@ export class Dashboard {
     this.selectedArtifact = null;
     this.searchQuery = '';
     this.isSearchVisible = false;
-    
+
+    console.log('Dashboard: Inicializando...');
     this.initializeServices();
     this.initializeElements();
     this.setupEventListeners();
     this.loadDefaultData();
     this.updateArtifactCount();
+    console.log('Dashboard: Inicialización completada');
   }
 
   /**
@@ -38,7 +41,9 @@ export class Dashboard {
       menuElement,
       this.onNodeTypeChange.bind(this),
       this.onNodeNameChange.bind(this),
-      this.onNodeDescriptionChange.bind(this)
+      this.onNodeDescriptionChange.bind(this),
+      this.onLinkCreate.bind(this),
+      this.onCreateArtifact.bind(this)
     );
     this.configService = new ConfigService(graphContainer, this.onColorsChange.bind(this));
     this.editorService = new EditorService(editor, this.onEditorContentChange.bind(this));
@@ -56,9 +61,12 @@ export class Dashboard {
     this.searchInput = document.getElementById('search-input');
     this.exportBtn = document.getElementById('export-btn');
     this.importBtn = document.getElementById('import-btn');
+    this.exportSemanticBtn = document.getElementById('export-semantic-btn');
     this.configBtn = document.getElementById('config-btn');
     this.editBtn = document.getElementById('edit-btn');
     this.visualizeBtn = document.getElementById('visualize-btn');
+    this.testCreateBtn = document.getElementById('test-create-btn');
+    this.createArtifactBtn = document.getElementById('create-artifact-btn');
     this.artifactCount = document.getElementById('artifact-count');
     this.createBtn = document.getElementById('create-btn');
     this.cancelBtn = document.getElementById('cancel-btn');
@@ -75,12 +83,15 @@ export class Dashboard {
     this.searchBtn.addEventListener('click', () => this.toggleSearch());
     this.exportBtn.addEventListener('click', () => this.exportData());
     this.importBtn.addEventListener('click', () => this.importData());
+    this.exportSemanticBtn.addEventListener('click', () => this.exportSemanticRelations());
     this.editBtn.addEventListener('click', () => this.editorService.showEditModal());
     this.visualizeBtn.addEventListener('click', () => this.editorService.showVisualizeModal());
     this.configBtn.addEventListener('click', () => this.showConfig());
+    this.testCreateBtn.addEventListener('click', () => this.onCreateArtifact(400, 300));
+    this.createArtifactBtn.addEventListener('click', () => this.onCreateArtifact(400, 300)); // Prueba con coordenadas fijas
     this.createBtn.addEventListener('click', () => this.createArtifact());
     this.cancelBtn.addEventListener('click', () => this.toggleArtifactForm());
-    
+
     this.searchInput.addEventListener('input', (e) => {
       this.searchQuery = e.target.value;
       this.filterArtifacts();
@@ -104,7 +115,7 @@ export class Dashboard {
   loadDefaultData() {
     // Cargar el texto por defecto en el editor
     this.editorService.setContent(DEFAULT_TEXT);
-    
+
     // Por ahora, usar directamente los artefactos por defecto
     const defaultArtifacts = [
       new Artifact('hexy-framework', 'Hexy Framework', 'purpose', 'Hexy es un framework de contexto organizacional, ayuda a los LLMs a apegarse fuertemente a la lógica de operación del negocio de manera optimizado, escalable y ejecutable'),
@@ -121,7 +132,7 @@ export class Dashboard {
     this.artifacts = defaultArtifacts;
     this.renderArtifacts();
     this.updateArtifactCount();
-    
+
     // Delay para asegurar que el DOM esté completamente cargado
     setTimeout(() => {
       this.updateGraph();
@@ -210,20 +221,20 @@ export class Dashboard {
    */
   renderArtifacts() {
     this.artifactsContainer.innerHTML = '';
-    
-    const filteredArtifacts = this.searchQuery 
-      ? this.artifacts.filter(artifact => 
-          artifact.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          artifact.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          artifact.type.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
+
+    const filteredArtifacts = this.searchQuery
+      ? this.artifacts.filter(artifact =>
+        artifact.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        artifact.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        artifact.type.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
       : this.artifacts;
 
     filteredArtifacts.forEach(artifact => {
       const artifactElement = this.createArtifactElement(artifact);
       this.artifactsContainer.appendChild(artifactElement);
     });
-    
+
   }
 
   /**
@@ -421,7 +432,11 @@ export class Dashboard {
     }));
 
     const links = this.generateLinks(nodes);
-    
+
+    if (this.semanticRelations && this.semanticRelations.length > 0) {
+      links.push(...this.semanticRelations);
+    }
+
     // Forzar el resize del grafo para asegurar dimensiones
     setTimeout(() => {
       this.graphService.resize();
@@ -484,7 +499,7 @@ export class Dashboard {
    * Callback cuando se actualiza el grafo
    */
   onGraphUpdate() {
-    
+
   }
 
   /**
@@ -521,6 +536,42 @@ export class Dashboard {
   }
 
   /**
+   * Callback cuando se crea una relación semántica
+   */
+  onLinkCreate(semanticLink) {
+    this.semanticRelations = this.semanticRelations || [];
+    this.semanticRelations.push(semanticLink);
+
+    this.updateGraph();
+    this.showNotification('Relación semántica agregada al contexto organizacional', 'success');
+  }
+
+  /**
+   * Exporta las relaciones semánticas en formato SOL
+   */
+  exportSemanticRelations() {
+    if (!this.semanticRelations || this.semanticRelations.length === 0) {
+      this.showNotification('No hay relaciones semánticas para exportar', 'info');
+      return;
+    }
+
+    const semanticService = new SemanticService();
+    const solCode = semanticService.exportToSOL(this.semanticRelations);
+
+    const blob = new Blob([solCode], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'semantic-relations.sol';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.showNotification('Relaciones semánticas exportadas exitosamente', 'success');
+  }
+
+  /**
    * Callback cuando cambian los colores
    */
   onColorsChange(newColors) {
@@ -530,7 +581,7 @@ export class Dashboard {
         COLORS[type] = newColors[type];
       }
     });
-    
+
     // Refrescar el grafo con los nuevos colores
     this.updateGraph();
     this.showNotification('Colores actualizados', 'success');
@@ -547,6 +598,62 @@ export class Dashboard {
       this.renderArtifacts();
       this.updateGraph();
       this.updateArtifactCount();
+    }
+  }
+
+  /**
+   * Maneja la creación de un nuevo artefacto desde el canvas
+   * @param {number} x - Coordenada X en el grafo
+   * @param {number} y - Coordenada Y en el grafo
+   */
+  onCreateArtifact(x, y) {
+    console.log('Dashboard: onCreateArtifact llamado con coordenadas:', { x, y });
+
+    // Crear un artefacto temporal con nombre por defecto
+    const tempId = `new-artifact-${Date.now()}`;
+    const tempName = 'Nuevo Artefacto';
+    const tempType = 'concept'; // Tipo por defecto
+    const tempInfo = 'Descripción del nuevo artefacto';
+
+    const newArtifact = new Artifact(tempId, tempName, tempType, tempInfo);
+
+    // Establecer la posición del artefacto
+    newArtifact.x = x;
+    newArtifact.y = y;
+    newArtifact.fx = x; // Posición fija inicial
+    newArtifact.fy = y;
+
+    console.log('Artefacto creado:', newArtifact);
+
+    // Agregar el artefacto a la lista
+    this.addArtifact(newArtifact);
+
+    // Actualizar el grafo
+    this.updateGraph();
+
+    // Mostrar notificación
+    this.showNotification('Artefacto creado. Haz doble clic para editar. Usa clic en el canvas vacío, Alt, Ctrl, o Cmd + clic para crear más artefactos.', 'success');
+
+    // Permitir edición inmediata del nombre
+    setTimeout(() => {
+      this.enableInlineEditing(newArtifact);
+    }, 100);
+  }
+
+  /**
+   * Habilita la edición inline del nombre de un artefacto
+   * @param {Artifact} artifact - Artefacto a editar
+   */
+  enableInlineEditing(artifact) {
+    // Buscar el nodo en el grafo y habilitar edición
+    if (this.graphService) {
+      const nodeElement = this.graphService.nodeGroup
+        .selectAll('g')
+        .filter(d => d.id === artifact.id);
+
+      if (!nodeElement.empty()) {
+        this.graphService.showEditNameDialog(artifact, nodeElement.node());
+      }
     }
   }
 

@@ -1,4 +1,6 @@
 import { COLORS } from '../shared/constants.js';
+import { SemanticService } from '../services/SemanticService.js';
+import * as d3 from 'd3';
 
 /**
  * Servicio para gestionar el grafo D3.js
@@ -11,6 +13,7 @@ export class GraphService {
    * @param {Function} onNodeTypeChange - Función a llamar cuando cambia el tipo de un nodo
    * @param {Function} onNodeNameChange - Función a llamar cuando cambia el nombre de un nodo
    * @param {Function} onNodeDescriptionChange - Función a llamar cuando cambia la descripción de un nodo
+   * @param {Function} onLinkCreate - Función a llamar cuando se crea una nueva relación
    */
   constructor(
     svgElement,
@@ -18,7 +21,9 @@ export class GraphService {
     menuElement,
     onNodeTypeChange,
     onNodeNameChange,
-    onNodeDescriptionChange
+    onNodeDescriptionChange,
+    onLinkCreate,
+    onCreateArtifact
   ) {
     this.svg = d3.select(svgElement);
     this.svgEl = svgElement;
@@ -28,6 +33,9 @@ export class GraphService {
     this.onNodeNameChange = onNodeNameChange || this.onNodeNameChange;
     this.onNodeDescriptionChange =
       onNodeDescriptionChange || this.onNodeDescriptionChange;
+    this.onLinkCreate = onLinkCreate || this.onLinkCreate;
+    this.onCreateArtifact = onCreateArtifact;
+    console.log('GraphService: onCreateArtifact callback:', this.onCreateArtifact);
     this.width = this.svgEl.clientWidth;
     this.height = this.svgEl.clientHeight;
     this.nodes = [];
@@ -36,6 +44,10 @@ export class GraphService {
     this.g = null;
     this.linkGroup = null;
     this.nodeGroup = null;
+    this.isCreatingLink = false;
+    this.linkSource = null;
+    this.tempLink = null;
+    this.semanticService = new SemanticService();
 
     this.setupGraph();
   }
@@ -50,12 +62,13 @@ export class GraphService {
     this.nodeGroup = this.g.append('g');
 
 
-    this.svg.call(
-      d3
-        .zoom()
-        .scaleExtent([0.2, 5])
-        .on('zoom', ({ transform }) => this.g.attr('transform', transform))
-    );
+    // Configurar zoom normal
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.2, 5])
+      .on('zoom', ({ transform }) => this.g.attr('transform', transform));
+
+    this.svg.call(zoom);
 
 
     this.svg
@@ -89,6 +102,58 @@ export class GraphService {
 
 
     this.simulation.on('tick', () => this.onTick());
+
+    // Agregar event listener específico en el contenedor del grafo para Ctrl + clic
+    // Esto evita conflictos con el zoom de D3.js
+    this.graphContainer = this.svgEl.parentElement;
+
+    this.graphContainerMouseDownHandler = (event) => {
+      console.log('Graph container mousedown event:', {
+        altKey: event.altKey,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        target: event.target,
+        svgEl: this.svgEl,
+        isCreatingLink: this.isCreatingLink,
+        isNode: event.target.closest('.node')
+      });
+
+      // Procesar si Alt, Ctrl, o Cmd (Meta) está presionado y no estamos creando un enlace
+      if ((event.altKey || event.ctrlKey || event.metaKey) && !this.isCreatingLink) {
+        // Verificar que no sea un nodo
+        if (!event.target.closest('.node')) {
+          console.log('Creating artifact via modifier+click');
+          event.preventDefault();
+          event.stopPropagation();
+          this.handleCanvasDoubleClick(event);
+        }
+      }
+    };
+
+    this.graphContainer.addEventListener('mousedown', this.graphContainerMouseDownHandler);
+
+    // Implementar clic simple en canvas vacío para crear artefactos
+    this.graphContainerClickHandler = (event) => {
+      console.log('Graph container click event:', {
+        target: event.target,
+        isCreatingLink: this.isCreatingLink,
+        isNode: event.target.closest('.node'),
+        isCanvas: event.target === this.svgEl || event.target.closest('svg')
+      });
+
+      // Solo crear artefacto si es clic en el canvas vacío y no estamos creando un enlace
+      if (!this.isCreatingLink &&
+        !event.target.closest('.node') &&
+        (event.target === this.svgEl || event.target.closest('svg'))) {
+
+        console.log('Creating artifact via single click on empty canvas');
+        event.preventDefault();
+        event.stopPropagation();
+        this.handleCanvasDoubleClick(event);
+      }
+    };
+
+    this.graphContainer.addEventListener('click', this.graphContainerClickHandler);
   }
 
   /**
@@ -104,6 +169,31 @@ export class GraphService {
     this.nodeGroup
       .selectAll('g')
       .attr('transform', d => `translate(${d.x},${d.y})`);
+  }
+
+  /**
+   * Maneja el doble clic en el canvas para crear un nuevo artefacto
+   * @param {Event} event - Evento del doble clic
+   */
+  handleCanvasDoubleClick(event) {
+    console.log('Creación de artefacto detectada');
+
+    // Obtener las coordenadas del clic en el sistema de coordenadas del grafo
+    const transform = d3.zoomTransform(this.svgEl);
+    const [x, y] = d3.pointer(event, this.svgEl);
+
+    // Convertir coordenadas del mouse a coordenadas del grafo
+    const graphX = (x - transform.x) / transform.k;
+    const graphY = (y - transform.y) / transform.k;
+
+    console.log('Coordenadas del grafo:', { graphX, graphY });
+
+    // Llamar al callback para crear el artefacto
+    if (this.onCreateArtifact) {
+      this.onCreateArtifact(graphX, graphY);
+    } else {
+      console.warn('onCreateArtifact callback no está definido');
+    }
   }
 
   /**
@@ -156,13 +246,16 @@ export class GraphService {
 
     const lk = this.linkGroup
       .selectAll('line')
-      .data(this.links, d => d.getId());
+      .data(this.links, d => d.getId ? d.getId() : `${d.source.id}->${d.target.id}`);
     lk.exit().remove();
     lk.enter()
       .append('line')
       .attr('class', 'link')
       .attr('marker-end', 'url(#arrow)')
-      .attr('stroke-width', d => d.weight);
+      .attr('stroke-width', d => d.weight || 1)
+      .attr('stroke', d => d.semantic ? '#8b5cf6' : '#90a4ae')
+      .attr('stroke-dasharray', d => d.semantic ? '5,5' : 'none')
+      .attr('opacity', d => d.semantic ? 0.8 : 0.6);
 
 
     const nd = this.nodeGroup.selectAll('g').data(this.nodes, d => d.id);
@@ -206,6 +299,18 @@ export class GraphService {
       .attr('y', 4)
       .attr('text-anchor', 'middle')
       .text(d => d.id);
+
+    ne.on('click', (e, d) => {
+      if (this.isCreatingLink) {
+        this.handleLinkTarget(d);
+      }
+    });
+
+    // Agregar doble clic en nodos para edición directa
+    ne.on('dblclick', (e, d) => {
+      e.stopPropagation(); // Evitar que se propague al canvas
+      this.showEditNameDialog(d, e.currentTarget);
+    });
 
     this.simulation.nodes(this.nodes);
     this.simulation.force('link').links(this.links);
@@ -260,10 +365,32 @@ export class GraphService {
   showContextMenu(event, d) {
     const nodeElement = event.currentTarget;
     event.preventDefault();
+    event.stopPropagation();
+
     this.menu.innerHTML = '';
     this.menu.style.display = 'block';
-    this.menu.style.left = `${event.pageX}px`;
-    this.menu.style.top = `${event.pageY}px`;
+
+    // Position menu to avoid going off-screen
+    const menuWidth = 200;
+    const menuHeight = 400;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    let left = event.pageX;
+    let top = event.pageY;
+
+    // Adjust horizontal position if menu would go off-screen
+    if (left + menuWidth > windowWidth) {
+      left = event.pageX - menuWidth;
+    }
+
+    // Adjust vertical position if menu would go off-screen
+    if (top + menuHeight > windowHeight) {
+      top = event.pageY - menuHeight;
+    }
+
+    this.menu.style.left = `${left}px`;
+    this.menu.style.top = `${top}px`;
 
 
     const typeSection = document.createElement('div');
@@ -315,13 +442,32 @@ export class GraphService {
     };
     editSection.appendChild(editDescItem);
 
-    document.addEventListener(
-      'click',
-      () => (this.menu.style.display = 'none'),
-      {
-        once: true,
+    const relationSection = document.createElement('div');
+    relationSection.className = 'menu-section';
+    relationSection.innerHTML = '<h3>Relaciones Semánticas</h3>';
+    this.menu.appendChild(relationSection);
+
+    const createRelationItem = document.createElement('div');
+    createRelationItem.textContent = 'Crear relación semántica';
+    createRelationItem.className = 'menu-item';
+    createRelationItem.onclick = () => {
+      this.menu.style.display = 'none';
+      this.startLinkCreation(d);
+    };
+    relationSection.appendChild(createRelationItem);
+
+    // Close menu when clicking outside
+    const closeMenu = (e) => {
+      if (!this.menu.contains(e.target)) {
+        this.menu.style.display = 'none';
+        document.removeEventListener('click', closeMenu);
       }
-    );
+    };
+
+    // Delay adding the event listener to avoid immediate closure
+    setTimeout(() => {
+      document.addEventListener('click', closeMenu);
+    }, 100);
   }
 
   /**
@@ -387,17 +533,20 @@ export class GraphService {
   showEditNameDialog(node, nodeElement) {
 
     const dialog = document.createElement('div');
-    dialog.className = 'edit-dialog modal';
+    dialog.className = 'edit-dialog';
     dialog.style.display = 'block';
     dialog.innerHTML = `
       <div class="modal-content">
         <span class="close-button">&times;</span>
-        <h2>Editar nombre del nodo</h2>
-        <div class="form-group">
-          <label for="node-name">Nombre:</label>
-          <input type="text" id="node-name" value="${node.name}" class="form-control">
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 16px; color: #f8fafc;">Editar nombre del nodo</h2>
+        <div style="margin-bottom: 16px;">
+          <label for="node-name" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Nombre:</label>
+          <input type="text" id="node-name" value="${node.name}" style="width: 100%; padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #f8fafc; font-size: 14px;">
         </div>
-        <button id="save-node-name" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button id="cancel-node-name" style="background: #64748b; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">Cancelar</button>
+          <button id="save-node-name" style="background: #3b82f6; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">Guardar</button>
+        </div>
       </div>
     `;
     document.body.appendChild(dialog);
@@ -405,34 +554,52 @@ export class GraphService {
 
     const closeBtn = dialog.querySelector('.close-button');
     const saveBtn = dialog.querySelector('#save-node-name');
+    const cancelBtn = dialog.querySelector('#cancel-node-name');
     const input = dialog.querySelector('#node-name');
 
-    closeBtn.onclick = () => {
+    const closeDialog = () => {
       document.body.removeChild(dialog);
     };
+
+    closeBtn.onclick = closeDialog;
+    cancelBtn.onclick = closeDialog;
 
     saveBtn.onclick = () => {
       const newName = input.value.trim();
       if (newName && newName !== node.name) {
         const oldName = node.name;
         node.name = newName;
+        node.id = newName.replace(/\s+/g, ''); // Actualizar también el ID
 
-
+        // Actualizar el texto en el grafo
         d3.select(nodeElement).select('text').text(newName);
 
-
+        // Notificar el cambio
         this.onNodeNameChange(node, oldName, newName);
       }
-      document.body.removeChild(dialog);
+      closeDialog();
     };
 
 
-    window.onclick = event => {
+    const closeOnOutsideClick = (event) => {
       if (event.target === dialog) {
         document.body.removeChild(dialog);
+        document.removeEventListener('click', closeOnOutsideClick);
       }
     };
 
+    // Agregar soporte para teclas
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        saveBtn.click();
+      } else if (event.key === 'Escape') {
+        closeDialog();
+      }
+    });
+
+    setTimeout(() => {
+      document.addEventListener('click', closeOnOutsideClick);
+    }, 100);
 
     input.focus();
     input.select();
@@ -446,17 +613,20 @@ export class GraphService {
   showEditDescriptionDialog(node, nodeElement) {
 
     const dialog = document.createElement('div');
-    dialog.className = 'edit-dialog modal';
+    dialog.className = 'edit-dialog';
     dialog.style.display = 'block';
     dialog.innerHTML = `
       <div class="modal-content">
         <span class="close-button">&times;</span>
-        <h2>Editar descripción del nodo</h2>
-        <div class="form-group">
-          <label for="node-description">Descripción:</label>
-          <textarea id="node-description" class="form-control" rows="4">${node.info}</textarea>
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 16px; color: #f8fafc;">Editar descripción del nodo</h2>
+        <div style="margin-bottom: 16px;">
+          <label for="node-description" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Descripción:</label>
+          <textarea id="node-description" style="width: 100%; padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #f8fafc; font-size: 14px; resize: vertical;" rows="4">${node.info}</textarea>
         </div>
-        <button id="save-node-description" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button id="cancel-node-description" style="background: #64748b; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">Cancelar</button>
+          <button id="save-node-description" style="background: #3b82f6; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">Guardar</button>
+        </div>
       </div>
     `;
     document.body.appendChild(dialog);
@@ -464,11 +634,15 @@ export class GraphService {
 
     const closeBtn = dialog.querySelector('.close-button');
     const saveBtn = dialog.querySelector('#save-node-description');
+    const cancelBtn = dialog.querySelector('#cancel-node-description');
     const textarea = dialog.querySelector('#node-description');
 
-    closeBtn.onclick = () => {
+    const closeDialog = () => {
       document.body.removeChild(dialog);
     };
+
+    closeBtn.onclick = closeDialog;
+    cancelBtn.onclick = closeDialog;
 
     saveBtn.onclick = () => {
       const newDescription = textarea.value.trim();
@@ -476,19 +650,32 @@ export class GraphService {
         const oldDescription = node.info;
         node.info = newDescription;
 
-
+        // Notificar el cambio
         this.onNodeDescriptionChange(node, oldDescription, newDescription);
       }
-      document.body.removeChild(dialog);
+      closeDialog();
     };
 
 
-    window.onclick = event => {
+    const closeOnOutsideClick = (event) => {
       if (event.target === dialog) {
         document.body.removeChild(dialog);
+        document.removeEventListener('click', closeOnOutsideClick);
       }
     };
 
+    // Agregar soporte para teclas
+    textarea.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && event.ctrlKey) {
+        saveBtn.click();
+      } else if (event.key === 'Escape') {
+        closeDialog();
+      }
+    });
+
+    setTimeout(() => {
+      document.addEventListener('click', closeOnOutsideClick);
+    }, 100);
 
     textarea.focus();
   }
@@ -513,5 +700,291 @@ export class GraphService {
   onNodeDescriptionChange(node, oldDescription, newDescription) {
 
     console.log(`Descripción del nodo cambiada`);
+  }
+
+  /**
+   * Inicia la creación de una relación semántica
+   * @param {Object} sourceNode - Nodo de origen
+   */
+  startLinkCreation(sourceNode) {
+    this.isCreatingLink = true;
+    this.linkSource = sourceNode;
+
+    this.svg.style('cursor', 'crosshair');
+    this.nodeGroup.selectAll('g').style('cursor', 'pointer');
+
+    this.showNotification('Haz clic en el nodo destino para crear la relación', 'info');
+  }
+
+  /**
+   * Cancela la creación de una relación
+   */
+  cancelLinkCreation() {
+    this.isCreatingLink = false;
+    this.linkSource = null;
+    this.tempLink = null;
+
+    this.svg.style('cursor', 'default');
+    this.nodeGroup.selectAll('g').style('cursor', 'default');
+
+    if (this.tempLink) {
+      this.tempLink.remove();
+      this.tempLink = null;
+    }
+  }
+
+  /**
+   * Maneja el clic en un nodo durante la creación de relaciones
+   * @param {Object} targetNode - Nodo de destino
+   */
+  handleLinkTarget(targetNode) {
+    if (!this.isCreatingLink || !this.linkSource) return;
+
+    if (this.linkSource.id === targetNode.id) {
+      this.showNotification('No puedes crear una relación consigo mismo', 'error');
+      return;
+    }
+
+    this.showSemanticRelationDialog(this.linkSource, targetNode);
+    this.cancelLinkCreation();
+  }
+
+  /**
+   * Muestra el diálogo para crear una relación semántica
+   * @param {Object} sourceNode - Nodo de origen
+   * @param {Object} targetNode - Nodo de destino
+   */
+  showSemanticRelationDialog(sourceNode, targetNode) {
+    const dialog = document.createElement('div');
+    dialog.className = 'semantic-relation-dialog modal';
+    dialog.style.display = 'block';
+    dialog.innerHTML = `
+      <div class="modal-content" style="max-width: 600px; width: 90vw;">
+        <span class="close-button">&times;</span>
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 16px; color: #f8fafc;">Crear Relación Semántica</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Artefacto Origen:</label>
+            <div style="padding: 12px; background: #334155; border-radius: 6px; border: 1px solid #475569;">
+              <strong style="color: #f8fafc;">${sourceNode.name}</strong> <span style="color: #94a3b8;">(${sourceNode.type})</span>
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Artefacto Destino:</label>
+            <div style="padding: 12px; background: #334155; border-radius: 6px; border: 1px solid #475569;">
+              <strong style="color: #f8fafc;">${targetNode.name}</strong> <span style="color: #94a3b8;">(${targetNode.type})</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="relation-type" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Tipo de Relación:</label>
+          <select id="relation-type" style="width: 100%; padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #f8fafc; font-size: 14px;">
+            <option value="uses">Usa (uses)</option>
+            <option value="implements">Implementa (implements)</option>
+            <option value="supports">Soporta (supports)</option>
+            <option value="defines">Define (defines)</option>
+            <option value="triggers">Dispara (triggers)</option>
+            <option value="validates">Valida (validates)</option>
+            <option value="custom">Personalizada</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="custom-relation" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Relación Personalizada:</label>
+          <input type="text" id="custom-relation" style="width: 100%; padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #f8fafc; font-size: 14px; display: none;" placeholder="Ej: depends_on, requires, etc.">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label for="semantic-justification" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #e2e8f0;">Justificación Semántica:</label>
+          <textarea id="semantic-justification" style="width: 100%; padding: 8px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #f8fafc; font-size: 14px; resize: vertical;" rows="3" placeholder="Explica por qué existe esta relación y cómo contribuye al contexto organizacional..."></textarea>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <button id="generate-suggestion" style="background: #10b981; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; margin-right: 8px;">
+            Generar Sugerencia con IA
+          </button>
+          <button id="save-relation" style="background: #3b82f6; color: white; font-weight: bold; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">
+            Confirmar Relación
+          </button>
+        </div>
+        
+        <div id="ai-suggestion" style="padding: 12px; background: #1e3a8a; border: 1px solid #3b82f6; border-radius: 6px; display: none;">
+          <h4 style="font-weight: 500; margin-bottom: 8px; color: #f8fafc;">Sugerencia de IA:</h4>
+          <div id="suggestion-content" style="color: #e2e8f0;"></div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(dialog);
+
+    const closeBtn = dialog.querySelector('.close-button');
+    const saveBtn = dialog.querySelector('#save-relation');
+    const generateBtn = dialog.querySelector('#generate-suggestion');
+    const relationTypeSelect = dialog.querySelector('#relation-type');
+    const customRelationInput = dialog.querySelector('#custom-relation');
+    const justificationTextarea = dialog.querySelector('#semantic-justification');
+    const aiSuggestion = dialog.querySelector('#ai-suggestion');
+    const suggestionContent = dialog.querySelector('#suggestion-content');
+
+    relationTypeSelect.addEventListener('change', () => {
+      if (relationTypeSelect.value === 'custom') {
+        customRelationInput.style.display = 'block';
+      } else {
+        customRelationInput.style.display = 'none';
+      }
+    });
+
+    generateBtn.addEventListener('click', () => {
+      this.generateAISuggestion(sourceNode, targetNode, relationTypeSelect.value, customRelationInput.value, suggestionContent);
+      aiSuggestion.style.display = 'block';
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const relationType = relationTypeSelect.value === 'custom' ? customRelationInput.value : relationTypeSelect.value;
+      const justification = justificationTextarea.value.trim();
+
+      if (!relationType || !justification) {
+        this.showNotification('Por favor completa todos los campos', 'error');
+        return;
+      }
+
+      this.createSemanticRelation(sourceNode, targetNode, relationType, justification);
+      document.body.removeChild(dialog);
+    });
+
+    closeBtn.addEventListener('click', () => {
+      document.body.removeChild(dialog);
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === dialog) {
+        document.body.removeChild(dialog);
+      }
+    });
+  }
+
+  /**
+ * Genera una sugerencia de IA para la relación
+ * @param {Object} sourceNode - Nodo de origen
+ * @param {Object} targetNode - Nodo de destino
+ * @param {string} relationType - Tipo de relación
+ * @param {string} customRelation - Relación personalizada
+ * @param {HTMLElement} suggestionElement - Elemento donde mostrar la sugerencia
+ */
+  async generateAISuggestion(sourceNode, targetNode, relationType, customRelation, suggestionElement) {
+    try {
+      const finalRelationType = relationType === 'custom' ? customRelation : relationType;
+
+      suggestionElement.innerHTML = '<div class="text-gray-600">Generando sugerencia...</div>';
+
+      const suggestion = await this.semanticService.generateSuggestion(
+        sourceNode,
+        targetNode,
+        finalRelationType
+      );
+
+      suggestionElement.innerHTML = `<p class="text-gray-800">${suggestion}</p>`;
+    } catch (error) {
+      suggestionElement.innerHTML = '<div class="text-red-600">Error al generar sugerencia</div>';
+    }
+  }
+
+  /**
+ * Crea una relación semántica
+ * @param {Object} sourceNode - Nodo de origen
+ * @param {Object} targetNode - Nodo de destino
+ * @param {string} relationType - Tipo de relación
+ * @param {string} justification - Justificación semántica
+ */
+  createSemanticRelation(sourceNode, targetNode, relationType, justification) {
+    const validation = this.semanticService.validateRelation(sourceNode, targetNode, relationType);
+
+    if (!validation.isValid) {
+      this.showNotification(validation.errors.join(', '), 'error');
+      return;
+    }
+
+    if (validation.warnings.length > 0) {
+      this.showNotification(`Advertencia: ${validation.warnings.join(', ')}`, 'info');
+    }
+
+    const semanticLink = {
+      source: sourceNode,
+      target: targetNode,
+      type: relationType,
+      justification: justification,
+      weight: 2,
+      semantic: true
+    };
+
+    this.links.push(semanticLink);
+    this.refresh(this.nodes, this.links, false);
+
+    this.onLinkCreate(semanticLink);
+    this.showNotification('Relación semántica creada exitosamente', 'success');
+  }
+
+  /**
+   * Método para notificar la creación de una relación
+   * @param {Object} link - Relación creada
+   */
+  onLinkCreate(link) {
+    console.log('Relación semántica creada:', link);
+  }
+
+  /**
+   * Muestra una notificación
+   * @param {string} message - Mensaje a mostrar
+   * @param {string} type - Tipo de notificación (info, success, error)
+   */
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideIn 0.3s ease-out;
+    `;
+
+    if (type === 'success') {
+      notification.style.backgroundColor = '#10b981';
+    } else if (type === 'error') {
+      notification.style.backgroundColor = '#ef4444';
+    } else {
+      notification.style.backgroundColor = '#3b82f6';
+    }
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease-in';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  /**
+   * Limpia los event listeners y recursos
+   */
+  destroy() {
+    if (this.graphContainer) {
+      this.graphContainer.removeEventListener('mousedown', this.graphContainerMouseDownHandler);
+      this.graphContainer.removeEventListener('click', this.graphContainerClickHandler);
+    }
+    if (this.simulation) {
+      this.simulation.stop();
+    }
   }
 }

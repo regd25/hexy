@@ -52,6 +52,7 @@ dev = [
 
 [project.scripts]
 hexy = "src.cli:main"
+hexy-server = "run_server:main"
 
 [tool.black]
 line-length = 88

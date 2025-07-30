@@ -508,13 +508,15 @@ body {
 /* Context Menu */
 .context-menu {
   position: fixed;
-  background: #334155;
+  background: #1e293b;
   border: 1px solid #475569;
   border-radius: 8px;
   padding: 8px 0;
-  min-width: 160px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  min-width: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
   display: none;
 }
 
@@ -523,11 +525,16 @@ body {
 }
 
 .menu-item {
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   color: #f8fafc;
   font-size: 14px;
   transition: background-color 0.2s;
+  border-bottom: 1px solid #334155;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
 }
 
 .menu-item:hover {
@@ -541,6 +548,28 @@ body {
 .menu-item.danger:hover {
   background: #dc2626;
   color: white;
+}
+
+.menu-section {
+  border-bottom: 2px solid #475569;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+
+.menu-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.menu-section h3 {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 16px 8px 16px;
+  padding-top: 8px;
 }
 
 /* Modal */
@@ -642,6 +671,11 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes slideOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-20px); opacity: 0; }
+}
+
 .fade-in {
   animation: fadeIn 0.3s ease-out;
 }
@@ -677,4 +711,200 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* Notifications */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification-success {
+  background: #10b981;
+}
+
+.notification-error {
+  background: #ef4444;
+}
+
+.notification-info {
+  background: #3b82f6;
+}
+
+/* Semantic Relation Dialog */
+.semantic-relation-dialog .modal-content {
+  max-width: 600px;
+  width: 90vw;
+}
+
+.semantic-relation-dialog .form-group {
+  margin-bottom: 16px;
+}
+
+.semantic-relation-dialog label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.semantic-relation-dialog input,
+.semantic-relation-dialog select,
+.semantic-relation-dialog textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.semantic-relation-dialog input:focus,
+.semantic-relation-dialog select:focus,
+.semantic-relation-dialog textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.semantic-relation-dialog button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.semantic-relation-dialog button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal overlay for semantic relations */
+.semantic-relation-dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.semantic-relation-dialog .modal-content {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.semantic-relation-dialog .close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.semantic-relation-dialog .close-button:hover {
+  color: #e2e8f0;
+  background: #475569;
+}
+
+/* Modal for editing nodes */
+.edit-dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.edit-dialog .modal-content {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.edit-dialog .close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.edit-dialog .close-button:hover {
+  color: #e2e8f0;
+  background: #475569;
+}
+
+/* Button hover effects for modals */
+.edit-dialog button:hover,
+.semantic-relation-dialog button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+/* Form controls focus states */
+.edit-dialog input:focus,
+.edit-dialog textarea:focus,
+.semantic-relation-dialog input:focus,
+.semantic-relation-dialog textarea:focus,
+.semantic-relation-dialog select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Semantic Links */
+.link.semantic {
+  stroke: #8b5cf6 !important;
+  stroke-dasharray: 5,5 !important;
+  opacity: 0.8 !important;
+}
+
+.link.semantic:hover {
+  stroke-width: 3 !important;
+  opacity: 1 !important;
 }

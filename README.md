@@ -1,4 +1,4 @@
-# 🧠 Hexy Framework
+****# 🧠 Hexy Framework
 
 **Hexy** es un framework de contexto organizacional, diseñado para alinear el proposito, reglas y procesos de negocio con su ejecución técnica. Permite construir sistemas AI-first, modulares, escalables, con trazabilidad total y validación contextual.
 
