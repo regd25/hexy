@@ -240,6 +240,7 @@ export class GraphService {
    * @param {boolean} restart - Si se debe reiniciar la simulación
    */
   refresh(nodes, links, restart = true) {
+    console.log('GraphService: refresh called with', nodes.length, 'nodes and', links.length, 'links');
     this.nodes = nodes;
     this.links = links;
 
@@ -518,6 +519,7 @@ export class GraphService {
   resize() {
     this.width = this.svgEl.clientWidth;
     this.height = this.svgEl.clientHeight;
+    console.log('GraphService: resize - width:', this.width, 'height:', this.height);
     this.simulation.force(
       'center',
       d3.forceCenter(this.width / 2, this.height / 2)
@@ -935,44 +937,19 @@ export class GraphService {
   }
 
   /**
-   * Muestra una notificación
+   * Muestra una notificación usando el sistema centralizado
    * @param {string} message - Mensaje a mostrar
    * @param {string} type - Tipo de notificación (info, success, error)
    */
   showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border-radius: 4px;
-      color: white;
-      font-weight: 500;
-      z-index: 10000;
-      animation: slideIn 0.3s ease-out;
-    `;
-
-    if (type === 'success') {
-      notification.style.backgroundColor = '#10b981';
-    } else if (type === 'error') {
-      notification.style.backgroundColor = '#ef4444';
+    // Usar el sistema de notificaciones centralizado si está disponible
+    if (window.notificationManager) {
+      window.notificationManager.show(message, type);
     } else {
-      notification.style.backgroundColor = '#3b82f6';
+      console.warn('NotificationManager no disponible, usando fallback');
+      // Fallback simple sin crear elementos DOM
+      console.log(`[${type.toUpperCase()}] ${message}`);
     }
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.style.animation = 'slideOut 0.3s ease-in';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          document.body.removeChild(notification);
-        }
-      }, 300);
-    }, 3000);
   }
 
   /**

@@ -5,6 +5,10 @@ import { ArtifactParser } from '../services/ArtifactParser.js';
 import { SemanticService } from '../services/SemanticService.js';
 import { Artifact, Link } from '../models/Artifact.js';
 import { COLORS, TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
+import { EventBus } from '../components/utils/events/EventBus.js';
+import { EVENT_TYPES } from '../components/utils/events/EventTypes.js';
+import { NotificationManager } from '../components/utils/notifications/NotificationManager.js';
+import { ArtifactService } from '../services/ArtifactService.js';
 
 /**
  * Clase principal del Dashboard
@@ -17,6 +21,16 @@ export class Dashboard {
     this.isSearchVisible = false;
 
     console.log('Dashboard: Inicializando...');
+
+    this.eventBus = new EventBus();
+    this.notificationManager = new NotificationManager(this.eventBus);
+
+    // Exponer NotificationManager globalmente para otros servicios
+    window.notificationManager = this.notificationManager;
+
+    // Initialize ArtifactService (temporalmente comentado)
+    // this.artifactService = new ArtifactService(this.eventBus);
+
     this.initializeServices();
     this.initializeElements();
     this.setupEventListeners();
@@ -92,6 +106,11 @@ export class Dashboard {
     this.createBtn.addEventListener('click', () => this.createArtifact());
     this.cancelBtn.addEventListener('click', () => this.toggleArtifactForm());
 
+    // Test notification on load
+    setTimeout(() => {
+      this.showNotification('Dashboard cargado correctamente', 'success');
+    }, 1000);
+
     this.searchInput.addEventListener('input', (e) => {
       this.searchQuery = e.target.value;
       this.filterArtifacts();
@@ -113,6 +132,8 @@ export class Dashboard {
    * Carga datos por defecto
    */
   loadDefaultData() {
+    console.log('Dashboard: Loading default data...');
+    
     // Cargar el texto por defecto en el editor
     this.editorService.setContent(DEFAULT_TEXT);
 
@@ -129,12 +150,14 @@ export class Dashboard {
       new Artifact('organizational-logic', 'Organizational Logic', 'concept', 'Lógica operativa del negocio')
     ];
 
+    console.log('Dashboard: Default artifacts created:', defaultArtifacts.length);
     this.artifacts = defaultArtifacts;
     this.renderArtifacts();
     this.updateArtifactCount();
 
     // Delay para asegurar que el DOM esté completamente cargado
     setTimeout(() => {
+      console.log('Dashboard: Updating graph...');
       this.updateGraph();
     }, 200);
   }
@@ -195,9 +218,18 @@ export class Dashboard {
       return;
     }
 
-    const id = name.toLowerCase().replace(/\s+/g, '-');
-    const artifact = new Artifact(id, name, type, description);
-    this.addArtifact(artifact);
+    // Crear artefacto directamente
+    const artifact = new Artifact(
+      this.generateId(),
+      name,
+      type,
+      description
+    );
+
+    this.artifacts.push(artifact);
+    this.renderArtifacts();
+    this.updateGraph();
+    this.updateArtifactCount();
 
     this.artifactNameInput.value = '';
     this.artifactDescriptionInput.value = '';
@@ -210,6 +242,7 @@ export class Dashboard {
    * Agrega un artefacto a la lista
    */
   addArtifact(artifact) {
+    // Agregar el artefacto directamente a la lista local
     this.artifacts.push(artifact);
     this.renderArtifacts();
     this.updateGraph();
@@ -219,22 +252,15 @@ export class Dashboard {
   /**
    * Renderiza la lista de artefactos
    */
-  renderArtifacts() {
+  renderArtifacts(artifactsToRender = null) {
     this.artifactsContainer.innerHTML = '';
 
-    const filteredArtifacts = this.searchQuery
-      ? this.artifacts.filter(artifact =>
-        artifact.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        artifact.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        artifact.type.toLowerCase().includes(this.searchQuery.toLowerCase())
-      )
-      : this.artifacts;
+    const artifactsToShow = artifactsToRender || this.artifacts;
 
-    filteredArtifacts.forEach(artifact => {
+    artifactsToShow.forEach(artifact => {
       const artifactElement = this.createArtifactElement(artifact);
       this.artifactsContainer.appendChild(artifactElement);
     });
-
   }
 
   /**
@@ -409,7 +435,12 @@ export class Dashboard {
    * Filtra los artefactos según la búsqueda
    */
   filterArtifacts() {
-    this.renderArtifacts();
+    const filteredArtifacts = this.artifacts.filter(artifact =>
+      artifact.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      artifact.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      artifact.type.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+    this.renderArtifacts(filteredArtifacts);
   }
 
   /**
@@ -423,6 +454,8 @@ export class Dashboard {
    * Actualiza el grafo
    */
   updateGraph() {
+    console.log('Dashboard: updateGraph called with', this.artifacts.length, 'artifacts');
+    
     const nodes = this.artifacts.map(artifact => ({
       id: artifact.id,
       name: artifact.name,
@@ -437,8 +470,11 @@ export class Dashboard {
       links.push(...this.semanticRelations);
     }
 
+    console.log('Dashboard: Generated', nodes.length, 'nodes and', links.length, 'links');
+
     // Forzar el resize del grafo para asegurar dimensiones
     setTimeout(() => {
+      console.log('Dashboard: Calling graphService.refresh...');
       this.graphService.resize();
       this.graphService.refresh(nodes, links, true);
     }, 100);
@@ -510,6 +546,14 @@ export class Dashboard {
     if (artifact) {
       artifact.type = newType;
       this.renderArtifacts();
+
+      // Publish event
+      this.eventBus.publish(EVENT_TYPES.NODE_UPDATED, {
+        node,
+        oldType,
+        newType,
+        artifact
+      });
     }
   }
 
@@ -521,6 +565,14 @@ export class Dashboard {
     if (artifact) {
       artifact.name = newName;
       this.renderArtifacts();
+
+      // Publish event
+      this.eventBus.publish(EVENT_TYPES.NODE_UPDATED, {
+        node,
+        oldName,
+        newName,
+        artifact
+      });
     }
   }
 
@@ -532,6 +584,14 @@ export class Dashboard {
     if (artifact) {
       artifact.description = newDescription;
       this.renderArtifacts();
+
+      // Publish event
+      this.eventBus.publish(EVENT_TYPES.NODE_UPDATED, {
+        node,
+        oldDescription,
+        newDescription,
+        artifact
+      });
     }
   }
 
@@ -544,6 +604,11 @@ export class Dashboard {
 
     this.updateGraph();
     this.showNotification('Relación semántica agregada al contexto organizacional', 'success');
+
+    // Publish event
+    this.eventBus.publish(EVENT_TYPES.LINK_CREATED, {
+      semanticLink
+    });
   }
 
   /**
@@ -732,29 +797,16 @@ export class Dashboard {
   }
 
   /**
-   * Muestra una notificación
+   * Muestra una notificación usando NotificationManager
    */
   showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      color: white;
-      font-weight: 500;
-      z-index: 1000;
-      background: ${type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#3b82f6'};
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    `;
+    this.notificationManager.show(message, type);
+  }
 
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+  /**
+   * Genera un ID único para los artefactos
+   */
+  generateId() {
+    return 'artifact-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
   }
 }

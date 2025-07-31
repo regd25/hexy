@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-El Dashboard de Hexy es una aplicación web que permite la visualización, edición y gestión de artefactos semánticos organizacionales. Proporciona una interfaz gráfica para crear, modificar y relacionar artefactos que representan la lógica de negocio de una organización.
+El Dashboard de Hexy es una aplicación web que permite la visualización, edición y gestión de artefactos semánticos organizacionales. Proporciona una interfaz gráfica para crear, **modificar** y relacionar artefactos que representan la lógica de negocio de una organización.
 
 ## Arquitectura y Principios
 

@@ -110,8 +110,14 @@ Esta revisión compara las reglas de negocio definidas en `docs/hexy/dashboard.m
 ### Prioridad Alta
 1. ✅ **Implementar localStorage** para persistencia de configuraciones
 2. ✅ **Agregar clic en canvas vacío** para creación rápida de artefactos
-3. **Implementar selección múltiple** con Ctrl + clic
-4. **Agregar atajos de teclado** básicos (Ctrl+A, Ctrl+Z, Ctrl+Y)
+3. **🔄 Modularizar arquitectura del dashboard** siguiendo principios SOLID y Hexy Framework
+   - Implementar EventBus para comunicación entre componentes
+   - Crear ServiceContainer para inyección de dependencias
+   - Separar componentes en módulos específicos (Graph, Navigator, Navbar, Utils)
+   - Implementar NotificationManager centralizado
+   - Establecer patrones de arquitectura event-driven
+4. **Implementar selección múltiple** con Ctrl + clic
+5. **Agregar atajos de teclado** básicos (Ctrl+A, Ctrl+Z, Ctrl+Y)
 
 ### Prioridad Media
 1. **Mejorar búsqueda** con filtros por tipo y descripción
@@ -135,11 +141,28 @@ Esta revisión compara las reglas de negocio definidas en `docs/hexy/dashboard.m
 
 ## 🎯 Próximos Pasos
 
-1. **Implementar funcionalidades de prioridad alta** para mejorar UX
-2. **Refactorizar código** para agregar localStorage
+### Fase 1: Modularización (Prioridad Alta)
+1. **Implementar EventBus** para comunicación desacoplada entre componentes
+2. **Crear ServiceContainer** para gestión de dependencias e inyección
+3. **Desarrollar NotificationManager** centralizado para feedback de usuario
+4. **Separar componentes** en módulos específicos:
+   - `components/graph/` - Visualización y interacciones del grafo
+   - `components/navigator/` - Sidebar y lista de artefactos
+   - `components/navbar/` - Barra de navegación y controles
+   - `components/utils/` - Utilidades compartidas
+5. **Establecer patrones** de arquitectura event-driven
+
+### Fase 2: Funcionalidades Avanzadas
+1. **Implementar selección múltiple** con Ctrl + clic
+2. **Agregar atajos de teclado** básicos (Ctrl+A, Ctrl+Z, Ctrl+Y)
 3. **Extender GraphService** con interacciones avanzadas
 4. **Mejorar SemanticService** con validaciones más robustas
-5. **Agregar tests** para nuevas funcionalidades
+
+### Fase 3: Testing y Optimización
+1. **Agregar tests unitarios** para cada componente modular
+2. **Implementar tests de integración** usando EventBus
+3. **Optimizar performance** de componentes individuales
+4. **Documentar APIs** de cada módulo
 
 ## 📝 Notas Técnicas
 
@@ -156,6 +179,14 @@ El dashboard tiene una base sólida con:
 - EditorService puede integrar más funcionalidades de IA
 - SemanticService puede expandirse para validaciones más complejas
 
+### Beneficios de la Modularización Propuesta
+- **Mantenibilidad**: Código organizado y predecible con responsabilidades claras
+- **Testabilidad**: Testing unitario por componente con mocking de dependencias
+- **Escalabilidad**: Nuevos componentes sin afectar existentes
+- **Desarrollo en Equipo**: Trabajo paralelo en componentes independientes
+- **Performance**: Optimización individual por componente
+- **Reutilización**: Componentes intercambiables y reutilizables
+
 ### Dependencias y Tecnologías
 - D3.js v7.8.0 para visualización
 - Vanilla JavaScript sin frameworks
@@ -165,8 +196,16 @@ El dashboard tiene una base sólida con:
 
 ## 🔍 Archivos Clave para Modificaciones
 
-1. **`dashboard/graph/GraphService.js`**: Agregar interacciones avanzadas
-2. **`dashboard/pages/Dashboard.js`**: Implementar localStorage y atajos
-3. **`dashboard/services/SemanticService.js`**: Mejorar validaciones
-4. **`dashboard/graph/ConfigService.js`**: Agregar persistencia
-5. **`dashboard/index.html`**: Agregar elementos para nuevas funcionalidades 
+### Para Modularización (Prioridad Alta)
+1. **`dashboard/components/utils/events/EventBus.js`**: Sistema de eventos centralizado
+2. **`dashboard/components/utils/notifications/NotificationManager.js`**: Gestión de notificaciones
+3. **`dashboard/services/ServiceContainer.js`**: Contenedor de dependencias
+4. **`dashboard/components/ComponentFactory.js`**: Factory para creación de componentes
+5. **`dashboard/components/graph/GraphContainer.js`**: Contenedor principal del grafo
+
+### Para Funcionalidades Existentes
+6. **`dashboard/graph/GraphService.js`**: Agregar interacciones avanzadas
+7. **`dashboard/pages/Dashboard.js`**: Implementar localStorage y atajos
+8. **`dashboard/services/SemanticService.js`**: Mejorar validaciones
+9. **`dashboard/graph/ConfigService.js`**: Agregar persistencia
+10. **`dashboard/index.html`**: Agregar elementos para nuevas funcionalidades 

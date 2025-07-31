@@ -19,7 +19,7 @@
 * **Agente de onboarding**
   Agente encargado de realizar el onboarding a la ontología organizacional.
 
-  * Experto en la lógica de negocio
+  * Experto en la lógica de **negocio**
   * Responde a las necesidades de aprendizaje del @Operador
 
 ---
