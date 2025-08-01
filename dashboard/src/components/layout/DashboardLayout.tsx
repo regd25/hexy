@@ -5,11 +5,13 @@ import { GraphContainer } from '../graph/GraphContainer'
 
 export const DashboardLayout: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen bg-slate-900">
-      <NavbarContainer />
-      <div className="flex flex-1 overflow-hidden">
-        <NavigatorContainer />
-        <GraphContainer />
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="flex flex-col h-screen">
+        <NavbarContainer />
+        <div className="flex flex-1">
+          <NavigatorContainer />
+          <GraphContainer />
+        </div>
       </div>
     </div>
   )

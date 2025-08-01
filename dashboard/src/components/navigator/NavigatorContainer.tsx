@@ -30,29 +30,30 @@ export const NavigatorContainer: React.FC = () => {
     }
 
     return (
-        <div className="navigator">
-            <div className="navigator-header">
-                <h3>Navegador</h3>
-                <div className="artifact-count">
-                    {getFilteredCount()} / {getArtifactCount()} artefactos
+        <div className="w-80 bg-slate-800 border-r border-slate-600 flex flex-col">
+            <div className="p-4 border-b border-slate-600">
+                <h3 className="text-lg font-semibold text-white mb-2">Navegador</h3>
+                <div className="flex items-center gap-2 bg-slate-700 px-3 py-2 rounded-lg text-sm">
+                    <span className="font-semibold text-blue-400">{getFilteredCount()}</span> 
+                    <span className="text-slate-300">/ {getArtifactCount()} artefactos</span>
                 </div>
             </div>
 
-            <div className="search-section">
+            <div className="p-4">
                 <input
                     type="text"
                     placeholder="Buscar artefactos..."
                     value={searchQuery}
                     onChange={handleSearch}
-                    className="search-input"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
             </div>
 
-            <div className="filter-section">
+            <div className="px-4 pb-4 flex gap-2">
                 <select
                     value={selectedType}
                     onChange={handleTypeChange}
-                    className="type-filter"
+                    className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 >
                     <option value="all">Todos los tipos</option>
                     <option value="purpose">Propósito</option>
@@ -75,13 +76,16 @@ export const NavigatorContainer: React.FC = () => {
                     <option value="reference">Referencia</option>
                 </select>
 
-                <button onClick={handleClearFilters} className="btn btn-clear">
+                <button 
+                    onClick={handleClearFilters} 
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-medium transition-colors"
+                >
                     Limpiar
                 </button>
             </div>
 
-            <div className="artifact-list">
-                <p className="placeholder-text">
+            <div className="flex-1 p-4">
+                <p className="text-slate-400 text-center">
                     Lista de artefactos - En desarrollo
                 </p>
             </div>

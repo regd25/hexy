@@ -30,6 +30,13 @@ export const useArtifactStore = create<ArtifactStore>((set, get) => ({
 
     addArtifact: artifact =>
         set(state => {
+            // Check if artifact with same ID already exists
+            const existingArtifact = state.artifacts.find(a => a.id === artifact.id)
+            if (existingArtifact) {
+                console.warn(`Artifact with ID ${artifact.id} already exists. Skipping addition.`)
+                return state
+            }
+            
             const newArtifacts = [...state.artifacts, artifact]
             return {
                 artifacts: newArtifacts,

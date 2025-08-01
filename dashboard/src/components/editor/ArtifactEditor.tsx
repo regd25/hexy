@@ -180,15 +180,15 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                 </div>
             </div>
 
-            <div className="editor-actions">
+            <div className="form-actions">
                 <button
                     onClick={handleSave}
                     disabled={!isValid}
-                    className="btn btn-primary"
+                    className="primary-btn"
                 >
                     {artifact ? 'Actualizar' : 'Crear'} Artefacto
                 </button>
-                <button onClick={handleCancel} className="btn btn-secondary">
+                <button onClick={handleCancel} className="secondary-btn">
                     Cancelar
                 </button>
             </div>
