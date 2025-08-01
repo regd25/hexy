@@ -1,0 +1,41 @@
+export const COLORS: Record<string, string> = {
+  purpose: '#a855f7',
+  context: '#14b8a6',
+  authority: '#10b981',
+  evaluation: '#f59e0b',
+  vision: '#6366f1',
+  policy: '#ef4444',
+  principle: '#ec4899',
+  guideline: '#f97316',
+  concept: '#06b6d4',
+  indicator: '#0891b2',
+  process: '#059669',
+  procedure: '#84cc16',
+  event: '#d97706',
+  result: '#dc2626',
+  observation: '#0ea5e9',
+  actor: '#8b5cf6',
+  area: '#a855f7',
+  reference: '#64748b'
+}
+
+export const REVERSE_TYPE_MAP: Record<string, string> = {
+  purpose: 'Propósitos',
+  context: 'Contextos',
+  authority: 'Autoridades',
+  evaluation: 'Evaluaciones',
+  vision: 'Visiones',
+  policy: 'Políticas',
+  principle: 'Principios',
+  guideline: 'Guías',
+  concept: 'Conceptos',
+  indicator: 'Indicadores',
+  process: 'Procesos',
+  procedure: 'Procedimientos',
+  event: 'Eventos',
+  result: 'Resultados',
+  observation: 'Observaciones',
+  actor: 'Actores',
+  area: 'Áreas',
+  reference: 'Referencias'
+} 

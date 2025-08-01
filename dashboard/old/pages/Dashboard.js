@@ -5,9 +5,9 @@ import { ArtifactParser } from '../services/ArtifactParser.js';
 import { SemanticService } from '../services/SemanticService.js';
 import { Artifact, Link } from '../models/Artifact.js';
 import { COLORS, TYPE_MAP, DEFAULT_TEXT } from '../shared/constants.js';
-import { EventBus } from '../components/utils/events/EventBus.js';
-import { EVENT_TYPES } from '../components/utils/events/EventTypes.js';
-import { NotificationManager } from '../components/utils/notifications/NotificationManager.js';
+import { EventBus } from '../../components/utils/events/EventBus.js';
+import { EVENT_TYPES } from '../../components/utils/events/EventTypes.js';
+import { NotificationManager } from '../../components/utils/notifications/NotificationManager.js';
 import { ArtifactService } from '../services/ArtifactService.js';
 
 /**

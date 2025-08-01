@@ -1,0 +1,49 @@
+.app {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8fafc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.toastify {
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    word-wrap: break-word !important;
+    max-width: 400px !important;
+    z-index: 999999 !important;
+}
+
+.toastify .toast-close {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    opacity: 0.8 !important;
+    transition: opacity 0.2s !important;
+}
+
+.toastify .toast-close:hover {
+    opacity: 1 !important;
+}

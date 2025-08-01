@@ -1,183 +1,53 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hexy Framework - Dashboard</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div id="app">
-      <!-- Header -->
-      <header class="app-header">
-        <div class="header-content">
-          <div class="header-left">
-            <h1 class="app-title">Hexy Framework</h1>
-            <span class="app-subtitle">Dashboard</span>
-          </div>
-          <div class="header-actions">
-            <button id="search-btn" class="action-btn" title="Buscar artefactos">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-            </button>
-            <button id="export-btn" class="action-btn" title="Exportar datos">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
-            </button>
-            <button id="import-btn" class="action-btn" title="Importar datos">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-              </svg>
-            </button>
-            <button id="export-semantic-btn" class="action-btn" title="Exportar relaciones semánticas">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-              </svg>
-            </button>
-            <div class="artifact-counter">
-              <span id="artifact-count">0</span>
-              <span class="counter-label">artefactos</span>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hexy Dashboard</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+        />
+        <style>
+            .loading {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                font-family:
+                    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                    sans-serif;
+                color: #64748b;
+            }
+
+            .loading-spinner {
+                border: 3px solid #f3f4f6;
+                border-top: 3px solid #3b82f6;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 1s linear infinite;
+                margin-right: 1rem;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Cargando Hexy Dashboard...</span>
             </div>
-          </div>
         </div>
-      </header>
 
-      <!-- Main Content -->
-      <div class="main-layout">
-        <!-- Left Panel - Artifacts -->
-        <aside class="artifacts-panel">
-          <div class="panel-header">
-            <h2>Artefactos</h2>
-            <button id="add-artifact-btn" class="primary-btn">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              Nuevo Artefacto
-            </button>
-          </div>
-
-          <!-- Search Bar -->
-          <div id="search-container" class="search-container hidden">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar artefactos...">
-          </div>
-
-          <!-- Artifact Creation Form -->
-          <div id="artifact-form" class="artifact-form hidden">
-            <h3>Crear Nuevo Artefacto</h3>
-            <div class="form-group">
-              <label for="artifact-name">Nombre</label>
-              <input type="text" id="artifact-name" class="form-input" placeholder="Nombre del artefacto">
-            </div>
-            <div class="form-group">
-              <label for="artifact-type">Tipo</label>
-              <select id="artifact-type" class="form-input">
-                <option value="purpose">Purpose</option>
-                <option value="context">Context</option>
-                <option value="authority">Authority</option>
-                <option value="evaluation">Evaluation</option>
-                <option value="vision">Vision</option>
-                <option value="policy">Policy</option>
-                <option value="principle">Principle</option>
-                <option value="guideline">Guideline</option>
-                <option value="concept">Concept</option>
-                <option value="indicator">Indicator</option>
-                <option value="process">Process</option>
-                <option value="procedure">Procedure</option>
-                <option value="event">Event</option>
-                <option value="result">Result</option>
-                <option value="observation">Observation</option>
-                <option value="actor">Actor</option>
-                <option value="area">Area</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="artifact-description">Descripción</label>
-              <textarea id="artifact-description" class="form-input" rows="3" placeholder="Descripción del artefacto"></textarea>
-            </div>
-            <div class="form-actions">
-              <button id="create-btn" class="primary-btn">Crear</button>
-              <button id="cancel-btn" class="secondary-btn">Cancelar</button>
-            </div>
-          </div>
-
-          <!-- Artifacts List -->
-          <div class="artifacts-list">
-            <div id="artifacts-container">
-              <!-- Artifacts will be dynamically added here -->
-            </div>
-          </div>
-        </aside>
-
-        <!-- Center Panel - Graph Visualization -->
-        <main class="graph-panel">
-          <div class="panel-header">
-            <h2>Visualización del Grafo</h2>
-            <div class="graph-controls">
-              <button id="test-create-btn" class="control-btn" title="Crear artefacto (prueba)" style="background-color: #10b981; color: white;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-              </button>
-              <button id="create-artifact-btn" class="control-btn" title="Crear artefacto (Clic en canvas vacío, Alt/Ctrl/Cmd+Click)" style="background-color: #3b82f6; color: white;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Crear
-              </button>
-              <button id="config-btn" class="control-btn" title="Configurar colores">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-              </button>
-              <button id="edit-btn" class="control-btn" title="Editar documento">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-              </button>
-              <button id="visualize-btn" class="control-btn" title="Visualizar documento">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div id="graph-container" class="graph-container">
-            <svg id="graph"></svg>
-            <div id="tooltip" class="tooltip"></div>
-            <div id="menu" class="context-menu"></div>
-          </div>
-        </main>
-
-        <!-- Right Panel - Editor -->
-        <aside class="editor-panel">
-          <div class="panel-header">
-            <h2>Editor de Artefactos</h2>
-            <div class="editor-mode">
-              <span id="editor-mode-indicator">Modo: Texto</span>
-            </div>
-          </div>
-          
-          <div class="editor-content">
-            <textarea id="editor" class="editor-textarea" placeholder="Escribe aquí el contenido de los artefactos..."></textarea>
-          </div>
-        </aside>
-      </div>
-
-      <!-- Modals -->
-      <div id="modal-overlay" class="modal-overlay hidden">
-        <div id="modal" class="modal">
-          <div id="modal-content"></div>
-        </div>
-      </div>
-    </div>
-
-    <script type="module" src="index.js"></script>
-  </body>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
 </html>
-

@@ -1,5 +1,5 @@
 import { Artifact } from '../models/Artifact.js';
-import { EVENT_TYPES } from '../components/utils/events/EventTypes.js';
+import { EVENT_TYPES } from '../../components/utils/events/EventTypes.js';
 
 /**
  * Service for managing artifacts with event-driven architecture
