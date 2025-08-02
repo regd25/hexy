@@ -1,5 +1,5 @@
 import React from 'react'
-import { DashboardLayout } from './components/layout/DashboardLayout'
+import { DashboardLayout } from './old/layout/DashboardLayout'
 import { EventBusProvider } from './contexts/EventBusContext'
 import './App.css'
 

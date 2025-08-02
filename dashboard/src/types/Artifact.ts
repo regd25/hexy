@@ -12,6 +12,14 @@ export interface Artifact {
     fy: number | null
 }
 
+export interface TemporalArtifact extends Omit<Artifact, 'id'> {
+    id: string
+    isTemporary: true
+    createdAt: number
+    status: 'creating' | 'editing' | 'saving' | 'error'
+    validationErrors?: string[]
+}
+
 export type ArtifactType =
     | 'purpose'
     | 'vision'

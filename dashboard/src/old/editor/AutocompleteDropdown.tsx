@@ -53,20 +53,20 @@ export const AutocompleteDropdown: React.FC<AutocompleteDropdownProps> = ({
                 display: visible ? 'block' : 'none',
             }}
         >
-            {filteredArtifacts.map(artifact => (
+            {filteredArtifacts.map(artifactItem => (
                 <div
-                    key={artifact.id}
+                    key={artifactItem.id}
                     className="autocomplete-item"
-                    onClick={() => onSelect(artifact)}
+                    onClick={() => onSelect(artifactItem)}
                 >
                     <div className="autocomplete-item-content">
-                        <span className="artifact-name">{artifact.name}</span>
-                        <span className="artifact-type">{artifact.type}</span>
+                        <span className="artifact-name">{artifactItem.name}</span>
+                        <span className="artifact-type">{artifactItem.type}</span>
                     </div>
                     <div className="autocomplete-item-preview">
-                        {artifact.description.length > 50
-                            ? `${artifact.description.substring(0, 50)}...`
-                            : artifact.description}
+                        {artifactItem.description.length > 50
+                            ? `${artifactItem.description.substring(0, 50)}...`
+                            : artifactItem.description}
                     </div>
                 </div>
             ))}

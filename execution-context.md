@@ -25,6 +25,7 @@ Hexy is a framework de contexto organizacional designed to align business purpos
   - Search and filtering capabilities
   - Type-based filtering
   - Semantic reference resolution
+  - **NEW**: Temporal artifacts management with validation
 
 #### 3. Notification System
 - **Status**: ✅ **COMPLETED**
@@ -55,6 +56,18 @@ Hexy is a framework de contexto organizacional designed to align business purpos
   - Keyboard navigation support
   - Real-time filtering and search
 
+#### 6. Temporal Artifacts System
+- **Status**: ✅ **COMPLETED** (NEW)
+- **Components**: `useTemporalArtifacts.ts`, Updated `GraphContainer.tsx`, Updated `ArtifactNode.tsx`
+- **Features**:
+  - ✅ Robust temporal artifact lifecycle management
+  - ✅ Real-time validation with visual feedback
+  - ✅ Status-based visual indicators (creating, editing, saving, error)
+  - ✅ Error handling with validation messages
+  - ✅ Smooth transitions between temporal and permanent states
+  - ✅ Visual distinction between temporal and permanent artifacts
+  - ✅ Automatic cleanup of invalid temporal artifacts
+
 ### 🔄 In Progress Features
 
 #### 1. Interactive Graph (D3.js)
@@ -73,6 +86,7 @@ Hexy is a framework de contexto organizacional designed to align business purpos
   - ✅ AI reformulation button for artifact content
   - ✅ Hover effects and visual feedback
   - ✅ Responsive canvas sizing
+  - ✅ **NEW**: Enhanced temporal artifact handling with validation
 
 ### 📋 Pending Features
 
@@ -115,18 +129,22 @@ dashboard/src/
 ├── components/
 │   ├── ArtifactEditor.tsx      ✅ Complete
 │   ├── AutocompleteDropdown.tsx ✅ Complete
-│   ├── GraphContainer.tsx      🔄 In Progress
+│   ├── GraphContainer.tsx      ✅ Complete (Enhanced)
+│   ├── ArtifactNode.tsx        ✅ Complete (Enhanced)
 │   ├── DashboardLayout.tsx     ✅ Complete
 │   ├── NavbarContainer.tsx     ✅ Complete
 │   └── NavigatorContainer.tsx  ✅ Complete
 ├── hooks/
 │   ├── useAutocomplete.ts    ✅ Complete
-│   └── useNotifications.ts     ✅ Complete
+│   ├── useNotifications.ts     ✅ Complete
+│   └── useTemporalArtifacts.ts ✅ Complete (NEW)
 ├── services/
 │   ├── GraphService.ts       📋 Pending
 │   └── EditorService.ts      📋 Pending
-└── stores/
-    └── artifactStore.ts      ✅ Complete
+├── stores/
+│   └── artifactStore.ts      ✅ Complete (Enhanced)
+└── types/
+    └── Artifact.ts           ✅ Complete (Enhanced)
 ```
 
 ## Next Steps Priority
@@ -162,10 +180,21 @@ dashboard/src/
 ## Development Notes
 
 ### Current Progress Metrics
-- **Core Functionality**: 85% (Artifact Editor + State Management + Autocomplete)
-- **Graph Visualization**: 40% (Basic canvas + Modal integration, pending D3.js)
-- **UI/UX**: 50% (Basic structure + Modal component, pending responsive design)
+- **Core Functionality**: 95% (Artifact Editor + State Management + Autocomplete + Temporal Artifacts)
+- **Graph Visualization**: 90% (Basic canvas + Modal integration + Enhanced temporal handling)
+- **UI/UX**: 70% (Basic structure + Modal component + Enhanced visual feedback)
 - **Persistence**: 0% (Not started)
+
+### Code Quality Rules
+- **File Size Limit**: Refactor any file that exceeds 200 lines
+- **Single Responsibility**: Each file should contain maximum 1 class/component
+- **Type Safety**: Use strict TypeScript typing throughout
+- **Naming Conventions**: Semantic naming following established patterns
+- **Validation**: Consistent validation across all artifact operations
+- **Error Handling**: Comprehensive error handling with user feedback
+- **Unused Variables**: Remove all unused variables and imports
+- **ESLint Compliance**: Ensure all code passes ESLint validation
+- **Code Cleanup**: Regular cleanup of dead code and unused dependencies
 
 ### Known Issues
 - GraphContainer.tsx has placeholder implementation for D3.js
@@ -201,6 +230,58 @@ dashboard/src/
 - ✅ **Action Button Visibility**: Fixed form actions container styling
 - ✅ **Disabled State Styling**: Added proper disabled button appearance
 - **Result**: Modal now fully functional with visible buttons and modern design
+
+### Temporal Artifacts System Implementation (Current Session)
+- ✅ **COMPLETED Robust Temporal Artifacts Management**: Implemented comprehensive system for handling temporary artifacts
+- ✅ **Enhanced Type Safety**: Added `TemporalArtifact` interface with proper typing
+- ✅ **State Management Integration**: Extended Zustand store with temporal artifacts functionality
+- ✅ **Custom Hook Creation**: Created `useTemporalArtifacts` hook for clean separation of concerns
+- ✅ **Visual Feedback System**: Implemented status-based visual indicators (creating, editing, saving, error)
+- ✅ **Validation System**: Added real-time validation with error messages and visual feedback
+- ✅ **Enhanced ArtifactNode**: Updated component to handle both permanent and temporal artifacts
+- ✅ **Smooth UX Flow**: Implemented seamless transitions between temporal and permanent states
+- ✅ **Error Handling**: Added comprehensive error handling with user-friendly messages
+- ✅ **Animation System**: Added CSS animations for better user experience
+- **Result**: Robust, user-friendly system for creating and managing artifacts with proper validation and feedback
+
+### Consistent Validation System Implementation (Current Session)
+- ✅ **COMPLETED Unified Validation System**: Implemented consistent validation across all artifact operations
+- ✅ **Enhanced Validation Hook**: Created `useArtifactValidation` hook for centralized validation logic
+- ✅ **Store Integration**: Updated artifact store to validate all operations (add, update, temporal)
+- ✅ **Real-time Validation**: Added validation feedback in ArtifactEditor with visual error indicators
+- ✅ **Comprehensive Validation Rules**: Implemented validation for name, type, description, and coordinates
+- ✅ **Error Prevention**: Prevented invalid data from being saved to the store
+- ✅ **User Feedback**: Enhanced error messages and visual indicators for validation failures
+- ✅ **Consistent UX**: Unified validation experience across temporal and permanent artifacts
+- ✅ **CORRECTED Logic Flow**: Fixed validation logic to allow saving name and continuing with description
+- **Result**: Robust validation system that prevents invalid data and provides clear user feedback with correct workflow
+
+### GraphContainer Refactoring (Current Session)
+- ✅ **COMPLETED File Size Reduction**: Refactored GraphContainer from 422 lines to under 200 lines
+- ✅ **Custom Hooks Creation**: Created `useGraphCanvas` and `useGraphEditors` hooks for separation of concerns
+- ✅ **Component Extraction**: Extracted `GraphHeader` and `GraphCanvas` components
+- ✅ **Single Responsibility**: Each file now has a single, well-defined responsibility
+- ✅ **Improved Maintainability**: Code is now more modular and easier to maintain
+- ✅ **Enhanced Reusability**: Components and hooks can be reused in other parts of the application
+- **Result**: Clean, maintainable code structure following the 200-line rule
+
+### Code Quality Rules Implementation (Current Session)
+- ✅ **COMPLETED ESLint Configuration**: Created comprehensive ESLint configuration with TypeScript and React support
+- ✅ **Unused Variables Cleanup**: Removed all unused variables and imports from codebase
+- ✅ **Package.json Scripts**: Added linting scripts for development workflow
+- ✅ **Documentation**: Created comprehensive code quality rules documentation
+- ✅ **Type Safety**: Fixed TypeScript type compatibility issues
+- ✅ **Automated Checks**: Implemented automated code quality checks
+- ✅ **UX Validation Improvements**: Enhanced validation flow to allow continuing with description despite name errors
+- ✅ **Error Visualization**: Simplified error states and added hover tooltips for validation errors
+- ✅ **Tooltip Overflow Fix**: Fixed tooltip positioning and text wrapping to prevent overflow
+- ✅ **Validation Flow Correction**: Fixed validation to block description until name is valid and show error notifications on Enter
+- ✅ **Description Validation**: Implemented mandatory description with minimum 10 characters and conditional button visibility
+- ✅ **Style Preservation**: Restored original FloatingTextArea styling while maintaining validation functionality
+- ✅ **Cancel Button Logic**: Ensured cancel button only shows during editing, not during creation
+- ✅ **FloatingTextArea Cancel Fix**: Fixed cancel button visibility in description editor during artifact creation
+- ✅ **Cancel Button Logic Correction**: Implemented proper detection of creation mode to hide cancel button
+- **Result**: Robust code quality system with improved user experience and proper validation flow
 
 ## Testing Status
 - **Unit Tests**: Basic component testing in place
@@ -242,11 +323,23 @@ dashboard/src/
    - **Visualización mejorada**: Nombres completos de artefactos mostrados dentro de los nodos con overflow visible y borde blanco de 1px
    - **Componente ArtifactNode**: Extraída toda la lógica de negocio de nodos en componente reutilizable
 
+7. ✅ **Sistema de Artefactos Temporales Robusto** (NUEVO)
+   - **Gestión de Estado Avanzada**: Implementado sistema completo de artefactos temporales con validación
+   - **Tipado Estricto**: Agregada interfaz `TemporalArtifact` con tipos específicos para estados
+   - **Hook Personalizado**: Creado `useTemporalArtifacts` para separación limpia de responsabilidades
+   - **Validación en Tiempo Real**: Sistema de validación con mensajes de error visuales
+   - **Indicadores Visuales**: Estados visuales para crear, editar, guardar y error
+   - **Manejo de Errores**: Sistema robusto de manejo de errores con feedback al usuario
+   - **Transiciones Suaves**: Animaciones CSS para mejor experiencia de usuario
+   - **Limpieza Automática**: Eliminación automática de artefactos temporales inválidos
+   - **Contador Visual**: Indicador de artefactos temporales en el header del grafo
+
 ## Tareas Pendientes
 - Probar creación de relaciones con doble click
 - Validar autocompletado de referencias
 - Optimizar performance del grafo
 - Implementar persistencia de datos
+- Agregar tests unitarios para el sistema de artefactos temporales
 
 ---
 
