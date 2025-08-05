@@ -14,10 +14,15 @@ Each template follows the Hexy semantic architecture principles:
 
 ## Usage
 
-1. Copy the desired template folder
+1. Copy the desired template folder 'generic-module'
 2. Rename it to your module name
 3. Update the component names and imports
 4. Implement your specific business logic
+
+## Maintain
+1. Read the Hexy semantic architecture principles
+2. Follow the template structure
+3. Use DDD patterns and Hexy semantic artifacts
 
 ## Principles
 
