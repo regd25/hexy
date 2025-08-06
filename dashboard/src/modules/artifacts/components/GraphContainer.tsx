@@ -1,136 +1,58 @@
-/**
- * GraphContainer - Semantic Artifact Graph Visualization
- * D3.js-based graph for visualizing artifacts and their relationships
- * Following simplified architecture with direct EventBus integration
- */
-
-import React, { useRef, useEffect, useState, useMemo } from 'react'
-import * as d3 from 'd3'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { useEventBus } from '../../../shared/event-bus'
+import { useNotifications } from '../../../shared/notifications/useNotifications'
+import { InlineEditor } from '../../../shared/editors/InlineEditor'
+import { FloatingEditor as FloatingTextArea } from '../../../shared/editors/FloatingEditor'
+import { ArtifactNode } from './ArtifactNode'
 import { ArtifactService } from '../services'
-import {
-    Artifact,
-    TemporalArtifact,
-    Relationship,
-    ArtifactType,
-    ARTIFACT_TYPES,
-    CreateArtifactPayload
-} from '../types'
+import { Artifact, CreateArtifactPayload } from '../types'
 
 interface GraphContainerProps {
-    width?: number
-    height?: number
     className?: string
 }
 
-interface D3Node extends d3.SimulationNodeDatum {
-    id: string
-    artifact: Artifact | TemporalArtifact
-    type: ArtifactType
-    isTemporary?: boolean
-}
-
-interface D3Link extends d3.SimulationLinkDatum<D3Node> {
-    id: string
-    relationship: Relationship
-}
-
-/**
- * Semantic colors for different artifact types
- */
-const ARTIFACT_COLORS = {
-    [ARTIFACT_TYPES.PURPOSE]: '#3B82F6',      // Blue
-    [ARTIFACT_TYPES.CONTEXT]: '#10B981',      // Green  
-    [ARTIFACT_TYPES.AUTHORITY]: '#F59E0B',    // Amber
-    [ARTIFACT_TYPES.EVALUATION]: '#EF4444',   // Red
-    [ARTIFACT_TYPES.VISION]: '#8B5CF6',       // Purple
-    [ARTIFACT_TYPES.POLICY]: '#EC4899',       // Pink
-    [ARTIFACT_TYPES.PRINCIPLE]: '#06B6D4',    // Cyan
-    [ARTIFACT_TYPES.GUIDELINE]: '#84CC16',    // Lime
-    [ARTIFACT_TYPES.CONCEPT]: '#F97316',      // Orange
-    [ARTIFACT_TYPES.INDICATOR]: '#6366F1',    // Indigo
-    [ARTIFACT_TYPES.PROCESS]: '#14B8A6',      // Teal
-    [ARTIFACT_TYPES.PROCEDURE]: '#A855F7',    // Violet
-    [ARTIFACT_TYPES.EVENT]: '#F43F5E',        // Rose
-    [ARTIFACT_TYPES.RESULT]: '#22C55E',       // Green
-    [ARTIFACT_TYPES.OBSERVATION]: '#64748B',  // Slate
-    [ARTIFACT_TYPES.ACTOR]: '#DC2626',        // Red
-    [ARTIFACT_TYPES.AREA]: '#7C3AED',         // Purple
-} as const
-
 export const GraphContainer: React.FC<GraphContainerProps> = ({
-    width = 800,
-    height = 600,
-    className = ''
+    className,
 }) => {
-    const svgRef = useRef<SVGSVGElement>(null)
-    const eventBus = useEventBus()
+    const [isNameEditorVisible, setIsNameEditorVisible] = useState(false)
+    const [isDescriptionEditorVisible, setIsDescriptionEditorVisible] =
+        useState(false)
+    const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(
+        null
+    )
+    const [newArtifactPosition, setNewArtifactPosition] = useState({
+        x: 0,
+        y: 0,
+    })
+    const [editorPosition, setEditorPosition] = useState({ x: 0, y: 0 })
+    const [isCreatingRelation, setIsCreatingRelation] = useState(false)
+    const [relationSource, setRelationSource] = useState<Artifact | null>(null)
+    const [relationLine, setRelationLine] = useState<{
+        x1: number
+        y1: number
+        x2: number
+        y2: number
+    } | null>(null)
+    const [tempArtifact, setTempArtifact] = useState<Artifact | null>(null)
+    const [currentName, setCurrentName] = useState('')
+    const [nameValidationErrors, setNameValidationErrors] = useState<string[]>(
+        []
+    )
     const [artifacts, setArtifacts] = useState<Artifact[]>([])
-    const [temporalArtifacts, setTemporalArtifacts] = useState<TemporalArtifact[]>([])
-    const [relationships, setRelationships] = useState<Relationship[]>([])
-    const [selectedNode, setSelectedNode] = useState<D3Node | null>(null)
 
-    // ✅ Simplified service initialization
-    const artifactService = useMemo(() => 
-        new ArtifactService(eventBus), 
+    const canvasRef = useRef<HTMLDivElement>(null)
+    const eventBus = useEventBus()
+    const { showSuccess, showError } = useNotifications()
+
+    // Initialize ArtifactService
+    const artifactService = useMemo(
+        () => new ArtifactService(eventBus),
         [eventBus]
     )
 
-    // ✅ Direct event subscriptions - no intermediate layers
+    // Load artifacts on mount
     useEffect(() => {
-        const unsubscribeArtifactCreated = eventBus.subscribe('artifact:created', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setArtifacts(prev => [...prev, data.artifact])
-            }
-        })
-
-        const unsubscribeArtifactUpdated = eventBus.subscribe('artifact:updated', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setArtifacts(prev => 
-                    prev.map(a => a.id === data.artifact.id ? data.artifact : a)
-                )
-            }
-        })
-
-        const unsubscribeArtifactDeleted = eventBus.subscribe('artifact:deleted', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setArtifacts(prev => prev.filter(a => a.id !== data.id))
-            }
-        })
-
-        const unsubscribeTemporalCreated = eventBus.subscribe('temporal:created', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setTemporalArtifacts(prev => [...prev, data.temporal])
-            }
-        })
-
-        const unsubscribeTemporalPromoted = eventBus.subscribe('temporal:promoted', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setTemporalArtifacts(prev => 
-                    prev.filter(t => t.temporaryId !== data.temporalId)
-                )
-            }
-        })
-
-        const unsubscribeRelationshipCreated = eventBus.subscribe('relationship:created', ({ data }) => {
-            if (data.source === 'artifacts-module') {
-                setRelationships(prev => [...prev, data.relationship])
-            }
-        })
-
-        return () => {
-            unsubscribeArtifactCreated()
-            unsubscribeArtifactUpdated()
-            unsubscribeArtifactDeleted()
-            unsubscribeTemporalCreated()
-            unsubscribeTemporalPromoted()
-            unsubscribeRelationshipCreated()
-        }
-    }, [eventBus])
-
-    // Load initial data
-    useEffect(() => {
-        const loadData = async () => {
+        const loadArtifacts = async () => {
             try {
                 const loadedArtifacts = await artifactService.getAllArtifacts()
                 setArtifacts(loadedArtifacts)
@@ -138,220 +60,418 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({
                 console.error('Error loading artifacts:', error)
             }
         }
-        loadData()
+        loadArtifacts()
     }, [artifactService])
 
-    // Prepare D3 data
-    const { nodes, links } = useMemo(() => {
-        const allNodes: D3Node[] = [
-            // Permanent artifacts
-            ...artifacts.map(artifact => ({
-                id: artifact.id,
-                artifact,
-                type: artifact.type,
-                x: artifact.visualProperties.x,
-                y: artifact.visualProperties.y,
-                isTemporary: false
-            })),
-            // Temporal artifacts
-            ...temporalArtifacts.map(temporal => ({
-                id: temporal.temporaryId,
-                artifact: temporal,
-                type: temporal.type,
-                x: temporal.visualProperties.x,
-                y: temporal.visualProperties.y,
-                isTemporary: true
-            }))
-        ]
-
-        const allLinks: D3Link[] = relationships.map(relationship => ({
-            id: relationship.id,
-            source: relationship.sourceId,
-            target: relationship.targetId,
-            relationship
-        }))
-
-        return { nodes: allNodes, links: allLinks }
-    }, [artifacts, temporalArtifacts, relationships])
-
-    // D3.js visualization
+    // Listen for artifact changes
     useEffect(() => {
-        if (!svgRef.current || nodes.length === 0) return
-
-        const svg = d3.select(svgRef.current)
-        svg.selectAll('*').remove() // Clear previous render
-
-        // Create main group for zoom/pan
-        const g = svg.append('g')
-
-        // Setup zoom behavior
-        const zoom = d3.zoom<SVGSVGElement, unknown>()
-            .scaleExtent([0.1, 4])
-            .on('zoom', (event) => {
-                g.attr('transform', event.transform)
-            })
-
-        svg.call(zoom)
-
-        // Create simulation
-        const simulation = d3.forceSimulation<D3Node>(nodes)
-            .force('link', d3.forceLink<D3Node, D3Link>(links).id(d => d.id).distance(100))
-            .force('charge', d3.forceManyBody().strength(-300))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('collision', d3.forceCollide().radius(30))
-
-        // Create links
-        const link = g.append('g')
-            .selectAll('line')
-            .data(links)
-            .enter()
-            .append('line')
-            .attr('stroke', '#64748B')
-            .attr('stroke-width', 2)
-            .attr('stroke-opacity', 0.6)
-
-        // Create nodes
-        const node = g.append('g')
-            .selectAll('circle')
-            .data(nodes)
-            .enter()
-            .append('circle')
-            .attr('r', d => d.isTemporary ? 15 : 20)
-            .attr('fill', d => ARTIFACT_COLORS[d.type] || '#64748B')
-            .attr('stroke', d => d.isTemporary ? '#94A3B8' : '#1F2937')
-            .attr('stroke-width', d => d.isTemporary ? 2 : 3)
-            .attr('stroke-dasharray', d => d.isTemporary ? '5,5' : 'none')
-            .attr('opacity', d => d.isTemporary ? 0.7 : 1)
-            .style('cursor', 'pointer')
-            .call(d3.drag<SVGCircleElement, D3Node>()
-                .on('start', (event, d) => {
-                    if (!event.active) simulation.alphaTarget(0.3).restart()
-                    d.fx = d.x
-                    d.fy = d.y
-                })
-                .on('drag', (event, d) => {
-                    d.fx = event.x
-                    d.fy = event.y
-                })
-                .on('end', (event, d) => {
-                    if (!event.active) simulation.alphaTarget(0)
-                    d.fx = null
-                    d.fy = null
-                })
-            )
-
-        // Add labels
-        const labels = g.append('g')
-            .selectAll('text')
-            .data(nodes)
-            .enter()
-            .append('text')
-            .text(d => d.artifact.name.substring(0, 20) + (d.artifact.name.length > 20 ? '...' : ''))
-            .attr('font-size', '12px')
-            .attr('font-family', 'system-ui, sans-serif')
-            .attr('fill', '#F8FAFC')
-            .attr('text-anchor', 'middle')
-            .attr('dy', '0.35em')
-            .style('pointer-events', 'none')
-            .style('user-select', 'none')
-
-        // Node click handler
-        node.on('click', (event, d) => {
-            event.stopPropagation()
-            setSelectedNode(d)
-        })
-
-        // Canvas click handler for creating new artifacts
-        svg.on('click', async (event) => {
-            if (event.target === svgRef.current) {
-                const [x, y] = d3.pointer(event, g.node())
-                await handleCreateArtifact(x, y)
+        const unsubscribeCreated = eventBus.subscribe(
+            'artifact:created',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev => [...prev, data.artifact])
+                }
             }
-        })
+        )
 
-        // Update positions on simulation tick
-        simulation.on('tick', () => {
-            link
-                .attr('x1', d => (d.source as D3Node).x!)
-                .attr('y1', d => (d.source as D3Node).y!)
-                .attr('x2', d => (d.target as D3Node).x!)
-                .attr('y2', d => (d.target as D3Node).y!)
+        const unsubscribeUpdated = eventBus.subscribe(
+            'artifact:updated',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev =>
+                        prev.map(a =>
+                            a.id === data.artifact.id ? data.artifact : a
+                        )
+                    )
+                }
+            }
+        )
 
-            node
-                .attr('cx', d => d.x!)
-                .attr('cy', d => d.y!)
-
-            labels
-                .attr('x', d => d.x!)
-                .attr('y', d => d.y!)
-        })
+        const unsubscribeDeleted = eventBus.subscribe(
+            'artifact:deleted',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev => prev.filter(a => a.id !== data.id))
+                }
+            }
+        )
 
         return () => {
-            simulation.stop()
+            unsubscribeCreated()
+            unsubscribeUpdated()
+            unsubscribeDeleted()
         }
-    }, [nodes, links, width, height])
+    }, [eventBus])
 
-    // Handle artifact creation
-    const handleCreateArtifact = async (x: number, y: number) => {
-        try {
-            const payload: CreateArtifactPayload = {
-                name: 'New Artifact',
-                type: ARTIFACT_TYPES.PURPOSE,
-                description: 'Click to edit this artifact',
-                coordinates: { x, y }
+    // Validate name in real-time
+    const validateNameInput = (name: string): string[] => {
+        const errors: string[] = []
+
+        if (!name || name.trim().length === 0) {
+            errors.push('El nombre del artefacto es requerido')
+        } else if (name.trim().length < 2) {
+            errors.push('El nombre debe tener al menos 2 caracteres')
+        } else if (name.trim().length > 100) {
+            errors.push('El nombre no puede exceder 100 caracteres')
+        }
+
+        // Check for duplicate names
+        const existingArtifact = artifacts.find(
+            a => a.name.toLowerCase() === name.trim().toLowerCase()
+        )
+        if (existingArtifact) {
+            errors.push('Ya existe un artefacto con este nombre')
+        }
+
+        return errors
+    }
+
+    const handleNameChange = (name: string) => {
+        setCurrentName(name)
+        const errors = validateNameInput(name)
+        setNameValidationErrors(errors)
+    }
+
+    // Simple validation for descriptions
+    const validateDescription = (description: string): string[] => {
+        const errors: string[] = []
+        if (!description || description.trim().length === 0) {
+            errors.push('La descripción del artefacto es requerida')
+        } else if (description.trim().length < 10) {
+            errors.push('La descripción debe tener al menos 10 caracteres')
+        } else if (description.trim().length > 1000) {
+            errors.push('La descripción no puede exceder 1000 caracteres')
+        }
+        return errors
+    }
+
+    const generateUniqueId = (name: string): string => {
+        const baseId = name.replace(/\s+/g, '').toLowerCase()
+        const timestamp = Date.now()
+        const random = Math.random().toString(36).substring(2, 8)
+        return `${baseId}-${timestamp}-${random}`
+    }
+
+    const handleCanvasClick = (event: React.MouseEvent) => {
+        if (!canvasRef.current || isCreatingRelation) return
+
+        const rect = canvasRef.current.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+
+        // Check if clicking on existing artifact
+        const clickedArtifact = artifacts.find(artifact => {
+            const dx = x - artifact.visualProperties.x
+            const dy = y - artifact.visualProperties.y
+            return Math.sqrt(dx * dx + dy * dy) < 28
+        })
+
+        if (!clickedArtifact) {
+            // Create temporary artifact (using old format for compatibility with ArtifactNode)
+            const tempArtifact: any = {
+                id: `temp-${Date.now()}`,
+                name: '',
+                type: 'concept',
+                description: '',
+                x,
+                y,
             }
 
-            // Create temporal artifact first
-            await artifactService.createTemporalArtifact(payload)
-        } catch (error) {
-            console.error('Error creating artifact:', error)
+            setTempArtifact(tempArtifact)
+            setNewArtifactPosition({ x, y })
+            setIsNameEditorVisible(true)
         }
     }
 
-    return (
-        <div className={`relative bg-gray-900 rounded-lg overflow-hidden ${className}`}>
-            <svg
-                ref={svgRef}
-                width={width}
-                height={height}
-                className="w-full h-full"
-                style={{ background: 'radial-gradient(circle, #1F2937 0%, #111827 100%)' }}
-            />
+    const handleNameSave = async () => {
+        if (!tempArtifact || !canvasRef.current || !currentName.trim()) return
+
+        // Check if there are validation errors
+        if (nameValidationErrors.length > 0) {
+            showError(`Error en el nombre: ${nameValidationErrors.join(', ')}`)
+            return
+        }
+
+        try {
+            const payload: CreateArtifactPayload = {
+                name: currentName,
+                type: 'concept',
+                description: '',
+                coordinates: { x: tempArtifact.x, y: tempArtifact.y },
+            }
+
+            const newArtifact = await artifactService.createArtifact(payload)
             
-            {/* Instructions overlay */}
-            <div className="absolute top-4 left-4 bg-gray-800 bg-opacity-90 rounded-lg p-3 text-sm text-gray-300">
-                <div className="font-medium text-white mb-1">Graph Controls</div>
-                <div>• Click empty space to create artifact</div>
-                <div>• Click node to select/edit</div>
-                <div>• Drag nodes to reposition</div>
-                <div>• Scroll to zoom, drag to pan</div>
+            setIsNameEditorVisible(false)
+            setTempArtifact(null)
+            setCurrentName('')
+
+            // Convert canvas coordinates to window coordinates
+            const rect = canvasRef.current.getBoundingClientRect()
+            const windowX = rect.left + newArtifact.visualProperties.x
+            const windowY = rect.top + newArtifact.visualProperties.y + 80
+
+            // Open description editor immediately
+            setEditingArtifact(newArtifact)
+            setEditorPosition({ x: windowX, y: windowY })
+            setIsDescriptionEditorVisible(true)
+            showSuccess(`Artefacto "${currentName}" creado`)
+        } catch (error) {
+            showError(`Error al crear artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+        }
+    }
+
+    const handleNameCancel = () => {
+        setIsNameEditorVisible(false)
+        setTempArtifact(null)
+        setCurrentName('')
+    }
+
+    const handleArtifactClick = (
+        artifact: Artifact,
+        event: React.MouseEvent
+    ) => {
+        if (isCreatingRelation || !canvasRef.current) return
+
+        event.stopPropagation()
+
+        // Convert canvas coordinates to window coordinates
+        const rect = canvasRef.current.getBoundingClientRect()
+        const windowX = rect.left + artifact.visualProperties.x
+        const windowY = rect.top + artifact.visualProperties.y + 80
+
+        setEditingArtifact(artifact)
+        setEditorPosition({ x: windowX, y: windowY })
+        setIsDescriptionEditorVisible(true)
+    }
+
+    const handleArtifactDoubleClick = (
+        artifact: Artifact,
+        event: React.MouseEvent
+    ) => {
+        event.preventDefault()
+        event.stopPropagation()
+
+        setIsCreatingRelation(true)
+        setRelationSource(artifact)
+        setRelationLine({
+            x1: artifact.visualProperties.x,
+            y1: artifact.visualProperties.y,
+            x2: event.clientX,
+            y2: event.clientY,
+        })
+    }
+
+    const handleMouseMove = (event: React.MouseEvent) => {
+        if (!canvasRef.current || !isCreatingRelation) return
+
+        const rect = canvasRef.current.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+
+        if (relationLine && relationSource) {
+            setRelationLine({
+                ...relationLine,
+                x2: x,
+                y2: y,
+            })
+        }
+    }
+
+    const handleMouseUp = (event: React.MouseEvent) => {
+        if (!isCreatingRelation || !relationSource) return
+
+        const rect = canvasRef.current?.getBoundingClientRect()
+        if (!rect) return
+
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+
+        const targetArtifact = artifacts.find(
+            artifact =>
+                artifact.id !== relationSource.id &&
+                Math.sqrt(
+                    Math.pow(x - artifact.visualProperties.x, 2) + Math.pow(y - artifact.visualProperties.y, 2)
+                ) < 28
+        )
+
+        if (targetArtifact) {
+            // Create relationship
+            const relationshipText = `@${targetArtifact.id}`
+            const currentDescription = relationSource.description || ''
+            const newDescription =
+                currentDescription +
+                (currentDescription ? '\n' : '') +
+                relationshipText
+
+            // Update artifact using ArtifactService
+            const updateArtifact = async () => {
+                try {
+                    await artifactService.updateArtifact(relationSource.id, {
+                        id: relationSource.id,
+                        description: newDescription,
+                    })
+                    showSuccess(`Relación creada con ${targetArtifact.name}`)
+                } catch (error) {
+                    showError(`Error al crear relación: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+                }
+            }
+            updateArtifact()
+
+            // Convert canvas coordinates to window coordinates
+            const rect = canvasRef.current?.getBoundingClientRect()
+            if (rect) {
+                const windowX = rect.left + relationSource.visualProperties.x
+                const windowY = rect.top + relationSource.visualProperties.y + 80
+
+                setEditingArtifact(relationSource)
+                setEditorPosition({ x: windowX, y: windowY })
+                setIsDescriptionEditorVisible(true)
+            }
+        }
+
+        setIsCreatingRelation(false)
+        setRelationSource(null)
+        setRelationLine(null)
+    }
+
+    const handleSaveDescription = async (description: string) => {
+        if (editingArtifact) {
+            // Validate description
+            const descriptionErrors = validateDescription(description)
+            if (descriptionErrors.length > 0) {
+                showError(
+                    `Error en la descripción: ${descriptionErrors.join(', ')}`
+                )
+                return
+            }
+
+            try {
+                await artifactService.updateArtifact(editingArtifact.id, {
+                    id: editingArtifact.id,
+                    description,
+                })
+                showSuccess(`Artefacto "${editingArtifact.name}" actualizado`)
+            } catch (error) {
+                showError(`Error al actualizar artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+            }
+        }
+        setIsDescriptionEditorVisible(false)
+        setEditingArtifact(null)
+    }
+
+    const handleCancelDescription = () => {
+        setIsDescriptionEditorVisible(false)
+        setEditingArtifact(null)
+    }
+
+    return (
+        <div className={`flex-1 bg-slate-900 flex flex-col ${className || ''}`}>
+            <div className="p-4 border-b border-slate-600">
+                <h3 className="text-lg font-semibold text-white mb-2">
+                    Grafo de Artefactos
+                </h3>
+                <div className="flex items-center gap-2 bg-slate-700 px-3 py-2 rounded-lg text-sm w-fit">
+                    <span className="font-semibold text-blue-400">
+                        {artifacts.length}
+                    </span>
+                    <span className="text-slate-300">
+                        artefactos en el grafo
+                    </span>
+                </div>
             </div>
 
-            {/* Node info panel */}
-            {selectedNode && (
-                <div className="absolute top-4 right-4 bg-gray-800 bg-opacity-95 rounded-lg p-4 max-w-sm">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium text-white">
-                            {selectedNode.artifact.name}
-                        </h3>
-                        <button
-                            onClick={() => setSelectedNode(null)}
-                            className="text-gray-400 hover:text-white"
-                        >
-                            ✕
-                        </button>
+            <div
+                ref={canvasRef}
+                className="flex-1 relative bg-slate-950 cursor-pointer"
+                onClick={handleCanvasClick}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+            >
+                {relationLine && (
+                    <svg className="absolute inset-0 pointer-events-none z-20">
+                        <line
+                            x1={relationLine.x1}
+                            y1={relationLine.y1}
+                            x2={relationLine.x2}
+                            y2={relationLine.y2}
+                            stroke="#60a5fa"
+                            strokeWidth="2"
+                            strokeDasharray="5,5"
+                        />
+                    </svg>
+                )}
+
+                {artifacts.length === 0 && !tempArtifact ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                        <p className="text-lg mb-2">
+                            Haz clic en el canvas para crear un artefacto
+                        </p>
+                        <p className="text-sm">
+                            Sistema de artefactos restaurado
+                        </p>
                     </div>
-                    <div className="text-sm text-gray-300 space-y-1">
-                        <div>Type: <span className="text-white">{selectedNode.type}</span></div>
-                        <div>Status: <span className="text-white">
-                            {selectedNode.isTemporary ? 'Draft' : 'Published'}
-                        </span></div>
-                        <div className="mt-2 text-xs text-gray-400">
-                            {selectedNode.artifact.description}
-                        </div>
+                ) : (
+                    <div className="relative w-full h-full">
+                        {/* Render temporary artifact */}
+                        {tempArtifact && (
+                            <ArtifactNode
+                                artifact={tempArtifact}
+                                isTemporary={true}
+                            />
+                        )}
+
+                        {/* Render existing artifacts */}
+                        {artifacts.map(artifact => (
+                            <ArtifactNode
+                                key={artifact.id}
+                                artifact={artifact}
+                                onClick={handleArtifactClick}
+                                onDoubleClick={handleArtifactDoubleClick}
+                            />
+                        ))}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
+
+            <InlineEditor
+                isVisible={isNameEditorVisible}
+                initialValue=""
+                onChange={handleNameChange}
+                onSave={handleNameSave}
+                onCancel={handleNameCancel}
+                position={{
+                    x: canvasRef.current
+                        ? canvasRef.current.getBoundingClientRect().left +
+                          newArtifactPosition.x
+                        : newArtifactPosition.x,
+                    y: canvasRef.current
+                        ? canvasRef.current.getBoundingClientRect().top +
+                          newArtifactPosition.y +
+                          80
+                        : newArtifactPosition.y + 80,
+                }}
+                placeholder="Nombre del artefacto..."
+            />
+
+            <FloatingTextArea
+                isVisible={isDescriptionEditorVisible}
+                position={editorPosition}
+                onSave={handleSaveDescription}
+                onCancel={handleCancelDescription}
+                initialText={
+                    editingArtifact?.description || editingArtifact?.info || ''
+                }
+                title={
+                    editingArtifact ? `Editando: ${editingArtifact.name}` : ''
+                }
+                subtitle={
+                    editingArtifact ? `Tipo: ${editingArtifact.type}` : ''
+                }
+                placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
+                showCancelButton={true}
+                validateText={validateDescription}
+            />
         </div>
     )
 }

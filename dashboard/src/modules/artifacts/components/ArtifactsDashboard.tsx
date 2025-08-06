@@ -11,10 +11,12 @@ interface ArtifactsDashboardProps {
 }
 
 export const ArtifactsDashboard: React.FC<ArtifactsDashboardProps> = ({
-    className = ''
+    className = '',
 }) => {
     return (
-        <div className={`artifacts-dashboard h-full flex flex-col ${className}`}>
+        <div
+            className={`artifacts-dashboard h-full flex flex-col ${className}`}
+        >
             {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 p-4">
                 <div className="flex items-center justify-between">
@@ -23,7 +25,8 @@ export const ArtifactsDashboard: React.FC<ArtifactsDashboardProps> = ({
                             Semantic Artifacts
                         </h1>
                         <p className="text-sm text-gray-400 mt-1">
-                            Visualize and manage organizational knowledge artifacts
+                            Visualize and manage organizational knowledge
+                            artifacts
                         </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -36,7 +39,7 @@ export const ArtifactsDashboard: React.FC<ArtifactsDashboardProps> = ({
 
             {/* Main content */}
             <div className="flex-1 p-4">
-                <GraphContainer 
+                <GraphContainer
                     width={1200}
                     height={700}
                     className="w-full h-full"
@@ -49,13 +52,9 @@ export const ArtifactsDashboard: React.FC<ArtifactsDashboardProps> = ({
                     <div>
                         Hexy Framework • Semantic Architecture • DRY Principles
                     </div>
-                    <div>
-                        Single Event System • Direct Integration
-                    </div>
+                    <div>Single Event System • Direct Integration</div>
                 </div>
             </div>
         </div>
     )
 }
-
-export default ArtifactsDashboard

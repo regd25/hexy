@@ -6,6 +6,7 @@ import { MouseEvent } from '../../../shared/types/DOMEvents'
 interface ArtifactNodeProps {
     artifact: Artifact | TemporalArtifact
     isTemporary?: boolean
+    validationErrors?: string[]
     onClick?: (
         artifact: Artifact | TemporalArtifact,
         event: React.MouseEvent
@@ -27,6 +28,7 @@ interface ArtifactNodeProps {
 export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
     artifact,
     isTemporary = false,
+    validationErrors,
     onClick,
     onDoubleClick,
 }) => {
@@ -34,9 +36,10 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
     const temporalArtifact = isTemporalArtifact
         ? (artifact as TemporalArtifact)
         : null
-    const hasErrors =
-        temporalArtifact?.validationErrors &&
-        temporalArtifact.validationErrors.length > 0
+    
+    // Use validation errors from props or from temporal artifact
+    const currentErrors = validationErrors || temporalArtifact?.validationErrors || []
+    const hasErrors = currentErrors.length > 0
     const [showErrorTooltip, setShowErrorTooltip] = useState(false)
 
     const handleClick = (event: MouseEvent) => {
@@ -93,27 +96,16 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
             overflow: 'visible' as const,
         }
 
-        if (isTemporalArtifact) {
-            const hasErrors =
-                temporalArtifact?.validationErrors &&
-                temporalArtifact.validationErrors.length > 0
-
-            if (hasErrors) {
-                return {
-                    ...baseStyles,
-                    border: '2px solid #ef4444',
-                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
-                }
-            }
-
+        // Show error styling if there are validation errors
+        if (hasErrors) {
             return {
                 ...baseStyles,
-                border: '2px solid #60a5fa',
-                boxShadow: '0 4px 12px rgba(96, 165, 250, 0.4)',
+                border: '2px solid #ef4444',
+                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
             }
         }
 
-        if (isTemporary) {
+        if (isTemporalArtifact || isTemporary) {
             return {
                 ...baseStyles,
                 border: '2px solid #60a5fa',
@@ -162,21 +154,16 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
                 }}
             >
-                {temporalArtifact?.validationErrors?.length} error(es)
+                {currentErrors.length} error(es)
             </div>
         )
     }
 
     const getErrorTooltip = () => {
-        if (
-            !hasErrors ||
-            !temporalArtifact?.validationErrors ||
-            !showErrorTooltip
-        )
-            return null
+        if (!hasErrors || !showErrorTooltip) return null
 
         // Calculate position to avoid overflow
-        const tooltipHeight = 60 + temporalArtifact.validationErrors.length * 20
+        const tooltipHeight = 60 + currentErrors.length * 20
         const shouldShowAbove = artifact.y > tooltipHeight + 20
 
         return (
@@ -212,7 +199,7 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
                 >
                     Errores de validación:
                 </div>
-                {temporalArtifact.validationErrors.map((error, index) => (
+                {currentErrors.map((error, index) => (
                     <div
                         key={index}
                         style={{ marginBottom: '2px', lineHeight: '1.3' }}
@@ -233,8 +220,8 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             title={
-                isTemporalArtifact && hasErrors
-                    ? temporalArtifact?.validationErrors?.join('\n')
+                hasErrors
+                    ? currentErrors.join('\n')
                     : `${artifact.name} is a ${artifact.type}`
             }
         >

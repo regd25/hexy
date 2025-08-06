@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-interface FloatingTextAreaProps {
+interface FloatingEditorProps {
     isVisible: boolean
     position: { x: number; y: number }
     onSave: (text: string) => void
@@ -19,7 +19,7 @@ interface FloatingTextAreaProps {
     className?: string
 }
 
-export const FloatingTextArea: React.FC<FloatingTextAreaProps> = ({
+export const FloatingEditor: React.FC<FloatingEditorProps> = ({
     isVisible,
     position,
     onSave,

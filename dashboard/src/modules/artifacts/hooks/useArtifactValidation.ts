@@ -92,10 +92,8 @@ export const useArtifactValidation = () => {
             // Validate type
             allErrors.push(...validateType(artifact.type || ''))
 
-            // Validate description (optional but if present, validate length)
-            if (artifact.description) {
-                allErrors.push(...validateDescription(artifact.description))
-            }
+            // Validate description - always validate, not optional
+            allErrors.push(...validateDescription(artifact.description || ''))
 
             // Validate coordinates
             if (artifact.x !== undefined && artifact.y !== undefined) {

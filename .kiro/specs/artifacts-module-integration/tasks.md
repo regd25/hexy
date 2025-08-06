@@ -52,7 +52,7 @@ Convert the approved design into a series of implementation tasks for creating a
   - Create relationship line rendering with semantic properties
   - _Requirements: 3.1, 3.4, 6.1, 6.2_
 
-- [-] 2.1 Implement graph interaction system
+- [ ] 2.1 Implement graph interaction system
 
   - Add click-to-create artifact functionality
   - Implement drag-to-create relationships
