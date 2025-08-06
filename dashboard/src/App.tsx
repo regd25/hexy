@@ -1,5 +1,5 @@
-import { DashboardLayout } from './components/layout/DashboardLayout'
-import { EventBusProvider } from './contexts/EventBusContext'
+import { DashboardLayout } from './modules/artifacts/components/DashboardLayout'
+import { EventBusProvider } from './shared/event-bus/EventBusContext'
 import './App.css'
 
 function App() {

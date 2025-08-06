@@ -1,3 +1,5 @@
+import React from "react"
+
 export interface ModuleData {
   id?: string
   name: string
@@ -19,6 +21,7 @@ export interface ModuleState {
 }
 
 export interface ModuleConfig {
+  name: string
   title: string
   subtitle?: string
   version: string
@@ -46,7 +49,7 @@ export interface ValidationRule {
   maxLength?: number
   pattern?: RegExp
   message?: string
-  custom?: (value: any) => string | null
+  custom?: (value: unknown) => string | null
 }
 
 export interface ValidationResult {

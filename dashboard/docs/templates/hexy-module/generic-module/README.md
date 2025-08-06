@@ -1,15 +1,16 @@
 # Generic Module Template
 
-A reusable template for creating new modules in the Hexy Framework dashboard following semantic architecture principles.
+A simplified, DRY-compliant template for creating new modules in the Hexy Framework dashboard following semantic architecture principles.
 
-## 🏗️ Architecture
+## 🏗️ Simplified Architecture
 
-This template follows Hexy Framework principles:
+This template follows **DRY principles** and **semantic simplicity**:
 
-- **Semantic Artifacts**: Built around Purpose, Context, Authority, and Evaluation
-- **DDD Patterns**: Domain-driven design with clear bounded contexts
-- **Event-Driven**: Reactive architecture with event bus integration
-- **Hexagonal Architecture**: Clean separation of concerns
+- **Single Event System**: One global event bus, no duplication
+- **Minimal Layers**: Direct service → component communication
+- **Semantic Focus**: Built around Purpose, Context, Authority, and Evaluation
+- **DDD Patterns**: Clear bounded contexts without over-abstraction
+- **Performance First**: Minimal overhead, maximum efficiency
 
 ## 📁 Structure
 
@@ -120,27 +121,110 @@ const { validate } = useModuleValidation(customRules)
 ### Custom Service Implementation
 
 ```tsx
+import { useEventBus } from '../../../contexts/EventBusContext'
+
+// ✅ Simplified service with direct EventBus integration
 class CustomModuleService extends ModuleService {
+  constructor(config: ModuleConfig, eventBus: EventBus) {
+    super(config, eventBus, '/api/your-endpoint')
+  }
+
   async load(): Promise<ModuleData | null> {
+    // Events are automatically emitted by parent class
     const response = await fetch('/api/your-endpoint')
     return response.json()
   }
 }
+
+// ✅ Usage in React component
+const MyModuleComponent: React.FC = () => {
+  const eventBus = useEventBus()
+  const [data, setData] = useState<ModuleData | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const service = useMemo(() => 
+    new CustomModuleService({ name: 'my-module', version: '1.0.0' }, eventBus),
+    [eventBus]
+  )
+
+  useEffect(() => {
+    // ✅ Direct event subscription - no intermediate layers
+    const unsubscribeLoad = eventBus.subscribe('module:loaded', ({ data }) => {
+      if (data.source === 'my-module') {
+        setData(data.data)
+        setLoading(false)
+      }
+    })
+
+    const unsubscribeError = eventBus.subscribe('module:load:failed', ({ data }) => {
+      if (data.source === 'my-module') {
+        setLoading(false)
+        // Handle error
+      }
+    })
+
+    return () => {
+      unsubscribeLoad()
+      unsubscribeError()
+    }
+  }, [eventBus])
+
+  const handleLoad = async () => {
+    setLoading(true)
+    await service.load() // Events emitted automatically
+  }
+
+  return (
+    <div>
+      {loading ? 'Loading...' : data?.name}
+      <button onClick={handleLoad}>Load Data</button>
+    </div>
+  )
+}
 ```
 
-### Event Integration
+### Simplified Event Integration
 
 ```tsx
 import { useEventBus } from '../../../contexts/EventBusContext'
 
-const { emit, subscribe } = useEventBus()
+const eventBus = useEventBus()
 
-// Emit events
-emit('module:updated', { moduleId, data })
+// ✅ Single event system - no duplication
+eventBus.publish('module:data:updated', { 
+  source: 'your-module',
+  moduleId, 
+  data,
+  timestamp: Date.now()
+})
 
-// Subscribe to events
-subscribe('artifact:created', handleArtifactCreated)
+// ✅ Direct subscription - no intermediate layers
+eventBus.subscribe('artifact:created', ({ data }) => {
+  // React directly to events
+  handleArtifactCreated(data.artifact)
+})
+
+// ✅ Semantic event naming
+eventBus.publish('module:validation:completed', {
+  source: 'your-module',
+  isValid: true,
+  errors: []
+})
 ```
+
+### Event Naming Convention
+
+Follow this **DRY-compliant** naming pattern:
+
+```
+{domain}:{entity}:{action}
+```
+
+Examples:
+- `artifact:item:created`
+- `module:validation:failed` 
+- `user:session:expired`
+- `system:backup:completed`
 
 ## 🎨 Styling
 
@@ -173,14 +257,66 @@ test('renders module page', () => {
 })
 ```
 
-## 📚 Best Practices
+## � Aenti-Patterns to Avoid (DRY Violations)
 
-1. **Semantic Naming**: Use domain-specific terminology
-2. **Single Responsibility**: Each component has one clear purpose
-3. **Error Handling**: Graceful degradation and user feedback
-4. **Performance**: Lazy loading and memoization where appropriate
-5. **Accessibility**: ARIA labels and keyboard navigation
-6. **Type Safety**: Comprehensive TypeScript coverage
+### ❌ **Don't Create Duplicate Event Systems**
+```tsx
+// ❌ BAD: Double event handling
+class ModuleService extends EventEmitter {
+  create(data) {
+    this.emit('item:created', data)  // Local event
+    eventBus.publish('module:item:created', data)  // Global event
+  }
+}
+
+// ✅ GOOD: Single event system
+class ModuleService {
+  create(data) {
+    eventBus.publish('module:item:created', { 
+      source: 'module-name',
+      data,
+      timestamp: Date.now()
+    })
+  }
+}
+```
+
+### ❌ **Don't Create Unnecessary Abstraction Layers**
+```tsx
+// ❌ BAD: Over-abstraction
+class EventBusIntegration {
+  constructor(eventBus, moduleService) {
+    this.setupEventHandlers()  // Unnecessary layer
+  }
+}
+
+// ✅ GOOD: Direct integration
+const moduleService = new ModuleService()
+moduleService.onCreate = (data) => {
+  eventBus.publish('module:item:created', data)
+}
+```
+
+### ❌ **Don't Duplicate State Management**
+```tsx
+// ❌ BAD: Multiple state sources
+const [localState, setLocalState] = useState()
+const globalState = useGlobalStore()
+const contextState = useModuleContext()
+
+// ✅ GOOD: Single source of truth
+const { state, actions } = useModule()
+```
+
+## 📚 DRY-Compliant Best Practices
+
+1. **Single Event System**: Use only the global EventBus, no local emitters
+2. **Direct Communication**: Service → EventBus → Component (no middleware)
+3. **Semantic Naming**: Use domain-specific terminology consistently
+4. **Single State Source**: One store per domain, avoid duplication
+5. **Minimal Abstractions**: Only abstract when you have 3+ similar implementations
+6. **Performance First**: Measure before optimizing, avoid premature abstraction
+7. **Type Safety**: Comprehensive TypeScript coverage without over-engineering
 
 ## 🔗 Integration with Hexy Framework
 
