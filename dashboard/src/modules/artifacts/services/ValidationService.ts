@@ -17,7 +17,6 @@ import {
     ARTIFACT_TYPE_CONFIGS,
     RELATIONSHIP_TYPES,
     artifactSchema,
-    temporalArtifactSchema,
     relationshipSchema,
 } from '../types'
 
@@ -136,9 +135,7 @@ export class ValidationService {
 
         // Calculate semantic score
         const semanticScore = this.calculateRelationshipSemanticScore(
-            relationship,
-            sourceArtifact,
-            targetArtifact
+            relationship
         )
 
         return {
@@ -305,8 +302,7 @@ export class ValidationService {
      */
     validateEvaluationCoherence(
         criteria: string[],
-        purpose: string,
-        artifactType: ArtifactType
+        purpose: string
     ): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
@@ -367,11 +363,7 @@ export class ValidationService {
             }
         }
 
-        const coherenceScore = this.calculateEvaluationCoherence(
-            criteria,
-            purpose,
-            artifactType
-        )
+        const coherenceScore = this.calculateEvaluationCoherence(criteria)
 
         return {
             isValid: errors.length === 0,
@@ -419,8 +411,7 @@ export class ValidationService {
                 validate: (artifact: Artifact) => {
                     return this.validateEvaluationCoherence(
                         artifact.evaluationCriteria,
-                        artifact.purpose,
-                        artifact.type
+                        artifact.purpose
                     )
                 },
             },
@@ -709,9 +700,7 @@ export class ValidationService {
     }
 
     private calculateEvaluationCoherence(
-        criteria: string[],
-        purpose: string,
-        artifactType: ArtifactType
+        criteria: string[]
     ): number {
         if (criteria.length === 0) return 0.0
 
@@ -728,9 +717,7 @@ export class ValidationService {
     }
 
     private calculateRelationshipSemanticScore(
-        relationship: Relationship,
-        source?: Artifact,
-        target?: Artifact
+        relationship: Relationship
     ): number {
         let score = 0.5 // Base score
 

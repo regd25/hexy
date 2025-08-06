@@ -122,7 +122,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
             authority: payload.authority || '',
             evaluationCriteria: payload.evaluationCriteria || [],
             semanticMetadata: {
-                ...createDefaultSemanticMetadata(payload.type),
+                ...createDefaultSemanticMetadata(),
                 ...payload.semanticMetadata,
             },
             visualProperties: {

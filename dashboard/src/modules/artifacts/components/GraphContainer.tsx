@@ -145,12 +145,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({
         return errors
     }
 
-    const generateUniqueId = (name: string): string => {
-        const baseId = name.replace(/\s+/g, '').toLowerCase()
-        const timestamp = Date.now()
-        const random = Math.random().toString(36).substring(2, 8)
-        return `${baseId}-${timestamp}-${random}`
-    }
+
 
     const handleCanvasClick = (event: React.MouseEvent) => {
         if (!canvasRef.current || isCreatingRelation) return

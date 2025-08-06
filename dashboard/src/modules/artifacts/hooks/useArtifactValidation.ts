@@ -1,146 +1,148 @@
-import { useCallback } from 'react'
-import { useArtifactStore } from '../../../stores/artifactStore'
+import { useCallback, useMemo } from 'react'
 import { useNotifications } from '../../../shared/notifications/useNotifications'
-import { Artifact, TemporalArtifact } from '../../../shared/types/Artifact'
+import { ValidationService } from '../services'
+import { Artifact, TemporalArtifact, ValidationResult } from '../types'
 
 export const useArtifactValidation = () => {
-    const { validateArtifact } = useArtifactStore()
     const { showError } = useNotifications()
 
-    const validateArtifactData = useCallback(
-        (artifact: Partial<Artifact | TemporalArtifact>) => {
-            return validateArtifact(artifact)
+    const validationService = useMemo(() => new ValidationService(), [])
+
+    const validateName = useCallback(
+        async (name: string): Promise<string[]> => {
+            try {
+                const validation: ValidationResult =
+                    await validationService.validatePartialArtifact({ name })
+                return validation.errors
+                    .filter(err => err.field === 'name')
+                    .map(err => err.message)
+            } catch (error) {
+                console.error('Error validating name:', error)
+                return ['Error al validar nombre']
+            }
         },
-        [validateArtifact]
+        [validationService]
+    )
+
+    const validateDescription = useCallback(
+        async (description: string): Promise<string[]> => {
+            try {
+                const validation: ValidationResult =
+                    await validationService.validatePartialArtifact({
+                        description,
+                    })
+                return validation.errors
+                    .filter(err => err.field === 'description')
+                    .map(err => err.message)
+            } catch (error) {
+                console.error('Error validating description:', error)
+                return ['Error al validar descripción']
+            }
+        },
+        [validationService]
+    )
+
+    const validateArtifactForSave = useCallback(
+        async (artifactData: Partial<Artifact>): Promise<string[]> => {
+            try {
+                const validation: ValidationResult =
+                    await validationService.validatePartialArtifact(
+                        artifactData
+                    )
+                return validation.errors.map(err => err.message)
+            } catch (error) {
+                console.error('Error validating artifact for save:', error)
+                return ['Error al validar artefacto']
+            }
+        },
+        [validationService]
     )
 
     const validateAndShowErrors = useCallback(
-        (
-            artifact: Partial<Artifact | TemporalArtifact>,
-            context: string = 'artefacto'
-        ) => {
-            const errors = validateArtifactData(artifact)
+        async (
+            artifact: Partial<Artifact> | TemporalArtifact,
+            entityName: string
+        ): Promise<boolean> => {
+            try {
+                const validation: ValidationResult =
+                    await validationService.validatePartialArtifact(artifact)
 
-            if (errors.length > 0) {
-                const errorMessage = `Errores de validación en ${context}: ${errors.join(', ')}`
-                showError(errorMessage)
+                if (!validation.isValid) {
+                    const errorMessages = validation.errors
+                        .map(err => err.message)
+                        .join(', ')
+                    showError(`Errores en ${entityName}: ${errorMessages}`)
+                    return false
+                }
+
+                return true
+            } catch (error) {
+                console.error('Error in validation:', error)
+                showError(`Error al validar ${entityName}`)
                 return false
             }
-
-            return true
         },
-        [validateArtifactData, showError]
+        [validationService, showError]
     )
 
-    const validateName = useCallback((name: string) => {
-        const errors: string[] = []
-
-        if (!name || name.trim().length === 0) {
-            errors.push('El nombre del artefacto es requerido')
-        } else if (name.trim().length < 2) {
-            errors.push('El nombre debe tener al menos 2 caracteres')
-        } else if (name.trim().length > 100) {
-            errors.push('El nombre no puede exceder 100 caracteres')
-        }
-
-        return errors
-    }, [])
-
-    const validateType = useCallback((type: string) => {
-        const errors: string[] = []
-
-        if (!type) {
-            errors.push('El tipo de artefacto es requerido')
-        }
-
-        return errors
-    }, [])
-
-    const validateDescription = useCallback((description: string) => {
-        const errors: string[] = []
-        if (!description || description.trim().length === 0) {
-            errors.push('La descripción del artefacto es requerida')
-        } else if (description.trim().length < 10) {
-            errors.push('La descripción debe tener al menos 10 caracteres')
-        } else if (description.trim().length > 1000) {
-            errors.push('La descripción no puede exceder 1000 caracteres')
-        }
-        return errors
-    }, [])
-
-    const validateCoordinates = useCallback((x: number, y: number) => {
-        const errors: string[] = []
-
-        if (typeof x !== 'number' || isNaN(x)) {
-            errors.push('Coordenada X inválida')
-        }
-
-        if (typeof y !== 'number' || isNaN(y)) {
-            errors.push('Coordenada Y inválida')
-        }
-
-        return errors
-    }, [])
-
-    const validateArtifactForSave = useCallback(
-        (artifact: Partial<Artifact | TemporalArtifact>) => {
-            const allErrors: string[] = []
-
-            // Validate name
-            allErrors.push(...validateName(artifact.name || ''))
-
-            // Validate type
-            allErrors.push(...validateType(artifact.type || ''))
-
-            // Validate description - always validate, not optional
-            allErrors.push(...validateDescription(artifact.description || ''))
-
-            // Validate coordinates
-            if (artifact.x !== undefined && artifact.y !== undefined) {
-                allErrors.push(...validateCoordinates(artifact.x, artifact.y))
-            }
-
-            return allErrors
-        },
-        [validateName, validateType, validateDescription, validateCoordinates]
-    )
-
-    const isArtifactValid = useCallback(
-        (artifact: Partial<Artifact | TemporalArtifact>) => {
-            return validateArtifactData(artifact).length === 0
-        },
-        [validateArtifactData]
-    )
-
-    const getValidationSummary = useCallback(
-        (artifact: Partial<Artifact | TemporalArtifact>) => {
-            const errors = validateArtifactData(artifact)
-            return {
-                isValid: errors.length === 0,
-                errors,
-                errorCount: errors.length,
-                hasNameError: errors.some(error => error.includes('nombre')),
-                hasTypeError: errors.some(error => error.includes('tipo')),
-                hasDescriptionError: errors.some(error =>
-                    error.includes('descripción')
-                ),
-                hasCoordinateError: errors.some(error =>
-                    error.includes('Coordenada')
-                ),
+    const validateFullArtifact = useCallback(
+        async (artifact: Artifact): Promise<ValidationResult> => {
+            try {
+                return await validationService.validateArtifact(artifact)
+            } catch (error) {
+                console.error('Error validating full artifact:', error)
+                return {
+                    isValid: false,
+                    errors: [
+                        {
+                            field: 'general',
+                            message: 'Error al validar artefacto',
+                            code: 'VALIDATION_ERROR',
+                            severity: 'error',
+                        },
+                    ],
+                    warnings: [],
+                    suggestions: [],
+                    semanticScore: 0,
+                }
             }
         },
-        [validateArtifactData]
+        [validationService]
+    )
+
+    const validateTemporalArtifact = useCallback(
+        async (temporal: TemporalArtifact): Promise<ValidationResult> => {
+            try {
+                return await validationService.validateTemporalArtifact(
+                    temporal
+                )
+            } catch (error) {
+                console.error('Error validating temporal artifact:', error)
+                return {
+                    isValid: false,
+                    errors: [
+                        {
+                            field: 'general',
+                            message: 'Error al validar artefacto temporal',
+                            code: 'VALIDATION_ERROR',
+                            severity: 'error',
+                        },
+                    ],
+                    warnings: [],
+                    suggestions: [],
+                    semanticScore: 0,
+                }
+            }
+        },
+        [validationService]
     )
 
     return {
-        validateArtifactData,
-        validateAndShowErrors,
         validateName,
-        validateType,
         validateDescription,
-        validateCoordinates,
         validateArtifactForSave,
-        isArtifactValid,
-        getValidationSummary,
+        validateAndShowErrors,
+        validateFullArtifact,
+        validateTemporalArtifact,
     }
 }

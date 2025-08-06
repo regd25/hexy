@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
-import { Artifact, ArtifactType } from '../../shared/types/Artifact'
-import { useArtifactStore } from '../../stores/artifactStore'
-import { useNotifications } from '../../shared/notifications/useNotifications'
-import { useArtifactValidation } from '../../hooks/useArtifactValidation'
-import { useAutocomplete } from '../../hooks/useAutocomplete'
-import { AutocompleteDropdown } from './AutocompleteDropdown'
+import React, { useState, useEffect, useMemo } from 'react'
+import { useEventBus } from '../../../shared/event-bus/useEventBus'
+import { useNotifications } from '../../../shared/notifications/useNotifications'
+import { ArtifactService } from '../services'
+import { useArtifactValidation } from '../hooks/useArtifactValidation'
+import { useAutocomplete } from '../../../shared/auto-complete/useAutocomplete'
+import { AutocompleteDropdown } from '../../../shared/auto-complete/AutocompleteDropdown'
+import { Artifact, ArtifactType, ARTIFACT_TYPES } from '../types'
 
 interface ArtifactEditorProps {
     artifact?: Artifact
@@ -12,75 +13,140 @@ interface ArtifactEditorProps {
     onCancel: () => void
 }
 
-const ARTIFACT_TYPES: { value: ArtifactType; label: string }[] = [
-    { value: 'purpose', label: 'Propósito' },
-    { value: 'vision', label: 'Visión' },
-    { value: 'policy', label: 'Política' },
-    { value: 'principle', label: 'Principio' },
-    { value: 'guideline', label: 'Guía' },
-    { value: 'context', label: 'Contexto' },
-    { value: 'actor', label: 'Actor' },
-    { value: 'concept', label: 'Concepto' },
-    { value: 'process', label: 'Proceso' },
-    { value: 'procedure', label: 'Procedimiento' },
-    { value: 'event', label: 'Evento' },
-    { value: 'result', label: 'Resultado' },
-    { value: 'observation', label: 'Observación' },
-    { value: 'evaluation', label: 'Evaluación' },
-    { value: 'indicator', label: 'Indicador' },
-    { value: 'area', label: 'Área' },
-    { value: 'authority', label: 'Autoridad' },
-    { value: 'reference', label: 'Referencia' },
+const ARTIFACT_TYPE_OPTIONS: { value: ArtifactType; label: string }[] = [
+    { value: ARTIFACT_TYPES.PURPOSE, label: 'Propósito' },
+    { value: ARTIFACT_TYPES.VISION, label: 'Visión' },
+    { value: ARTIFACT_TYPES.POLICY, label: 'Política' },
+    { value: ARTIFACT_TYPES.PRINCIPLE, label: 'Principio' },
+    { value: ARTIFACT_TYPES.GUIDELINE, label: 'Guía' },
+    { value: ARTIFACT_TYPES.CONTEXT, label: 'Contexto' },
+    { value: ARTIFACT_TYPES.ACTOR, label: 'Actor' },
+    { value: ARTIFACT_TYPES.CONCEPT, label: 'Concepto' },
+    { value: ARTIFACT_TYPES.PROCESS, label: 'Proceso' },
+    { value: ARTIFACT_TYPES.PROCEDURE, label: 'Procedimiento' },
+    { value: ARTIFACT_TYPES.EVENT, label: 'Evento' },
+    { value: ARTIFACT_TYPES.RESULT, label: 'Resultado' },
+    { value: ARTIFACT_TYPES.OBSERVATION, label: 'Observación' },
+    { value: ARTIFACT_TYPES.EVALUATION, label: 'Evaluación' },
+    { value: ARTIFACT_TYPES.INDICATOR, label: 'Indicador' },
+    { value: ARTIFACT_TYPES.AREA, label: 'Área' },
+    { value: ARTIFACT_TYPES.AUTHORITY, label: 'Autoridad' },
+    { value: ARTIFACT_TYPES.REFERENCE, label: 'Referencia' },
 ]
-
-const generateId = (): string =>
-    `artifact-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 
 export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
     artifact,
     onSave,
     onCancel,
 }) => {
+    const eventBus = useEventBus()
+    const { showSuccess, showError } = useNotifications()
+
+    const artifactService = useMemo(
+        () => new ArtifactService(eventBus),
+        [eventBus]
+    )
+
+    const [artifacts, setArtifacts] = useState<Artifact[]>([])
+
+    // Form state
     const [name, setName] = useState(artifact?.name || '')
-    const [type, setType] = useState<ArtifactType>(artifact?.type || 'concept')
-    const [description] = useState(artifact?.description || '')
+    const [type, setType] = useState<ArtifactType>(
+        artifact?.type || ARTIFACT_TYPES.CONCEPT
+    )
+    const [description, setDescription] = useState(artifact?.description || '')
     const [validationErrors, setValidationErrors] = useState<string[]>([])
 
-    const { showSuccess, showError } = useNotifications()
-    const { artifacts } = useArtifactStore()
     const { validateArtifactForSave, validateAndShowErrors } =
         useArtifactValidation()
+
+    useEffect(() => {
+        const loadArtifacts = async () => {
+            try {
+                const allArtifacts = await artifactService.getAllArtifacts()
+                setArtifacts(allArtifacts)
+            } catch (error) {
+                // Error loading artifacts for autocomplete - silent fail
+            }
+        }
+
+        loadArtifacts()
+
+        const unsubscribeCreated = eventBus.subscribe(
+            'artifact:created',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev => [...prev, data.artifact])
+                }
+            }
+        )
+
+        const unsubscribeUpdated = eventBus.subscribe(
+            'artifact:updated',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev =>
+                        prev.map(a =>
+                            a.id === data.artifact.id ? data.artifact : a
+                        )
+                    )
+                }
+            }
+        )
+
+        const unsubscribeDeleted = eventBus.subscribe(
+            'artifact:deleted',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setArtifacts(prev => prev.filter(a => a.id !== data.id))
+                }
+            }
+        )
+
+        return () => {
+            unsubscribeCreated()
+            unsubscribeUpdated()
+            unsubscribeDeleted()
+        }
+    }, [artifactService, eventBus])
+
+    const artifactDropdownItems = artifacts.map(artifact => ({
+        id: artifact.id,
+        name: artifact.name,
+        type: artifact.type as string,
+        description: artifact.description,
+    }))
 
     const {
         showAutocomplete,
         query,
         position,
-        selectedIndex,
         textareaRef,
-        handleInput,
         handleKeyDown,
         insertReference,
-        hideAutocomplete,
-    } = useAutocomplete(
-        artifacts,
-        (artifact: Artifact) =>
-            artifact.name.toLowerCase().includes(query.toLowerCase()) ||
-            artifact.id.toLowerCase().includes(query.toLowerCase()) ||
-            artifact.type.toLowerCase().includes(query.toLowerCase())
-    )
+    } = useAutocomplete({
+        items: artifactDropdownItems,
+        filterKeys: ['name', 'id', 'type'],
+        trigger: '@',
+        maxResults: 8,
+        getDisplayValue: (item) => item.name,
+    })
 
     useEffect(() => {
-        // Validate artifact data whenever form fields change
-        const artifactData = {
-            name,
-            type,
-            description,
+        const validateForm = async () => {
+            try {
+                const artifactData = { name, type, description }
+                const errors = await validateArtifactForSave(artifactData)
+                setValidationErrors(errors)
+            } catch (error) {
+                setValidationErrors(['Error de validación'])
+            }
         }
-        const errors = validateArtifactForSave(artifactData)
-        setValidationErrors(errors)
+
+        validateForm()
     }, [name, type, description, validateArtifactForSave])
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (validationErrors.length > 0) {
             showError(
                 'Por favor corrige los errores de validación antes de guardar'
@@ -88,36 +154,58 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
             return
         }
 
-        const artifactData: Artifact = {
-            id: artifact?.id || generateId(),
-            name: name.trim(),
-            type,
-            description: description.trim(),
-            info: description.trim(),
-            x: artifact?.x || 100,
-            y: artifact?.y || 100,
-            vx: 0,
-            vy: 0,
-            fx: null,
-            fy: null,
-        }
+        try {
+            if (artifact) {
+                const updatedArtifact = await artifactService.updateArtifact(
+                    artifact.id,
+                    {
+                        id: artifact.id,
+                        name: name.trim(),
+                        type,
+                        description: description.trim(),
+                    }
+                )
 
-        // Final validation before saving
-        if (validateAndShowErrors(artifactData, 'artefacto')) {
-            onSave(artifactData)
-            showSuccess(
-                `Artefacto "${artifactData.name}" guardado correctamente`
-            )
+                const isValid = await validateAndShowErrors(
+                    updatedArtifact,
+                    'artefacto'
+                )
+                if (isValid) {
+                    onSave(updatedArtifact)
+                    showSuccess(
+                        `Artefacto "${updatedArtifact.name}" actualizado correctamente`
+                    )
+                }
+            } else {
+                const newArtifact = await artifactService.createArtifact({
+                    name: name.trim(),
+                    type,
+                    description: description.trim(),
+                })
+
+                const isValid = await validateAndShowErrors(
+                    newArtifact,
+                    'artefacto'
+                )
+                if (isValid) {
+                    onSave(newArtifact)
+                    showSuccess(
+                        `Artefacto "${newArtifact.name}" creado correctamente`
+                    )
+                }
+            }
+        } catch (error) {
+            showError('Error al guardar el artefacto')
         }
     }
 
     const handleCancel = () => {
         if (name.trim() || description.trim()) {
-            if (
-                window.confirm(
-                    '¿Estás seguro de que quieres cancelar? Se perderán los cambios.'
-                )
-            ) {
+            // eslint-disable-next-line no-alert
+            const shouldCancel = window.confirm(
+                '¿Estás seguro de que quieres cancelar? Se perderán los cambios.'
+            )
+            if (shouldCancel) {
                 onCancel()
             }
         } else {
@@ -126,11 +214,13 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
     }
 
     const hasNameError = validationErrors.some(error =>
-        error.includes('nombre')
+        error.toLowerCase().includes('nombre')
     )
-    const hasTypeError = validationErrors.some(error => error.includes('tipo'))
+    const hasTypeError = validationErrors.some(error =>
+        error.toLowerCase().includes('tipo')
+    )
     const hasDescriptionError = validationErrors.some(error =>
-        error.includes('descripción')
+        error.toLowerCase().includes('descripción')
     )
 
     return (
@@ -163,7 +253,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                     {hasNameError && (
                         <p className="mt-1 text-sm text-red-400">
                             {validationErrors.find(error =>
-                                error.includes('nombre')
+                                error.toLowerCase().includes('nombre')
                             )}
                         </p>
                     )}
@@ -187,7 +277,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                                 : 'border-slate-600'
                         }`}
                     >
-                        {ARTIFACT_TYPES.map(artifactType => (
+                        {ARTIFACT_TYPE_OPTIONS.map(artifactType => (
                             <option
                                 key={artifactType.value}
                                 value={artifactType.value}
@@ -199,7 +289,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                     {hasTypeError && (
                         <p className="mt-1 text-sm text-red-400">
                             {validationErrors.find(error =>
-                                error.includes('tipo')
+                                error.toLowerCase().includes('tipo')
                             )}
                         </p>
                     )}
@@ -218,7 +308,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                             ref={textareaRef}
                             id="description"
                             value={description}
-                            onChange={handleInput}
+                            onChange={e => setDescription(e.target.value)}
                             onKeyDown={handleKeyDown}
                             className={`w-full px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                                 hasDescriptionError
@@ -231,7 +321,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                         {hasDescriptionError && (
                             <p className="mt-1 text-sm text-red-400">
                                 {validationErrors.find(error =>
-                                    error.includes('descripción')
+                                    error.toLowerCase().includes('descripción')
                                 )}
                             </p>
                         )}
@@ -242,7 +332,7 @@ export const ArtifactEditor: React.FC<ArtifactEditorProps> = ({
                 {showAutocomplete && (
                     <AutocompleteDropdown
                         query={query}
-                        artifacts={artifacts}
+                        items={artifactDropdownItems}
                         onSelect={insertReference}
                         position={position}
                         visible={showAutocomplete}

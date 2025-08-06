@@ -1,23 +1,28 @@
-import { useState, useCallback } from 'react'
-import { Artifact } from '../../../shared/types/Artifact'
-import { useTemporalArtifacts } from './useTemporalArtifacts'
-import { useArtifactValidation } from './useArtifactValidation'
+import { useState, useCallback, useMemo } from 'react'
+import { useEventBus } from '../../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../../shared/notifications/useNotifications'
-import { useArtifactStore } from '../../../stores/artifactStore'
+import { ArtifactService } from '../services'
+import { useTemporalArtifacts } from './useTemporalArtifacts'
+import { Artifact, TemporalArtifact } from '../types'
+
+interface EditorPosition {
+    x: number
+    y: number
+    width?: number
+    height?: number
+}
 
 export const useGraphEditors = () => {
-    const [isNameEditorVisible, setIsNameEditorVisible] = useState(false)
-    const [isDescriptionEditorVisible, setIsDescriptionEditorVisible] =
-        useState(false)
-    const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(
-        null
+    const eventBus = useEventBus()
+    const { showError } = useNotifications()
+
+    const artifactService = useMemo(
+        () => new ArtifactService(eventBus),
+        [eventBus]
     )
-    const [editingTemporalId, setEditingTemporalId] = useState<string | null>(
-        null
-    )
-    const [editorPosition, setEditorPosition] = useState({ x: 0, y: 0 })
 
     const {
+        createTemporalArtifact,
         updateTemporalArtifactName,
         updateTemporalArtifactDescription,
         saveTemporalArtifact,
@@ -25,193 +30,202 @@ export const useGraphEditors = () => {
         getTemporalArtifact,
     } = useTemporalArtifacts()
 
-    const { validateAndShowErrors, validateName } = useArtifactValidation()
-    const { showSuccess, showError } = useNotifications()
+    const [isNameEditorVisible, setIsNameEditorVisible] = useState(false)
+    const [isDescriptionEditorVisible, setIsDescriptionEditorVisible] =
+        useState(false)
+    const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(
+        null
+    )
+    const [nameEditorPosition, setNameEditorPosition] =
+        useState<EditorPosition>({ x: 0, y: 0 })
+    const [descriptionEditorPosition, setDescriptionEditorPosition] =
+        useState<EditorPosition>({ x: 0, y: 0 })
 
-    const handleNameChange = useCallback(
-        (name: string) => {
-            if (editingTemporalId) {
-                updateTemporalArtifactName(editingTemporalId, name)
+    const openNameEditor = useCallback(
+        async (x: number, y: number) => {
+            try {
+                const temporal = await createTemporalArtifact(x, y)
+                if (temporal) {
+                    setCurrentTemporalId(temporal.temporaryId)
+                    setNameEditorPosition({ x, y: y - 40 })
+                    setIsNameEditorVisible(true)
+                }
+            } catch (error) {
+                console.error('Error opening name editor:', error)
+                showError('Error al crear editor de nombre')
             }
         },
-        [editingTemporalId, updateTemporalArtifactName]
+        [createTemporalArtifact, showError]
     )
 
-    const handleNameSave = useCallback(() => {
-        if (!editingTemporalId) return
-
-        const temporalArtifact = getTemporalArtifact(editingTemporalId)
-        if (!temporalArtifact) return
-
-        const nameErrors = validateName(temporalArtifact.name)
-        if (nameErrors.length > 0) {
-            showError(`Errores de validación: ${nameErrors.join(', ')}`)
-            return null
-        }
-
-        const permanentArtifact = saveTemporalArtifact(editingTemporalId)
-
-        if (permanentArtifact) {
-            setIsNameEditorVisible(false)
-            setEditingTemporalId(null)
-            return permanentArtifact
-        }
-
-        return null
-    }, [
-        editingTemporalId,
-        getTemporalArtifact,
-        validateName,
-        saveTemporalArtifact,
-        showError,
-    ])
-
-    const handleNameCancel = useCallback(() => {
-        if (editingTemporalId) {
-            cancelTemporalArtifact(editingTemporalId)
+    const closeNameEditor = useCallback(() => {
+        if (currentTemporalId) {
+            cancelTemporalArtifact(currentTemporalId)
         }
         setIsNameEditorVisible(false)
-        setEditingTemporalId(null)
-    }, [editingTemporalId, cancelTemporalArtifact])
+        setCurrentTemporalId(null)
+    }, [currentTemporalId, cancelTemporalArtifact])
 
-    const handleArtifactClick = useCallback(
-        (
-            artifact: Artifact,
-            event: React.MouseEvent,
-            canvasRef: React.RefObject<HTMLDivElement | null>
-        ) => {
-            if (!canvasRef.current) return
+    const saveNameAndOpenDescription = useCallback(
+        async (name: string) => {
+            if (!currentTemporalId) return
 
-            event.stopPropagation()
-
-            const rect = canvasRef.current.getBoundingClientRect()
-            const windowX = rect.left + artifact.x
-            const windowY = rect.top + artifact.y + 80
-
-            setEditingArtifact(artifact)
-            setEditorPosition({ x: windowX, y: windowY })
-            setIsDescriptionEditorVisible(true)
-        },
-        []
-    )
-
-    const handleTemporalArtifactClick = useCallback(
-        (
-            temporalArtifact: any,
-            event: React.MouseEvent,
-            canvasRef: React.RefObject<HTMLDivElement | null>
-        ) => {
-            if (!canvasRef.current) return
-
-            event.stopPropagation()
-
-            const rect = canvasRef.current.getBoundingClientRect()
-            const windowX = rect.left + temporalArtifact.x
-            const windowY = rect.top + temporalArtifact.y + 80
-
-            setEditingTemporalId(temporalArtifact.id)
-            setEditorPosition({ x: windowX, y: windowY })
-            setIsDescriptionEditorVisible(true)
-        },
-        []
-    )
-
-    const handleSaveDescription = useCallback(
-        (description: string) => {
-            if (editingArtifact) {
-                const updatedArtifact = {
-                    ...editingArtifact,
-                    description,
-                    info: description,
-                }
-
-                if (validateAndShowErrors(updatedArtifact, 'artefacto')) {
-                    const { updateArtifact } = useArtifactStore.getState()
-                    updateArtifact(editingArtifact.id, updatedArtifact)
-                    showSuccess(
-                        `Artefacto "${editingArtifact.name}" actualizado`
-                    )
-                }
-            } else if (editingTemporalId) {
-                updateTemporalArtifactDescription(
-                    editingTemporalId,
-                    description
+            try {
+                const success = await updateTemporalArtifactName(
+                    currentTemporalId,
+                    name
                 )
+                if (success && name.trim().length > 0) {
+                    const temporal = getTemporalArtifact(currentTemporalId)
+                    if (temporal) {
+                        setDescriptionEditorPosition({
+                            x: temporal.coordinates.x,
+                            y: temporal.coordinates.y + 40,
+                            width: 300,
+                            height: 120,
+                        })
+                        setIsNameEditorVisible(false)
+                        setIsDescriptionEditorVisible(true)
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving name:', error)
+                showError('Error al guardar nombre')
             }
-
-            setIsDescriptionEditorVisible(false)
-            setEditingArtifact(null)
-            setEditingTemporalId(null)
         },
         [
-            editingArtifact,
-            editingTemporalId,
-            validateAndShowErrors,
-            updateTemporalArtifactDescription,
-            showSuccess,
+            currentTemporalId,
+            updateTemporalArtifactName,
+            getTemporalArtifact,
+            showError,
         ]
     )
 
-    const handleCancelDescription = useCallback(() => {
+    const openDescriptionEditor = useCallback((artifact: Artifact) => {
+        setDescriptionEditorPosition({
+            x: artifact.coordinates.x,
+            y: artifact.coordinates.y + 40,
+            width: 300,
+            height: 120,
+        })
+        setIsDescriptionEditorVisible(true)
+    }, [])
+
+    const closeDescriptionEditor = useCallback(() => {
         setIsDescriptionEditorVisible(false)
-        setEditingArtifact(null)
-        setEditingTemporalId(null)
-    }, [])
+        if (currentTemporalId) {
+            setCurrentTemporalId(null)
+        }
+    }, [currentTemporalId])
 
-    const getCurrentEditingArtifact = useCallback(() => {
-        if (editingArtifact) return editingArtifact
-        if (editingTemporalId) return getTemporalArtifact(editingTemporalId)
-        return null
-    }, [editingArtifact, editingTemporalId, getTemporalArtifact])
+    const saveDescription = useCallback(
+        async (description: string) => {
+            if (currentTemporalId) {
+                try {
+                    await updateTemporalArtifactDescription(
+                        currentTemporalId,
+                        description
+                    )
+                    const artifact =
+                        await saveTemporalArtifact(currentTemporalId)
 
-    const getCurrentEditingText = useCallback(() => {
-        const artifact = getCurrentEditingArtifact()
-        return artifact?.description || artifact?.info || ''
-    }, [getCurrentEditingArtifact])
-
-    const openNameEditor = useCallback((temporalArtifact: any) => {
-        setEditingTemporalId(temporalArtifact.id)
-        setIsNameEditorVisible(true)
-    }, [])
-
-    const openDescriptionEditor = useCallback(
-        (
-            artifact: Artifact,
-            canvasRef: React.RefObject<HTMLDivElement | null>
-        ) => {
-            if (!canvasRef.current) return
-
-            const rect = canvasRef.current.getBoundingClientRect()
-            const windowX = rect.left + artifact.x
-            const windowY = rect.top + artifact.y + 80
-
-            setEditingArtifact(artifact)
-            setEditorPosition({ x: windowX, y: windowY })
-            setIsDescriptionEditorVisible(true)
+                    if (artifact) {
+                        setIsDescriptionEditorVisible(false)
+                        setCurrentTemporalId(null)
+                    }
+                } catch (error) {
+                    console.error('Error saving temporal description:', error)
+                    showError('Error al guardar descripción temporal')
+                }
+            } else {
+                setIsDescriptionEditorVisible(false)
+            }
         },
-        []
+        [
+            currentTemporalId,
+            updateTemporalArtifactDescription,
+            saveTemporalArtifact,
+            showError,
+        ]
     )
 
-    const isInCreationMode = useCallback(() => {
-        return editingTemporalId !== null
-    }, [editingTemporalId])
+    const cancelDescription = useCallback(() => {
+        if (currentTemporalId) {
+            cancelTemporalArtifact(currentTemporalId)
+            setCurrentTemporalId(null)
+        }
+        setIsDescriptionEditorVisible(false)
+    }, [currentTemporalId, cancelTemporalArtifact])
+
+    const updateArtifactDescription = useCallback(
+        async (artifactId: string, description: string) => {
+            try {
+                await artifactService.updateArtifact(artifactId, {
+                    id: artifactId,
+                    description,
+                })
+            } catch (error) {
+                console.error('Error updating artifact description:', error)
+                showError('Error al actualizar descripción del artefacto')
+            }
+        },
+        [artifactService, showError]
+    )
+
+    const getCurrentTemporalArtifact = useCallback(():
+        | TemporalArtifact
+        | undefined => {
+        if (!currentTemporalId) return undefined
+        return getTemporalArtifact(currentTemporalId)
+    }, [currentTemporalId, getTemporalArtifact])
+
+    const handleCanvasClick = useCallback(
+        (x: number, y: number) => {
+            if (isNameEditorVisible || isDescriptionEditorVisible) {
+                return
+            }
+            openNameEditor(x, y)
+        },
+        [isNameEditorVisible, isDescriptionEditorVisible, openNameEditor]
+    )
+
+    const resetEditors = useCallback(() => {
+        if (currentTemporalId) {
+            cancelTemporalArtifact(currentTemporalId)
+        }
+        setIsNameEditorVisible(false)
+        setIsDescriptionEditorVisible(false)
+        setCurrentTemporalId(null)
+    }, [currentTemporalId, cancelTemporalArtifact])
+
+    const getEditorStyles = useCallback((position: EditorPosition) => {
+        return {
+            position: 'absolute' as const,
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            width: position.width ? `${position.width}px` : 'auto',
+            height: position.height ? `${position.height}px` : 'auto',
+            zIndex: 1000,
+        }
+    }, [])
 
     return {
         isNameEditorVisible,
         isDescriptionEditorVisible,
-        editorPosition,
-        handleNameChange,
-        handleNameSave,
-        handleNameCancel,
-        handleArtifactClick,
-        handleTemporalArtifactClick,
-        handleSaveDescription,
-        handleCancelDescription,
-        getCurrentEditingArtifact,
-        getCurrentEditingText,
+        currentTemporalId,
+        nameEditorPosition,
+        descriptionEditorPosition,
         openNameEditor,
+        closeNameEditor,
+        saveNameAndOpenDescription,
         openDescriptionEditor,
-        editingTemporalId,
-        isInCreationMode,
+        closeDescriptionEditor,
+        saveDescription,
+        cancelDescription,
+        updateArtifactDescription,
+        getCurrentTemporalArtifact,
+        handleCanvasClick,
+        resetEditors,
+        getEditorStyles,
     }
 }

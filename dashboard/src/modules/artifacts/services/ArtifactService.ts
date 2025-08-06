@@ -42,7 +42,7 @@ export class ArtifactService {
             const enhancedPayload: CreateArtifactPayload = {
                 ...payload,
                 semanticMetadata: {
-                    ...createDefaultSemanticMetadata(payload.type),
+                    ...createDefaultSemanticMetadata(),
                     ...payload.semanticMetadata,
                 },
                 visualProperties: {
@@ -277,7 +277,7 @@ export class ArtifactService {
                 authority: payload.authority || '',
                 evaluationCriteria: payload.evaluationCriteria || [],
                 semanticMetadata: {
-                    ...createDefaultSemanticMetadata(payload.type || 'purpose'),
+                    ...createDefaultSemanticMetadata(),
                     ...payload.semanticMetadata,
                 },
                 visualProperties: {

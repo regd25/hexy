@@ -72,15 +72,15 @@ export const ModulePage: React.FC<ModulePageProps> = ({
                 </p>
                 <div className="bg-gray-700 rounded p-4">
                   <code className="text-green-400">
-                    // TODO: Implement your module logic here
+                    {/* TODO: Implement your module logic here */}
                     <br />
-                    // 1. Define your semantic artifacts
+                    {/* 1. Define your semantic artifacts */}
                     <br />
-                    // 2. Implement business logic
+                    {/* 2. Implement business logic */}
                     <br />
-                    // 3. Add event handlers
+                    {/* 3. Add event handlers */}
                     <br />
-                    // 4. Configure validation rules
+                    {/* 4. Configure validation rules */}
                   </code>
                 </div>
               </div>

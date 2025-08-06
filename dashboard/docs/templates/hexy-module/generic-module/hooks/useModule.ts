@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ModuleState, ModuleConfig, ModuleData } from '../types/Module'
+import { ModuleData } from '../types/Module'
 import { useModuleContext } from '../contexts/ModuleContext'
 import { ModuleService } from '../services/ModuleService'
 
@@ -15,7 +15,7 @@ export interface UseModuleReturn {
 }
 
 export const useModule = (): UseModuleReturn => {
-  const { moduleState, setModuleState, moduleConfig } = useModuleContext()
+  const { setModuleState, moduleConfig } = useModuleContext()
   const [data, setData] = useState<ModuleData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)

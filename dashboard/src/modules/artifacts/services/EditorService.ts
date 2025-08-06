@@ -229,7 +229,7 @@ export class EditorService {
     const lastAtIndex = textBefore.lastIndexOf('@')
     if (lastAtIndex === -1) return text
 
-    const newText = textBefore.substring(0, lastAtIndex) + `@${id} ` + textAfter
+    const newText = `${textBefore.substring(0, lastAtIndex)}@${id} ${textAfter}`
     return newText
   }
 

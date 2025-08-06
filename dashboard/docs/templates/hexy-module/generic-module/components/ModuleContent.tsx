@@ -20,7 +20,7 @@ export const ModuleContent: React.FC<ModuleContentProps> = ({
             <div className="text-6xl mb-4">📋</div>
             <h3 className="text-lg font-medium mb-2">No content available</h3>
             <p className="text-sm text-center max-w-md">
-              This module doesn't have any content yet. Start by adding some data or configuring the module.
+              This module doesn&apos;t have any content yet. Start by adding some data or configuring the module.
             </p>
           </div>
         ) : (

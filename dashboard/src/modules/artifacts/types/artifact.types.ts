@@ -545,9 +545,7 @@ export const createDefaultVisualizationProperties = (
     }
 }
 
-export const createDefaultSemanticMetadata = (
-    type: ArtifactType
-): SemanticMetadata => {
+export const createDefaultSemanticMetadata = (): SemanticMetadata => {
     return {
         semanticTags: [],
         businessValue: 5,
