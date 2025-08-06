@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { EventBusContext } from './EventBusContext'
-import { EventBus } from '../types'
+import { EventBus } from './EventBus'
 
 export const useEventBus = (): EventBus => {
     const context = useContext(EventBusContext)

@@ -13,6 +13,7 @@ export interface EventBus {
 
 export interface EventData<T = any> {
     event: string
+    source: string
     data: T
     timestamp: number
 }
