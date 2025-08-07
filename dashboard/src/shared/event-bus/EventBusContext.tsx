@@ -1,5 +1,5 @@
 import React, { createContext, useRef, useEffect } from 'react'
-import { EventBus } from '../types'
+import { EventBus } from './EventBus'
 import { InMemoryEventBus } from './InMemoryEventBus'
 
 export const EventBusContext = createContext<EventBus | null>(null)

@@ -1,63 +1,61 @@
 {
-  "root": true,
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
+    "root": true,
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
     },
-    "ecmaVersion": 12,
-    "sourceType": "module"
-  },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "react-hooks"
-  ],
-  "rules": {
-    "no-console": "warn",
-    "no-debugger": "error",
-    "no-alert": "warn",
-    
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-non-null-assertion": "warn",
-    
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    
-    "prefer-const": "error",
-    "no-var": "error",
-    "object-shorthand": "error",
-    "prefer-template": "error",
-    
-    "no-undef": "error",
-    "no-unreachable": "error",
-    "no-duplicate-case": "error"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  },
-  "ignorePatterns": [
-    "node_modules/",
-    "dist/",
-    "build/",
-    "*.config.js",
-    "*.config.ts"
-  ]
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": ["react", "@typescript-eslint", "react-hooks"],
+    "rules": {
+        "no-debugger": "error",
+        "no-alert": "warn",
+
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-non-null-assertion": "warn",
+
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+
+        "prefer-const": "error",
+        "no-var": "error",
+        "object-shorthand": "error",
+        "prefer-template": "error",
+
+        "no-undef": "error",
+        "no-unreachable": "error",
+        "no-duplicate-case": "error",
+
+        "max-lines": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }],
+        "max-lines-per-function": ["warn", { "max": 80, "skipBlankLines": true, "skipComments": true, "IIFEs": true }]
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "ignorePatterns": [
+        "node_modules/",
+        "dist/",
+        "build/",
+        "*.config.js",
+        "*.config.ts"
+    ]
 }

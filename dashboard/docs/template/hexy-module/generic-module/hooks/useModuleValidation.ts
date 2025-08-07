@@ -100,5 +100,5 @@ export const useModuleValidation = (
     validateField,
     isValid,
     getValidationErrors
-  }
+  } 
 }
