@@ -579,7 +579,7 @@ export class ValidationService {
     /**
      * Validate partial artifact (for temporal artifacts)
      */
-    private validatePartialArtifact(
+    validatePartialArtifact(
         artifact: Partial<Artifact>
     ): ValidationResult {
         const errors: ValidationError[] = []

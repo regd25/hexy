@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 // Simple test utilities - just wraps Vitest with module context
 export interface TestContext {

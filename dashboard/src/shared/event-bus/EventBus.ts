@@ -2,8 +2,8 @@
  * EventBus interface for simplified architecture
  */
 export interface EventBus {
-    publish(event: string, data: any): void
-    subscribe<T extends any = any>(
+    publish(event: string, data: unknown): void
+    subscribe<T = unknown>(
         event: string,
         handler: (event: EventData<T>) => void
     ): () => void
@@ -11,7 +11,7 @@ export interface EventBus {
     clear(): void
 }
 
-export interface EventData<T = any> {
+export interface EventData<T = unknown> {
     event: string
     source: string
     data: T
