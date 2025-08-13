@@ -294,5 +294,3 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
         </div>
     )
 }
-
-export default GraphContainer
