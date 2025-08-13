@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useNotifications } from '../../../shared/notifications/useNotifications'
+import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ValidationService } from '../services'
 import { Artifact, TemporalArtifact, ValidationResult } from '../types'
 

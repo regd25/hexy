@@ -3,7 +3,7 @@
  * Following DRY principles - no duplicate event systems
  */
 
-import { EventBus } from '@/shared'
+import { EventBus } from '../../shared'
 import {
     Artifact,
     TemporalArtifact,

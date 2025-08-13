@@ -1,5 +1,5 @@
-import { ArtifactsDashboard } from '@/modules/artifacts/components/ArtifactsDashboard'
-import { EventBusProvider, NavbarContainer } from '@/shared'
+import { ArtifactsDashboard } from './components/ArtifactsDashboard'
+import { EventBusProvider, NavbarContainer } from '../shared'
 
 export function ArtifactsApp() {
     return (

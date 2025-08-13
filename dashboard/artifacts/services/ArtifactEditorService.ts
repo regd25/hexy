@@ -1,4 +1,4 @@
-import { Artifact, ArtifactType } from '../../../shared/types/Artifact'
+import { Artifact, ArtifactType } from '../../shared/types/Artifact'
 
 export interface ArtifactFormData {
     name: string

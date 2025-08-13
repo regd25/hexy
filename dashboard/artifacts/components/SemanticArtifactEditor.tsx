@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useEventBus } from '../../../shared/event-bus/useEventBus'
-import { useNotifications } from '../../../shared/notifications/useNotifications'
+import { useEventBus } from '../../shared/event-bus/useEventBus'
+import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ArtifactService } from '../services'
 import { Artifact, ArtifactType, ARTIFACT_TYPES } from '../types'
 import { useArtifactValidation } from '../hooks/useArtifactValidation'

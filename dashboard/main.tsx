@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ArtifactsApp } from './apps/ArtifactsApp'
+import { ArtifactsApp } from './artifacts/ArtifactsApp'
 import './main.css'
 
 const rootElement = document.getElementById('root')

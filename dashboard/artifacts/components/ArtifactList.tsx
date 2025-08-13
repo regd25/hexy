@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useEventBus } from '../../../shared/event-bus/useEventBus'
+import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { ArtifactService } from '../services'
 import { Artifact, ArtifactType, ARTIFACT_TYPES } from '../types'
-import { Selector } from '@/shared'
+import { Selector } from '../../shared'
 
 interface ArtifactListProps {
     className?: string

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from 'react'
-import { useEventBus } from '../../../shared/event-bus/useEventBus'
-import { useNotifications } from '../../../shared/notifications/useNotifications'
+import { useEventBus } from '../../shared/event-bus/useEventBus'
+import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ArtifactService, ValidationService } from '../services'
 import { TemporalArtifact, Artifact, CreateArtifactPayload, ValidationResult } from '../types'
 

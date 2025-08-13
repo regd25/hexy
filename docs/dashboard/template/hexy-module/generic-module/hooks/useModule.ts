@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ModuleData } from '../types/Module'
 import { useModuleContext } from '../contexts/ModuleContext'
 import { ModuleService } from '../services/ModuleService'
-import { useEventBus } from '@/shared'
+import { useEventBus } from '../../../../../../dashboard/shared'
 
 export interface UseModuleReturn {
     data: ModuleData | null

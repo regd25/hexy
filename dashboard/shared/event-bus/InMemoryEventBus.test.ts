@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { InMemoryEventBus } from '@/shared/event-bus'
+import { InMemoryEventBus } from '.'
 
 describe('InMemoryEventBus', () => {
     it('should deliver published events to subscribers', () => {
