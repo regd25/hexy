@@ -46,6 +46,9 @@ export const useGraphInteractions = ({
     const justDraggedRef = useRef<boolean>(false)
     const rafIdRef = useRef<number | null>(null)
     const dragClickSuppressUntilRef = useRef<number>(0)
+    const mouseDownAtRef = useRef<number>(0)
+
+    const DRAG_DELAY_MS = 120
 
     const isRelationActive = useMemo(() => Boolean(relationLine && relationSource), [relationLine, relationSource])
 
@@ -59,6 +62,7 @@ export const useGraphInteractions = ({
             const offsetX = x - artifact.visualProperties.x
             const offsetY = y - artifact.visualProperties.y
             pendingDrag.current = { artifact, offsetX, offsetY, startX: x, startY: y }
+            mouseDownAtRef.current = Date.now()
         },
         [canvasRef]
     )
@@ -71,13 +75,13 @@ export const useGraphInteractions = ({
             const y = event.clientY - rect.top
 
             if (!isDragging && pendingDrag.current) {
-                const dx = Math.abs(x - pendingDrag.current.startX)
-                const dy = Math.abs(y - pendingDrag.current.startY)
-                if (dx > 3 || dy > 3) {
-                    setIsDragging(true)
-                    setDraggingArtifact(pendingDrag.current.artifact)
-                    setDragOffset({ x: pendingDrag.current.offsetX, y: pendingDrag.current.offsetY })
+                const elapsed = Date.now() - mouseDownAtRef.current
+                if (elapsed < DRAG_DELAY_MS) {
+                    return
                 }
+                setIsDragging(true)
+                setDraggingArtifact(pendingDrag.current.artifact)
+                setDragOffset({ x: pendingDrag.current.offsetX, y: pendingDrag.current.offsetY })
             }
 
             if (isDragging && (draggingArtifact || pendingDrag.current?.artifact)) {
@@ -194,6 +198,9 @@ export const useGraphInteractions = ({
                 return
             }
             if (event) event.stopPropagation()
+            pendingDrag.current = null
+            setIsDragging(false)
+            setDraggingArtifact(null)
             onOpenEditor(artifact)
         },
         [canvasRef, onOpenEditor]

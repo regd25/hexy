@@ -24,6 +24,7 @@ interface GraphCanvasProps {
     onArtifactClick: (artifact: Artifact, e: React.MouseEvent) => void
     onArtifactDoubleClick: (artifact: Artifact, e: React.MouseEvent) => void
     onArtifactMouseDown: (artifact: Artifact, e: React.MouseEvent) => void
+    activeArtifactId?: string | null
 }
 
 export const GraphCanvas: React.FC<GraphCanvasProps> = ({
@@ -41,14 +42,27 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     onArtifactClick,
     onArtifactDoubleClick,
     onArtifactMouseDown,
+    activeArtifactId,
 }) => {
+    const blockInteractions = Boolean(activeArtifactId)
+
     return (
         <div
             ref={canvasRef}
-            className={`flex-1 relative bg-slate-950 cursor-pointer ${className || ''}`}
+            className={`flex-1 relative bg-slate-950 ${blockInteractions ? 'cursor-default' : 'cursor-pointer'} ${className || ''}`}
             onClick={onCanvasClick}
-            onMouseMove={onMouseMove}
+            onMouseMove={e => {
+                if (blockInteractions) return
+                onMouseMove(e)
+            }}
             onMouseUp={onMouseUp}
+            onMouseDown={e => {
+                if (blockInteractions) {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    return
+                }
+            }}
         >
             {relationLine && (
                 <svg className="absolute inset-0 pointer-events-none z-20">
@@ -81,8 +95,12 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                         artifact={artifact}
                         onClick={(a, e) => onArtifactClick(a as Artifact, e as React.MouseEvent)}
                         onDoubleClick={(a, e) => onArtifactDoubleClick(a as Artifact, e as React.MouseEvent)}
-                        onMouseDown={(a, e) => onArtifactMouseDown(a as Artifact, e as React.MouseEvent)}
+                        onMouseDown={(a, e) => {
+                            if (activeArtifactId && activeArtifactId === artifact.id) return
+                            onArtifactMouseDown(a as Artifact, e as React.MouseEvent)
+                        }}
                         isDraggingCurrent={isDragging && draggingArtifactId === artifact.id}
+                        isActive={activeArtifactId === artifact.id}
                     />
                 ))}
             </div>

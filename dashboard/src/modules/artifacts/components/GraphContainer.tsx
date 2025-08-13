@@ -258,6 +258,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 onArtifactClick={interactions.handleArtifactClick}
                 onArtifactDoubleClick={interactions.handleArtifactDoubleClick}
                 onArtifactMouseDown={interactions.handleArtifactMouseDown}
+                activeArtifactId={editingArtifact?.id || null}
             />
 
             <InlineEditor

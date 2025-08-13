@@ -48,13 +48,15 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
 
     const highlighted = isTemporary || isTemporal || isActive
 
+    const cursor: React.CSSProperties['cursor'] = isActive ? 'default' : isDraggingCurrent ? 'grabbing' : 'pointer'
+
     return (
         <GraphNode
             position={position}
             content={<span style={{ pointerEvents: 'none' }}>{(artifact as Artifact).name || '?'}</span>}
             style={{
                 backgroundColor: color,
-                cursor: isDraggingCurrent ? 'grabbing' : 'pointer',
+                cursor,
                 size,
                 zIndex: highlighted ? 15 : 10,
                 opacity,

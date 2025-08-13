@@ -13,6 +13,10 @@ export const useTemporalArtifacts = () => {
 
     const [temporalArtifacts, setTemporalArtifacts] = useState<TemporalArtifact[]>([])
 
+    const isClose = (a: { x: number; y: number }, b: { x: number; y: number }, threshold = 2) => {
+        return Math.hypot(a.x - b.x, a.y - b.y) <= threshold
+    }
+
     useEffect(() => {
         const unsubscribeTemporalCreated = eventBus.subscribe<{ source: string; temporal: TemporalArtifact }>(
             'temporal:created',
@@ -55,11 +59,29 @@ export const useTemporalArtifacts = () => {
             }
         )
 
+        const unsubscribeArtifactCreated = eventBus.subscribe<{ source: string; artifact: Artifact }>(
+            'artifact:created',
+            event => {
+                if (event.data.source === 'artifacts-module') {
+                    const art = event.data.artifact
+                    setTemporalArtifacts(prev =>
+                        prev.filter(t => {
+                            if (!t.name || t.name.trim().length === 0) return true
+                            const sameName = t.name.trim().toLowerCase() === art.name.trim().toLowerCase()
+                            const closePos = isClose(t.coordinates, art.coordinates, 4)
+                            return !(sameName && closePos)
+                        })
+                    )
+                }
+            }
+        )
+
         return () => {
             unsubscribeTemporalCreated()
             unsubscribeTemporalUpdated()
             unsubscribeTemporalPromoted()
             unsubscribeTemporalDeleted()
+            unsubscribeArtifactCreated()
         }
     }, [eventBus])
 
