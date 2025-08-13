@@ -17,7 +17,6 @@ interface FloatingEditorProps {
     width?: string
     height?: string
     className?: string
-    onOutsideClick?: () => void
 }
 
 export interface FloatingEditorHandle {
@@ -43,7 +42,6 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
             width = 'min(400px, 90vw)',
             height = 'h-24',
             className = '',
-            onOutsideClick,
         },
         ref
     ) => {
@@ -92,15 +90,12 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
             const handler = (e: MouseEvent) => {
                 const target = e.target as Node | null
                 if (containerRef.current && target && !containerRef.current.contains(target)) {
-                    onOutsideClick?.()
-                    if (textareaRef.current) {
-                        textareaRef.current.focus()
-                    }
+                    onCancel()
                 }
             }
             document.addEventListener('mousedown', handler, { capture: true })
             return () => document.removeEventListener('mousedown', handler, { capture: true })
-        }, [isVisible, onOutsideClick])
+        }, [isVisible, onCancel])
 
         const handleKeyDown = (e: React.KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -125,6 +120,7 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                     className={`fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200 ${
                         animateIn ? 'opacity-100' : 'opacity-0'
                     }`}
+                    onClick={onCancel}
                 />
                 <div
                     ref={containerRef}
