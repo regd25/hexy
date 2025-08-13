@@ -134,7 +134,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const handleCanvasClick = async (event: React.MouseEvent) => {
         if (!canvasRef.current) return
         if (isDescriptionEditorVisible) {
-            editorRef.current?.focus()
+            setTimeout(() => editorRef.current?.focus(), 0)
             return
         }
         if (interactions.shouldBlockCanvasClick()) return
@@ -296,7 +296,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}
                 validateText={validateDescription}
-                onOutsideClick={() => editorRef.current?.focus()}
+                onOutsideClick={() => setTimeout(() => editorRef.current?.focus(), 0)}
             />
         </div>
     )

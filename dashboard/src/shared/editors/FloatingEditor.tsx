@@ -51,12 +51,15 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
         const [validationErrors, setValidationErrors] = useState<string[]>([])
         const textareaRef = useRef<HTMLTextAreaElement>(null)
         const containerRef = useRef<HTMLDivElement>(null)
+        const [animateIn, setAnimateIn] = useState(false)
 
         useImperativeHandle(ref, () => ({
             focus: () => {
                 if (textareaRef.current) {
                     textareaRef.current.focus()
                     textareaRef.current.select()
+                    textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                    textareaRef.current.className += ' shadow-lg border-blue-500'
                 }
             },
         }))
@@ -70,6 +73,13 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                 textareaRef.current.focus()
                 textareaRef.current.select()
             }
+        }, [isVisible])
+
+        useEffect(() => {
+            if (!isVisible) return
+            setAnimateIn(false)
+            const id = window.requestAnimationFrame(() => setAnimateIn(true))
+            return () => window.cancelAnimationFrame(id)
         }, [isVisible])
 
         useEffect(() => {
@@ -88,8 +98,8 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                     }
                 }
             }
-            document.addEventListener('mousedown', handler)
-            return () => document.removeEventListener('mousedown', handler)
+            document.addEventListener('mousedown', handler, { capture: true })
+            return () => document.removeEventListener('mousedown', handler, { capture: true })
         }, [isVisible, onOutsideClick])
 
         const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -106,37 +116,31 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                 setText('')
             }
         }
-        
+
         if (!isVisible) return null
 
         return (
-            <div
-                ref={containerRef}
-                className={`fixed z-50 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-slate-600 ${className}`}
-                style={{
-                    left: Math.max(
-                        10,
-                        Math.min(position.x - 140, window.innerWidth - 320)
-                    ),
-                    top: Math.max(
-                        10,
-                        Math.min(position.y, window.innerHeight - 200)
-                    ),
-                    minWidth: '280px',
-                    maxWidth: '90vw',
-                    width,
-                }}
-            >
+            <>
+                <div
+                    className={`fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200 ${
+                        animateIn ? 'opacity-100' : 'opacity-0'
+                    }`}
+                />
+                <div
+                    ref={containerRef}
+                    className={`fixed z-50 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-slate-600 ${className}`}
+                    style={{
+                        left: Math.max(10, Math.min(position.x - 140, window.innerWidth - 320)),
+                        top: Math.max(10, Math.min(position.y, window.innerHeight - 200)),
+                        minWidth: '280px',
+                        maxWidth: '90vw',
+                        width,
+                    }}
+                >
                 {(title || subtitle) && (
-                <div className="mb-3">
-                        {title && (
-                            <h4 className="text-sm font-semibold text-blue-400 mb-1">
-                                {title}
-                    </h4>
-                )}
-                        {subtitle && (
-                            <p className="text-xs text-slate-400">{subtitle}</p>
-                        )}
+                    <div className="mb-3">
+                        {title && <h4 className="text-sm font-semibold text-blue-400 mb-1">{title}</h4>}
+                        {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
                     </div>
                 )}
 
@@ -146,11 +150,11 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                     onChange={e => setText(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
-                    className={`w-full ${height} px-3 py-2 bg-slate-700/50 text-white rounded-md border focus:outline-none resize-none text-sm ${
+                    className={`w-full ${height} px-3 py-2 bg-slate-700/50 text-white rounded-md border focus:outline-none resize-none text-sm transform transition-transform duration-100 ${
                         validationErrors.length > 0
                             ? 'border-red-500 focus:border-red-500'
                             : 'border-slate-600 focus:border-blue-500'
-                    }`}
+                    } ${animateIn ? 'scale-100' : 'scale-95'}`}
                 />
 
                 {validationErrors.length > 0 && (
@@ -158,7 +162,7 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                         {validationErrors.map((error, index) => (
                             <div key={index}>• {error}</div>
                         ))}
-                </div>
+                    </div>
                 )}
 
                 <div className="flex items-center justify-between mt-3">
@@ -182,7 +186,10 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                         </button>
                     </div>
                 </div>
-            </div>
+                </div>
+            </>
         )
     }
 )
+
+FloatingEditor.displayName = 'FloatingEditor'
