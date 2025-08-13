@@ -124,6 +124,7 @@ export const GraphNode: React.FC<GraphNodeProps> = ({
             aria-label={ariaLabel}
             title={title}
             tabIndex={tabIndex}
+            data-graph-node="true"
             onClick={onClick}
             onDoubleClick={onDoubleClick}
             onMouseDown={onMouseDown}

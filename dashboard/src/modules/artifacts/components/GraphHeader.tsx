@@ -3,11 +3,13 @@ import React from 'react'
 interface GraphHeaderProps {
     artifactCount: number
     temporalArtifactCount: number
+    selectedCount?: number
 }
 
 export const GraphHeader: React.FC<GraphHeaderProps> = ({
     artifactCount,
     temporalArtifactCount,
+    selectedCount = 0,
 }) => {
     return (
         <div className="p-4 border-b border-slate-600">
@@ -26,6 +28,15 @@ export const GraphHeader: React.FC<GraphHeaderProps> = ({
                             {temporalArtifactCount}
                         </span>
                         <span className="text-slate-300">temporales</span>
+                    </>
+                )}
+                {selectedCount > 0 && (
+                    <>
+                        <span className="text-slate-400">|</span>
+                        <span className="font-semibold text-green-400">
+                            {selectedCount}
+                        </span>
+                        <span className="text-slate-300">seleccionados</span>
                     </>
                 )}
             </div>

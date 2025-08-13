@@ -7,6 +7,7 @@ interface ArtifactNodeProps {
     artifact: Artifact | TemporalArtifact
     isTemporary?: boolean
     isActive?: boolean
+    isSelected?: boolean
     validationErrors?: string[]
     onClick?: (artifact: Artifact | TemporalArtifact, event: React.MouseEvent<HTMLDivElement>) => void
     onDoubleClick?: (artifact: Artifact | TemporalArtifact, event: React.MouseEvent<HTMLDivElement>) => void
@@ -20,6 +21,7 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
     artifact,
     isTemporary = false,
     isActive = false,
+    isSelected = false,
     validationErrors,
     onClick,
     onDoubleClick,
@@ -39,6 +41,7 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
     }
 
     const temporalState = isTemporal ? (artifact as TemporalArtifact).visualState : undefined
+
     const baseSize = 56
     const size = Math.round(baseSize * (temporalState?.scale ?? 1))
 
@@ -46,9 +49,11 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
 
     const opacity = isTemporal ? (temporalState?.opacity ?? 0.8) : 1
 
-    const highlighted = isTemporary || isTemporal || isActive
+    const highlighted = isTemporary || isTemporal || isActive || isSelected
 
     const cursor: React.CSSProperties['cursor'] = isActive ? 'default' : isDraggingCurrent ? 'grabbing' : 'pointer'
+
+    const borderColor = hasErrors ? '#ef4444' : highlighted ? (isSelected ? '#22c55e' : '#60a5fa') : 'transparent'
 
     return (
         <GraphNode
@@ -62,8 +67,8 @@ export const ArtifactNode: React.FC<ArtifactNodeProps> = ({
                 opacity,
             }}
             border={{
-                color: hasErrors ? '#ef4444' : highlighted ? '#60a5fa' : 'transparent',
-                width: 2,
+                color: borderColor,
+                width: isSelected ? 3 : 2,
                 radius: Math.round(size / 2),
                 style: isTemporal ? 'dashed' : 'solid',
             }}

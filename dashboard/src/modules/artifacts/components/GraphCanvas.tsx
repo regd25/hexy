@@ -9,6 +9,13 @@ interface RelationLine {
     y2: number
 }
 
+interface SelectionRect {
+    x: number
+    y: number
+    width: number
+    height: number
+}
+
 interface GraphCanvasProps {
     canvasRef: React.RefObject<HTMLDivElement>
     className?: string
@@ -24,6 +31,10 @@ interface GraphCanvasProps {
     onArtifactClick: (artifact: Artifact, e: React.MouseEvent) => void
     onArtifactDoubleClick: (artifact: Artifact, e: React.MouseEvent) => void
     onArtifactMouseDown: (artifact: Artifact, e: React.MouseEvent) => void
+    onCanvasMouseDown: (e: React.MouseEvent) => void
+    onCanvasContextMenu: (e: React.MouseEvent) => void
+    selectionRect: SelectionRect | null
+    selectedIds: Set<string>
     activeArtifactId?: string | null
 }
 
@@ -42,6 +53,10 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     onArtifactClick,
     onArtifactDoubleClick,
     onArtifactMouseDown,
+    onCanvasMouseDown,
+    onCanvasContextMenu,
+    selectionRect,
+    selectedIds,
     activeArtifactId,
 }) => {
     const blockInteractions = Boolean(activeArtifactId)
@@ -50,7 +65,14 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
         <div
             ref={canvasRef}
             className={`flex-1 relative bg-slate-950 ${blockInteractions ? 'cursor-default' : 'cursor-pointer'} ${className || ''}`}
-            onClick={onCanvasClick}
+            onClick={e => {
+                if (selectionRect) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    return
+                }
+                onCanvasClick(e)
+            }}
             onMouseMove={e => {
                 if (blockInteractions) return
                 onMouseMove(e)
@@ -62,7 +84,9 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                     e.preventDefault()
                     return
                 }
+                onCanvasMouseDown(e)
             }}
+            onContextMenu={onCanvasContextMenu}
         >
             {relationLine && (
                 <svg className="absolute inset-0 pointer-events-none z-20">
@@ -76,6 +100,18 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                         strokeDasharray="5,5"
                     />
                 </svg>
+            )}
+
+            {selectionRect && (
+                <div
+                    className="absolute z-30 border border-blue-400 border-dashed bg-blue-400/10 pointer-events-none"
+                    style={{
+                        left: Math.min(selectionRect.x, selectionRect.x + selectionRect.width),
+                        top: Math.min(selectionRect.y, selectionRect.y + selectionRect.height),
+                        width: Math.abs(selectionRect.width),
+                        height: Math.abs(selectionRect.height),
+                    }}
+                />
             )}
 
             <div className="relative w-full h-full">
@@ -101,6 +137,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                         }}
                         isDraggingCurrent={isDragging && draggingArtifactId === artifact.id}
                         isActive={activeArtifactId === artifact.id}
+                        isSelected={selectedIds.has(artifact.id)}
                     />
                 ))}
             </div>

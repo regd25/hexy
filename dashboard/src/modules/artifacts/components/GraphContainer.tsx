@@ -9,6 +9,7 @@ import { useTemporalArtifacts } from '../hooks/useTemporalArtifacts'
 import { GraphHeader } from './GraphHeader'
 import { GraphCanvas } from './GraphCanvas'
 import { useGraphInteractions } from '../hooks/useGraphInteractions'
+import ContextMenu from './ContextMenu'
 
 interface GraphContainerProps {
     className?: string
@@ -269,26 +270,43 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             <GraphHeader
                 artifactCount={artifacts.length}
                 temporalArtifactCount={temporalArtifacts.length}
+                selectedCount={interactions.selectedIds.size}
             />
 
-            <GraphCanvas
-                canvasRef={canvasRef}
-                artifacts={artifacts}
-                temporals={temporalArtifacts}
-                relationLine={
-                    interactions.relationLine as unknown as { x1: number; y1: number; x2: number; y2: number } | null
-                }
-                isDragging={interactions.isDragging}
-                draggingArtifactId={interactions.draggingArtifact?.id}
-                currentTemporalId={currentTemporalId}
-                onCanvasClick={handleCanvasClick}
-                onMouseMove={interactions.handleMouseMove}
-                onMouseUp={interactions.handleMouseUp}
-                onArtifactClick={interactions.handleArtifactClick}
-                onArtifactDoubleClick={interactions.handleArtifactDoubleClick}
-                onArtifactMouseDown={interactions.handleArtifactMouseDown}
-                activeArtifactId={editingArtifact?.id || null}
-            />
+            <div className="relative flex-1 flex">
+                <GraphCanvas
+                    canvasRef={canvasRef}
+                    artifacts={artifacts}
+                    temporals={temporalArtifacts}
+                    relationLine={
+                        interactions.relationLine as unknown as { x1: number; y1: number; x2: number; y2: number } | null
+                    }
+                    isDragging={interactions.isDragging}
+                    draggingArtifactId={interactions.draggingArtifact?.id}
+                    currentTemporalId={currentTemporalId}
+                    onCanvasClick={handleCanvasClick}
+                    onMouseMove={interactions.handleMouseMove}
+                    onMouseUp={interactions.handleMouseUp}
+                    onArtifactClick={interactions.handleArtifactClick}
+                    onArtifactDoubleClick={interactions.handleArtifactDoubleClick}
+                    onArtifactMouseDown={interactions.handleArtifactMouseDown}
+                    onCanvasMouseDown={interactions.handleCanvasMouseDown}
+                    onCanvasContextMenu={interactions.handleCanvasContextMenu}
+                    selectionRect={interactions.selectionRect as unknown as { x: number; y: number; width: number; height: number } | null}
+                    selectedIds={interactions.selectedIds}
+                    activeArtifactId={editingArtifact?.id || null}
+                />
+
+                {interactions.contextMenu && (
+                    <ContextMenu
+                        x={interactions.contextMenu.x}
+                        y={interactions.contextMenu.y}
+                        onDelete={() => interactions.deleteSelected()}
+                        onClose={() => interactions.setContextMenu(null)}
+                        disabled={interactions.selectedIds.size === 0}
+                    />
+                )}
+            </div>
 
             <InlineEditor
                 isVisible={isNameEditorVisible}
@@ -335,7 +353,6 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}
                 validateText={validateDescription}
-                onOutsideClick={() => setTimeout(() => editorRef.current?.focus(), 0)}
             />
         </div>
     )

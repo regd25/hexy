@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import type { Artifact } from '../types'
 import { RELATIONSHIP_TYPES, createDefaultRelationshipVisualProperties } from '../types/artifact.types'
 import type { ArtifactService } from '../services/ArtifactService'
@@ -8,6 +8,13 @@ interface RelationLine {
     y1: number
     x2: number
     y2: number
+}
+
+interface SelectionRect {
+    x: number
+    y: number
+    width: number
+    height: number
 }
 
 interface UseGraphInteractionsParams {
@@ -35,6 +42,12 @@ export const useGraphInteractions = ({
     const [relationLine, setRelationLine] = useState<RelationLine | null>(null)
     const [relationSource, setRelationSource] = useState<Artifact | null>(null)
 
+    const [isSelecting, setIsSelecting] = useState(false)
+    const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null)
+    const [selectionRect, setSelectionRect] = useState<SelectionRect | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+
     const pendingDrag = useRef<{
         artifact: Artifact
         offsetX: number
@@ -49,8 +62,64 @@ export const useGraphInteractions = ({
     const mouseDownAtRef = useRef<number>(0)
 
     const DRAG_DELAY_MS = 120
+    const NODE_SIZE = 56
 
     const isRelationActive = useMemo(() => Boolean(relationLine && relationSource), [relationLine, relationSource])
+
+    const clearSelection = useCallback(() => {
+        setSelectedIds(new Set())
+    }, [])
+
+    const computeSelectionFromRect = useCallback(
+        (rect: SelectionRect): Set<string> => {
+            const norm = {
+                x: Math.min(rect.x, rect.x + rect.width),
+                y: Math.min(rect.y, rect.y + rect.height),
+                w: Math.abs(rect.width),
+                h: Math.abs(rect.height),
+            }
+            const next = new Set<string>()
+            for (const a of artifacts) {
+                const ax = a.visualProperties.x
+                const ay = a.visualProperties.y
+                const intersects =
+                    norm.x < ax + NODE_SIZE &&
+                    norm.x + norm.w > ax &&
+                    norm.y < ay + NODE_SIZE &&
+                    norm.y + norm.h > ay
+                if (intersects) next.add(a.id)
+            }
+            return next
+        },
+        [artifacts]
+    )
+
+    const handleCanvasMouseDown = useCallback(
+        (event: React.MouseEvent) => {
+            if (!canvasRef.current) return
+            if (event.button !== 0) return
+            const rect = canvasRef.current.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            setIsSelecting(true)
+            setSelectionStart({ x, y })
+            setSelectionRect({ x, y, width: 0, height: 0 })
+            if (!event.shiftKey) {
+                clearSelection()
+            }
+            setContextMenu(null)
+        },
+        [canvasRef, clearSelection]
+    )
+
+    const handleCanvasContextMenu = useCallback(
+        (event: React.MouseEvent) => {
+            event.preventDefault()
+            if (!canvasRef.current) return
+            setContextMenu({ x: event.clientX, y: event.clientY })
+        },
+        [canvasRef]
+    )
 
     const handleArtifactMouseDown = useCallback(
         (artifact: Artifact, event: React.MouseEvent) => {
@@ -73,6 +142,18 @@ export const useGraphInteractions = ({
             const rect = canvasRef.current.getBoundingClientRect()
             const x = event.clientX - rect.left
             const y = event.clientY - rect.top
+
+            if (isSelecting && selectionStart) {
+                const nextRect = {
+                    x: selectionStart.x,
+                    y: selectionStart.y,
+                    width: x - selectionStart.x,
+                    height: y - selectionStart.y,
+                }
+                setSelectionRect(nextRect)
+                setSelectedIds(computeSelectionFromRect(nextRect))
+                return
+            }
 
             if (!isDragging && pendingDrag.current) {
                 const elapsed = Date.now() - mouseDownAtRef.current
@@ -109,12 +190,19 @@ export const useGraphInteractions = ({
                 setRelationLine({ ...relationLine, x2: x, y2: y })
             }
         },
-        [canvasRef, isDragging, draggingArtifact, dragOffset, setArtifacts, isRelationActive, relationLine]
+        [canvasRef, isSelecting, selectionStart, setArtifacts, isDragging, draggingArtifact, dragOffset, isRelationActive, relationLine, computeSelectionFromRect]
     )
 
     const handleMouseUp = useCallback(
         (event: React.MouseEvent) => {
             if (!canvasRef.current) return
+
+            if (isSelecting) {
+                setIsSelecting(false)
+                setSelectionStart(null)
+                setSelectionRect(null)
+                return
+            }
 
             if (isDragging && draggingArtifact) {
                 const moved = artifacts.find(a => a.id === draggingArtifact.id)
@@ -175,7 +263,7 @@ export const useGraphInteractions = ({
             setRelationSource(null)
             pendingDrag.current = null
         },
-        [canvasRef, isDragging, draggingArtifact, artifacts, artifactService, isRelationActive, relationSource, showSuccess, showError]
+        [canvasRef, isSelecting, isDragging, draggingArtifact, artifacts, artifactService, isRelationActive, relationSource, showSuccess, showError]
     )
 
     const handleArtifactDoubleClick = useCallback((artifact: Artifact, event: React.MouseEvent) => {
@@ -210,15 +298,55 @@ export const useGraphInteractions = ({
         return Date.now() < dragClickSuppressUntilRef.current
     }, [])
 
+    const deleteSelected = useCallback(async () => {
+        const ids = Array.from(selectedIds)
+        if (ids.length === 0) return
+        try {
+            const ok = await artifactService.bulkDeleteArtifacts(ids)
+            if (!ok) {
+                showError('No se pudieron eliminar todos los artefactos seleccionados')
+            }
+            setArtifacts(prev => prev.filter(a => !selectedIds.has(a.id)))
+            setSelectedIds(new Set())
+            setContextMenu(null)
+            showSuccess(`Eliminados ${ids.length} artefacto(s)`)    
+        } catch {
+            showError('Error al eliminar artefactos seleccionados')
+        }
+    }, [artifactService, selectedIds, setArtifacts, showError, showSuccess])
+
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (selectedIds.size === 0) return
+            const isDelete = e.key === 'Delete' || e.key === 'Del' || e.key.toLowerCase() === 'supr'
+            const isCmdBackspace = (e.metaKey || e.ctrlKey) && e.key === 'Backspace'
+            if (isDelete || isCmdBackspace) {
+                e.preventDefault()
+                deleteSelected().catch(() => {})
+            }
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+    }, [selectedIds, deleteSelected])
+
     return {
         isDragging,
         draggingArtifact,
         relationLine,
+        isSelecting,
+        selectionRect,
+        selectedIds,
+        contextMenu,
+        handleCanvasMouseDown,
+        handleCanvasContextMenu,
         handleArtifactMouseDown,
         handleMouseMove,
         handleMouseUp,
         handleArtifactDoubleClick,
         handleArtifactClick,
         shouldBlockCanvasClick,
+        clearSelection,
+        deleteSelected,
+        setContextMenu,
     }
 }
