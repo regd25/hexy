@@ -15,10 +15,7 @@ import {
     createDefaultVisualizationProperties,
     createDefaultSemanticMetadata,
 } from '../types'
-import {
-    IArtifactRepository,
-    LocalStorageArtifactRepository,
-} from './ArtifactRepository'
+import { IArtifactRepository, LocalStorageArtifactRepository } from './ArtifactRepository'
 
 /**
  * Simplified artifact service with direct EventBus integration
@@ -67,19 +64,14 @@ export class ArtifactService {
             return artifact
         } catch (error) {
             console.error('Error creating artifact:', error)
-            throw new Error(
-                `Failed to create artifact: ${error instanceof Error ? error.message : 'Unknown error'}`
-            )
+            throw new Error(`Failed to create artifact: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     }
 
     /**
      * Update an existing artifact
      */
-    async updateArtifact(
-        id: string,
-        payload: UpdateArtifactPayload
-    ): Promise<Artifact> {
+    async updateArtifact(id: string, payload: UpdateArtifactPayload): Promise<Artifact> {
         try {
             const previous = await this.repository.findById(id)
             if (!previous) {
@@ -99,9 +91,7 @@ export class ArtifactService {
             return updated
         } catch (error) {
             console.error('Error updating artifact:', error)
-            throw new Error(
-                `Failed to update artifact: ${error instanceof Error ? error.message : 'Unknown error'}`
-            )
+            throw new Error(`Failed to update artifact: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     }
 
@@ -124,9 +114,7 @@ export class ArtifactService {
             return success
         } catch (error) {
             console.error('Error deleting artifact:', error)
-            throw new Error(
-                `Failed to delete artifact: ${error instanceof Error ? error.message : 'Unknown error'}`
-            )
+            throw new Error(`Failed to delete artifact: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     }
 
@@ -181,27 +169,20 @@ export class ArtifactService {
     /**
      * Create a relationship between artifacts
      */
-    async createRelationship(
-        relationship: Omit<Relationship, 'id' | 'createdAt'>
-    ): Promise<Relationship> {
+    async createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
         try {
             // Validate that both artifacts exist
             const source = await this.repository.findById(relationship.sourceId)
             const target = await this.repository.findById(relationship.targetId)
 
             if (!source) {
-                throw new Error(
-                    `Source artifact ${relationship.sourceId} not found`
-                )
+                throw new Error(`Source artifact ${relationship.sourceId} not found`)
             }
             if (!target) {
-                throw new Error(
-                    `Target artifact ${relationship.targetId} not found`
-                )
+                throw new Error(`Target artifact ${relationship.targetId} not found`)
             }
 
-            const created =
-                await this.repository.createRelationship(relationship)
+            const created = await this.repository.createRelationship(relationship)
 
             // ✅ Single event emission - no duplication
             this.eventBus.publish('relationship:created', {
@@ -247,9 +228,7 @@ export class ArtifactService {
     /**
      * Get relationships for an artifact
      */
-    async getArtifactRelationships(
-        artifactId: string
-    ): Promise<Relationship[]> {
+    async getArtifactRelationships(artifactId: string): Promise<Relationship[]> {
         try {
             return await this.repository.findRelationshipsByArtifact(artifactId)
         } catch (error) {
@@ -261,9 +240,7 @@ export class ArtifactService {
     /**
      * Create a temporal artifact for drafting
      */
-    async createTemporalArtifact(
-        payload: Partial<CreateArtifactPayload>
-    ): Promise<TemporalArtifact> {
+    async createTemporalArtifact(payload: Partial<CreateArtifactPayload>): Promise<TemporalArtifact> {
         try {
             const temporaryId = crypto.randomUUID()
 
@@ -337,13 +314,9 @@ export class ArtifactService {
     /**
      * Update a temporal artifact
      */
-    async updateTemporalArtifact(
-        temporaryId: string,
-        updates: Partial<TemporalArtifact>
-    ): Promise<TemporalArtifact> {
+    async updateTemporalArtifact(temporaryId: string, updates: Partial<TemporalArtifact>): Promise<TemporalArtifact> {
         try {
-            const existing =
-                await this.repository.getTemporalArtifact(temporaryId)
+            const existing = await this.repository.getTemporalArtifact(temporaryId)
             if (!existing) {
                 throw new Error(`Temporal artifact ${temporaryId} not found`)
             }
@@ -377,8 +350,7 @@ export class ArtifactService {
      */
     async promoteTemporalArtifact(temporaryId: string): Promise<Artifact> {
         try {
-            const temporal =
-                await this.repository.getTemporalArtifact(temporaryId)
+            const temporal = await this.repository.getTemporalArtifact(temporaryId)
             if (!temporal) {
                 throw new Error(`Temporal artifact ${temporaryId} not found`)
             }
@@ -428,8 +400,7 @@ export class ArtifactService {
      */
     async deleteTemporalArtifact(temporaryId: string): Promise<boolean> {
         try {
-            const success =
-                await this.repository.deleteTemporalArtifact(temporaryId)
+            const success = await this.repository.deleteTemporalArtifact(temporaryId)
 
             if (success) {
                 // ✅ Single event emission - no duplication
@@ -450,9 +421,7 @@ export class ArtifactService {
     /**
      * Get temporal artifact by ID
      */
-    async getTemporalArtifact(
-        temporaryId: string
-    ): Promise<TemporalArtifact | null> {
+    async getTemporalArtifact(temporaryId: string): Promise<TemporalArtifact | null> {
         try {
             return await this.repository.getTemporalArtifact(temporaryId)
         } catch (error) {
@@ -464,9 +433,7 @@ export class ArtifactService {
     /**
      * Bulk operations
      */
-    async bulkCreateArtifacts(
-        payloads: CreateArtifactPayload[]
-    ): Promise<Artifact[]> {
+    async bulkCreateArtifacts(payloads: CreateArtifactPayload[]): Promise<Artifact[]> {
         try {
             return await this.repository.bulkCreate(payloads)
         } catch (error) {
@@ -475,9 +442,7 @@ export class ArtifactService {
         }
     }
 
-    async bulkUpdateArtifacts(
-        updates: UpdateArtifactPayload[]
-    ): Promise<Artifact[]> {
+    async bulkUpdateArtifacts(updates: UpdateArtifactPayload[]): Promise<Artifact[]> {
         try {
             return await this.repository.bulkUpdate(updates)
         } catch (error) {
@@ -512,9 +477,7 @@ export class ArtifactService {
             return await this.repository.backup()
         } catch (error) {
             console.error('Error exporting data:', error)
-            throw new Error(
-                `Failed to export data: ${error instanceof Error ? error.message : 'Unknown error'}`
-            )
+            throw new Error(`Failed to export data: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     }
 
@@ -530,10 +493,7 @@ export class ArtifactService {
     /**
      * Direct EventBus subscription methods (simplified)
      */
-    subscribeToEvent(
-        event: string,
-        handler: (data: unknown) => void
-    ): () => void {
+    subscribeToEvent(event: string, handler: (data: unknown) => void): () => void {
         return this.eventBus.subscribe(event, handler)
     }
 
@@ -549,9 +509,7 @@ export class ArtifactService {
     }> {
         try {
             const artifacts = await this.getAllArtifacts()
-            const relationships = await Promise.all(
-                artifacts.map(a => this.getArtifactRelationships(a.id))
-            )
+            const relationships = await Promise.all(artifacts.map(a => this.getArtifactRelationships(a.id)))
             const totalRelationships = relationships.flat().length
 
             const artifactsByType = artifacts.reduce(
@@ -564,10 +522,7 @@ export class ArtifactService {
 
             const averageBusinessValue =
                 artifacts.length > 0
-                    ? artifacts.reduce(
-                          (sum, a) => sum + a.semanticMetadata.businessValue,
-                          0
-                      ) / artifacts.length
+                    ? artifacts.reduce((sum, a) => sum + a.semanticMetadata.businessValue, 0) / artifacts.length
                     : 0
 
             const validationStatus = artifacts.reduce(

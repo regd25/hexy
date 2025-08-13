@@ -37,10 +37,7 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
         .filter(item =>
             searchFields.some(field => {
                 const value = item[field]
-                return (
-                    typeof value === 'string' &&
-                    value.toLowerCase().includes(query.toLowerCase())
-                )
+                return typeof value === 'string' && value.toLowerCase().includes(query.toLowerCase())
             })
         )
         .slice(0, maxItems)
@@ -70,9 +67,7 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
     )
 
     const defaultGetItemPreview = (item: T) =>
-        item.description.length > 50
-            ? `${item.description.substring(0, 50)}...`
-            : item.description
+        item.description.length > 50 ? `${item.description.substring(0, 50)}...` : item.description
 
     return (
         <div
@@ -91,9 +86,7 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
                 >
                     {renderItem ? renderItem(item) : defaultRenderItem(item)}
                     <div className="autocomplete-item-preview">
-                        {getItemPreview
-                            ? getItemPreview(item)
-                            : defaultGetItemPreview(item)}
+                        {getItemPreview ? getItemPreview(item) : defaultGetItemPreview(item)}
                     </div>
                 </div>
             ))}

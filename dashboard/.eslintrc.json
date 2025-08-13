@@ -5,11 +5,7 @@
         "es2021": true,
         "node": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:react-hooks/recommended"
-    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:react-hooks/recommended"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
@@ -43,10 +39,7 @@
         "no-unreachable": "error",
         "no-duplicate-case": "error",
 
-        "max-lines": [
-            "warn",
-            { "max": 300, "skipBlankLines": true, "skipComments": true }
-        ],
+        "max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }],
         "max-lines-per-function": [
             "warn",
             {
@@ -63,11 +56,5 @@
             "version": "detect"
         }
     },
-    "ignorePatterns": [
-        "node_modules/",
-        "dist/",
-        "build/",
-        "*.config.js",
-        "*.config.ts"
-    ]
+    "ignorePatterns": ["node_modules/", "dist/", "build/", "*.config.js", "*.config.ts"]
 }

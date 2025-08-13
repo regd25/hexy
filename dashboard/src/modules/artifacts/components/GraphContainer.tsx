@@ -279,7 +279,12 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                     artifacts={artifacts}
                     temporals={temporalArtifacts}
                     relationLine={
-                        interactions.relationLine as unknown as { x1: number; y1: number; x2: number; y2: number } | null
+                        interactions.relationLine as unknown as {
+                            x1: number
+                            y1: number
+                            x2: number
+                            y2: number
+                        } | null
                     }
                     isDragging={interactions.isDragging}
                     draggingArtifactId={interactions.draggingArtifact?.id}
@@ -292,7 +297,14 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                     onArtifactMouseDown={interactions.handleArtifactMouseDown}
                     onCanvasMouseDown={interactions.handleCanvasMouseDown}
                     onCanvasContextMenu={interactions.handleCanvasContextMenu}
-                    selectionRect={interactions.selectionRect as unknown as { x: number; y: number; width: number; height: number } | null}
+                    selectionRect={
+                        interactions.selectionRect as unknown as {
+                            x: number
+                            y: number
+                            width: number
+                            height: number
+                        } | null
+                    }
                     selectedIds={interactions.selectedIds}
                     activeArtifactId={editingArtifact?.id || null}
                 />

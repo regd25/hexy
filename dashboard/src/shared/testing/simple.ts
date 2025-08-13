@@ -50,13 +50,10 @@ export class SimpleTestSuite {
 }
 
 // Factory function
-export function createTestSuite(
-    moduleName: string, 
-    services: Record<string, () => any> = {}
-): SimpleTestSuite {
+export function createTestSuite(moduleName: string, services: Record<string, () => any> = {}): SimpleTestSuite {
     return new SimpleTestSuite(moduleName, services)
 }
 
 // Quick test helpers
 export const assert = expect
-export const should = expect 
+export const should = expect

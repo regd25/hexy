@@ -2,21 +2,21 @@
 
 ## 🚫 **Current Problems (Over-Engineering)**
 
-1. **Duplicate Event Systems**: 
-   - `ArtifactService.emit()` (local events)
-   - `EventBusIntegration.emitGlobalEvent()` (global events)
-   - Same information, different formats
+1. **Duplicate Event Systems**:
+    - `ArtifactService.emit()` (local events)
+    - `EventBusIntegration.emitGlobalEvent()` (global events)
+    - Same information, different formats
 
 2. **Unnecessary Abstraction Layers**:
-   - `EventBusIntegration` class as middleware
-   - `ArtifactEvents` vs `GlobalArtifactEvents` interfaces
-   - Complex event transformation logic
+    - `EventBusIntegration` class as middleware
+    - `ArtifactEvents` vs `GlobalArtifactEvents` interfaces
+    - Complex event transformation logic
 
 3. **State Duplication**:
-   - Repository state
-   - Service state  
-   - Component state
-   - Store state
+    - Repository state
+    - Service state
+    - Component state
+    - Store state
 
 ## ✅ **Simplified Architecture (DRY Compliant)**
 
@@ -25,40 +25,40 @@
 ```typescript
 // ❌ BEFORE: Dual event system
 class ArtifactService extends EventEmitter {
-  async createArtifact(payload) {
-    const artifact = await this.repository.create(payload)
-    this.emit('artifact:created', { artifact })  // Local
-    return artifact
-  }
+    async createArtifact(payload) {
+        const artifact = await this.repository.create(payload)
+        this.emit('artifact:created', { artifact }) // Local
+        return artifact
+    }
 }
 
 class EventBusIntegration {
-  setupArtifactEventHandlers() {
-    this.artifactService.on('artifact:created', ({ artifact }) => {
-      this.emitGlobalEvent('artifacts:artifact:created', { artifact })  // Global
-    })
-  }
+    setupArtifactEventHandlers() {
+        this.artifactService.on('artifact:created', ({ artifact }) => {
+            this.emitGlobalEvent('artifacts:artifact:created', { artifact }) // Global
+        })
+    }
 }
 
 // ✅ AFTER: Single event system
 class ArtifactService {
-  constructor(eventBus, repository) {
-    this.eventBus = eventBus
-    this.repository = repository
-  }
+    constructor(eventBus, repository) {
+        this.eventBus = eventBus
+        this.repository = repository
+    }
 
-  async createArtifact(payload) {
-    const artifact = await this.repository.create(payload)
-    
-    // Single event emission
-    this.eventBus.publish('artifact:created', {
-      source: 'artifacts-module',
-      artifact,
-      timestamp: Date.now()
-    })
-    
-    return artifact
-  }
+    async createArtifact(payload) {
+        const artifact = await this.repository.create(payload)
+
+        // Single event emission
+        this.eventBus.publish('artifact:created', {
+            source: 'artifacts-module',
+            artifact,
+            timestamp: Date.now(),
+        })
+
+        return artifact
+    }
 }
 ```
 
@@ -67,58 +67,58 @@ class ArtifactService {
 ```typescript
 // ✅ Simplified service with direct event bus integration
 export class SimplifiedArtifactService {
-  constructor(
-    private eventBus: EventBus,
-    private repository: IArtifactRepository,
-    private validator: ValidationService
-  ) {}
+    constructor(
+        private eventBus: EventBus,
+        private repository: IArtifactRepository,
+        private validator: ValidationService
+    ) {}
 
-  async createArtifact(payload: CreateArtifactPayload): Promise<Artifact> {
-    // Validate
-    const validationResult = await this.validator.validatePayload(payload)
-    if (!validationResult.isValid) {
-      this.eventBus.publish('artifact:validation:failed', {
-        source: 'artifacts-module',
-        errors: validationResult.errors,
-        payload
-      })
-      throw new Error('Validation failed')
+    async createArtifact(payload: CreateArtifactPayload): Promise<Artifact> {
+        // Validate
+        const validationResult = await this.validator.validatePayload(payload)
+        if (!validationResult.isValid) {
+            this.eventBus.publish('artifact:validation:failed', {
+                source: 'artifacts-module',
+                errors: validationResult.errors,
+                payload,
+            })
+            throw new Error('Validation failed')
+        }
+
+        // Create
+        const artifact = await this.repository.create(payload)
+
+        // Single event - no duplication
+        this.eventBus.publish('artifact:created', {
+            source: 'artifacts-module',
+            artifact,
+            timestamp: Date.now(),
+        })
+
+        // Auto-validate new artifact
+        this.validateArtifactAsync(artifact)
+
+        return artifact
     }
 
-    // Create
-    const artifact = await this.repository.create(payload)
+    private async validateArtifactAsync(artifact: Artifact) {
+        try {
+            const result = await this.validator.validateArtifact(artifact)
 
-    // Single event - no duplication
-    this.eventBus.publish('artifact:created', {
-      source: 'artifacts-module',
-      artifact,
-      timestamp: Date.now()
-    })
-
-    // Auto-validate new artifact
-    this.validateArtifactAsync(artifact)
-
-    return artifact
-  }
-
-  private async validateArtifactAsync(artifact: Artifact) {
-    try {
-      const result = await this.validator.validateArtifact(artifact)
-      
-      this.eventBus.publish('artifact:validated', {
-        source: 'artifacts-module',
-        artifact,
-        result,
-        timestamp: Date.now()
-      })
-    } catch (error) {
-      this.eventBus.publish('artifact:validation:error', {
-        source: 'artifacts-module',
-        artifactId: artifact.id,
-        error: error.message
-      })
+            this.eventBus.publish('artifact:validated', {
+                source: 'artifacts-module',
+                artifact,
+                result,
+                timestamp: Date.now(),
+            })
+        } catch (error) {
+            this.eventBus.publish('artifact:validation:error', {
+                source: 'artifacts-module',
+                artifactId: artifact.id,
+                error: error.message,
+            })
+        }
     }
-  }
 }
 ```
 
@@ -163,7 +163,7 @@ export const ArtifactEditor: React.FC = () => {
 ```typescript
 // ✅ Artifacts domain events
 'artifact:created'
-'artifact:updated' 
+'artifact:updated'
 'artifact:deleted'
 'artifact:validated'
 'artifact:validation:failed'
@@ -194,16 +194,19 @@ export const ArtifactEditor: React.FC = () => {
 ## 📊 **Migration Plan**
 
 ### Phase 1: Simplify Event System
+
 1. Remove `EventBusIntegration` class
 2. Update `ArtifactService` to use EventBus directly
 3. Standardize event naming convention
 
-### Phase 2: Update Components  
+### Phase 2: Update Components
+
 1. Remove local event listeners
 2. Subscribe directly to EventBus
 3. Simplify state management
 
 ### Phase 3: Clean Up
+
 1. Remove unused interfaces (`ArtifactEvents`, `GlobalArtifactEvents`)
 2. Update tests to reflect simplified architecture
 3. Update documentation
@@ -213,26 +216,26 @@ export const ArtifactEditor: React.FC = () => {
 ```typescript
 // ✅ Much simpler testing
 describe('SimplifiedArtifactService', () => {
-  let service: SimplifiedArtifactService
-  let mockEventBus: jest.Mocked<EventBus>
-  let mockRepository: jest.Mocked<IArtifactRepository>
+    let service: SimplifiedArtifactService
+    let mockEventBus: jest.Mocked<EventBus>
+    let mockRepository: jest.Mocked<IArtifactRepository>
 
-  beforeEach(() => {
-    mockEventBus = createMockEventBus()
-    mockRepository = createMockRepository()
-    service = new SimplifiedArtifactService(mockEventBus, mockRepository, mockValidator)
-  })
-
-  test('should emit single event when creating artifact', async () => {
-    const payload = createMockPayload()
-    const artifact = await service.createArtifact(payload)
-
-    expect(mockEventBus.publish).toHaveBeenCalledWith('artifact:created', {
-      source: 'artifacts-module',
-      artifact,
-      timestamp: expect.any(Number)
+    beforeEach(() => {
+        mockEventBus = createMockEventBus()
+        mockRepository = createMockRepository()
+        service = new SimplifiedArtifactService(mockEventBus, mockRepository, mockValidator)
     })
-  })
+
+    test('should emit single event when creating artifact', async () => {
+        const payload = createMockPayload()
+        const artifact = await service.createArtifact(payload)
+
+        expect(mockEventBus.publish).toHaveBeenCalledWith('artifact:created', {
+            source: 'artifacts-module',
+            artifact,
+            timestamp: expect.any(Number),
+        })
+    })
 })
 ```
 

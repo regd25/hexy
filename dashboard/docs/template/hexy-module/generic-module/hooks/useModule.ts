@@ -22,10 +22,7 @@ export const useModule = (): UseModuleReturn => {
     const [error, setError] = useState<Error | null>(null)
     const eventBus = useEventBus()
 
-    const moduleService = useMemo(
-        () => new ModuleService(moduleConfig, eventBus),
-        [moduleConfig, eventBus]
-    )
+    const moduleService = useMemo(() => new ModuleService(moduleConfig, eventBus), [moduleConfig, eventBus])
 
     const loadData = useCallback(async () => {
         setIsLoading(true)
@@ -41,10 +38,7 @@ export const useModule = (): UseModuleReturn => {
                 lastAction: 'loaded',
             }))
         } catch (err) {
-            const error =
-                err instanceof Error
-                    ? err
-                    : new Error('Failed to load module data')
+            const error = err instanceof Error ? err : new Error('Failed to load module data')
             setError(error)
             setModuleState(prev => ({
                 ...prev,
@@ -70,10 +64,7 @@ export const useModule = (): UseModuleReturn => {
                 lastAction: 'saved',
             }))
         } catch (err) {
-            const error =
-                err instanceof Error
-                    ? err
-                    : new Error('Failed to save module data')
+            const error = err instanceof Error ? err : new Error('Failed to save module data')
             setError(error)
             setModuleState(prev => ({
                 ...prev,
@@ -112,19 +103,14 @@ export const useModule = (): UseModuleReturn => {
                 lastAction: 'exported',
             }))
         } catch (err) {
-            const error =
-                err instanceof Error
-                    ? err
-                    : new Error('Failed to export module data')
+            const error = err instanceof Error ? err : new Error('Failed to export module data')
             setError(error)
         }
     }, [data, moduleService, setModuleState])
 
     const updateData = useCallback(
         (updates: Partial<ModuleData>) => {
-            setData(prev =>
-                prev ? { ...prev, ...updates } : (updates as ModuleData)
-            )
+            setData(prev => (prev ? { ...prev, ...updates } : (updates as ModuleData)))
             setModuleState(prev => ({
                 ...prev,
                 isDirty: true,

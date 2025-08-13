@@ -20,6 +20,7 @@ Each template follows the Hexy semantic architecture principles:
 4. Implement your specific business logic
 
 ## Maintain
+
 1. Read the Hexy semantic architecture principles
 2. Follow the template structure
 3. Use DDD patterns and Hexy semantic artifacts

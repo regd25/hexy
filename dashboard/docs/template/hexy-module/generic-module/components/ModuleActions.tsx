@@ -6,9 +6,7 @@ export interface ModuleActionsProps {
     customActions?: React.ReactNode
 }
 
-export const ModuleActions: React.FC<ModuleActionsProps> = ({
-    customActions,
-}) => {
+export const ModuleActions: React.FC<ModuleActionsProps> = ({ customActions }) => {
     const { moduleState } = useModuleContext()
     const { save, refresh, reset, export: exportData } = useModule()
 
@@ -29,11 +27,7 @@ export const ModuleActions: React.FC<ModuleActionsProps> = ({
     }
 
     const handleReset = async () => {
-        if (
-            window.confirm(
-                'Are you sure you want to reset? All unsaved changes will be lost.'
-            )
-        ) {
+        if (window.confirm('Are you sure you want to reset? All unsaved changes will be lost.')) {
             try {
                 await reset()
             } catch (error) {

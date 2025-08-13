@@ -19,8 +19,7 @@ export { SemanticArtifactEditor } from './components/SemanticArtifactEditor'
 export const artifactsModule = {
     name: 'artifacts-module',
     version: '1.0.0',
-    description:
-        'Enhanced Hexy artifacts management module with semantic validation and D3.js visualization',
+    description: 'Enhanced Hexy artifacts management module with semantic validation and D3.js visualization',
     features: [
         'Comprehensive type system with D3.js visualization properties',
         'Repository pattern with LocalStorage implementation',

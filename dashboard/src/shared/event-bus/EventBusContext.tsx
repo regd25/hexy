@@ -9,10 +9,7 @@ interface EventBusProviderProps {
     eventBus?: EventBus
 }
 
-export const EventBusProvider: React.FC<EventBusProviderProps> = ({
-    children,
-    eventBus,
-}) => {
+export const EventBusProvider: React.FC<EventBusProviderProps> = ({ children, eventBus }) => {
     const eventBusRef = useRef<EventBus | null>(null)
 
     if (!eventBusRef.current && eventBus) {
@@ -27,9 +24,5 @@ export const EventBusProvider: React.FC<EventBusProviderProps> = ({
         }
     }, [])
 
-    return (
-        <EventBusContext.Provider value={eventBusRef.current}>
-            {children}
-        </EventBusContext.Provider>
-    )
+    return <EventBusContext.Provider value={eventBusRef.current}>{children}</EventBusContext.Provider>
 }

@@ -36,8 +36,7 @@ export const CustomModuleExample: React.FC = () => {
         subtitle: 'Validate and analyze semantic artifacts',
         version: '2.1.0',
         author: 'AI Team',
-        description:
-            'Advanced validation module for ensuring semantic consistency across Hexy artifacts.',
+        description: 'Advanced validation module for ensuring semantic consistency across Hexy artifacts.',
         features: [
             'Real-time validation',
             'Semantic analysis',
@@ -53,7 +52,12 @@ export const CustomModuleExample: React.FC = () => {
         },
     }
 
-    return <ModulePage config={config} className="semantic-validator-module" />
+    return (
+        <ModulePage
+            config={config}
+            className="semantic-validator-module"
+        />
+    )
 }
 
 // Example 3: Minimal Configuration
@@ -86,8 +90,7 @@ export const IntegratedModuleExample: React.FC = () => {
         subtitle: `Managing ${artifacts.length} artifacts`,
         version: '1.0.0',
         author: 'Dashboard Team',
-        description:
-            'Integrated artifact management with existing dashboard functionality',
+        description: 'Integrated artifact management with existing dashboard functionality',
         settings: {
             autoSave: true,
             validateOnChange: true,
@@ -101,30 +104,22 @@ export const IntegratedModuleExample: React.FC = () => {
             <ModuleContainer>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Artifact Summary
-                        </h3>
+                        <h3 className="text-lg font-semibold mb-4">Artifact Summary</h3>
                         <div className="space-y-2">
                             {artifacts.slice(0, 5).map(artifact => (
                                 <div
                                     key={artifact.id}
                                     className="flex justify-between items-center"
                                 >
-                                    <span className="text-gray-300">
-                                        {artifact.name}
-                                    </span>
-                                    <span className="text-xs bg-blue-600 px-2 py-1 rounded">
-                                        {artifact.type}
-                                    </span>
+                                    <span className="text-gray-300">{artifact.name}</span>
+                                    <span className="text-xs bg-blue-600 px-2 py-1 rounded">{artifact.type}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Quick Actions
-                        </h3>
+                        <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
                         <div className="space-y-2">
                             <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded transition-colors">
                                 Create New Artifact

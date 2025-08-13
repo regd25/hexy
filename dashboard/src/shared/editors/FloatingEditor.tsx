@@ -133,55 +133,55 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                         width,
                     }}
                 >
-                {(title || subtitle) && (
-                    <div className="mb-3">
-                        {title && <h4 className="text-sm font-semibold text-blue-400 mb-1">{title}</h4>}
-                        {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
-                    </div>
-                )}
+                    {(title || subtitle) && (
+                        <div className="mb-3">
+                            {title && <h4 className="text-sm font-semibold text-blue-400 mb-1">{title}</h4>}
+                            {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
+                        </div>
+                    )}
 
-                <textarea
-                    ref={textareaRef}
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={placeholder}
-                    className={`w-full ${height} px-3 py-2 bg-slate-700/50 text-white rounded-md border focus:outline-none resize-none text-sm transform transition-transform duration-100 ${
-                        validationErrors.length > 0
-                            ? 'border-red-500 focus:border-red-500'
-                            : 'border-slate-600 focus:border-blue-500'
-                    } ${animateIn ? 'scale-100' : 'scale-95'}`}
-                />
+                    <textarea
+                        ref={textareaRef}
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={placeholder}
+                        className={`w-full ${height} px-3 py-2 bg-slate-700/50 text-white rounded-md border focus:outline-none resize-none text-sm transform transition-transform duration-100 ${
+                            validationErrors.length > 0
+                                ? 'border-red-500 focus:border-red-500'
+                                : 'border-slate-600 focus:border-blue-500'
+                        } ${animateIn ? 'scale-100' : 'scale-95'}`}
+                    />
 
-                {validationErrors.length > 0 && (
-                    <div className="mt-2 text-xs text-red-400">
-                        {validationErrors.map((error, index) => (
-                            <div key={index}>• {error}</div>
-                        ))}
-                    </div>
-                )}
+                    {validationErrors.length > 0 && (
+                        <div className="mt-2 text-xs text-red-400">
+                            {validationErrors.map((error, index) => (
+                                <div key={index}>• {error}</div>
+                            ))}
+                        </div>
+                    )}
 
-                <div className="flex items-center justify-between mt-3">
-                    {beforeButton}
+                    <div className="flex items-center justify-between mt-3">
+                        {beforeButton}
 
-                    <div className="flex gap-2">
-                        {showCancelButton && (
+                        <div className="flex gap-2">
+                            {showCancelButton && (
+                                <button
+                                    onClick={onCancel}
+                                    className="px-3 py-1.5 text-xs text-slate-300 hover:text-white transition-colors"
+                                >
+                                    {cancelButtonText}
+                                </button>
+                            )}
                             <button
-                                onClick={onCancel}
-                                className="px-3 py-1.5 text-xs text-slate-300 hover:text-white transition-colors"
+                                onClick={handleSave}
+                                disabled={validationErrors.length > 0}
+                                className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
                             >
-                                {cancelButtonText}
+                                {saveButtonText}
                             </button>
-                        )}
-                        <button
-                            onClick={handleSave}
-                            disabled={validationErrors.length > 0}
-                            className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {saveButtonText}
-                        </button>
+                        </div>
                     </div>
-                </div>
                 </div>
             </>
         )

@@ -82,6 +82,7 @@ const config = {
 ## 🎯 Key Features
 
 ### Components
+
 - **ModuleContainer**: Main wrapper with error handling and loading states
 - **ModuleHeader**: Title, status, and action buttons
 - **ModuleContent**: Main content area with empty state handling
@@ -89,15 +90,18 @@ const config = {
 - **ModuleActions**: Save, refresh, export, and reset functionality
 
 ### Hooks
+
 - **useModule**: Main business logic and data management
 - **useModuleValidation**: Form validation with customizable rules
 
 ### Services
+
 - **ModuleService**: API integration with CRUD operations
 - Mock implementations for rapid prototyping
 - Export/import functionality
 
 ### Context
+
 - **ModuleContext**: Centralized state management
 - Configuration and statistics sharing
 
@@ -107,12 +111,12 @@ const config = {
 
 ```tsx
 const customRules: ValidationRule[] = [
-  {
-    field: 'email',
-    required: true,
-    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    message: 'Please enter a valid email address'
-  }
+    {
+        field: 'email',
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: 'Please enter a valid email address',
+    },
 ]
 
 const { validate } = useModuleValidation(customRules)
@@ -125,61 +129,61 @@ import { useEventBus } from '../../../contexts/EventBusContext'
 
 // ✅ Simplified service with direct EventBus integration
 class CustomModuleService extends ModuleService {
-  constructor(config: ModuleConfig, eventBus: EventBus) {
-    super(config, eventBus, '/api/your-endpoint')
-  }
+    constructor(config: ModuleConfig, eventBus: EventBus) {
+        super(config, eventBus, '/api/your-endpoint')
+    }
 
-  async load(): Promise<ModuleData | null> {
-    // Events are automatically emitted by parent class
-    const response = await fetch('/api/your-endpoint')
-    return response.json()
-  }
+    async load(): Promise<ModuleData | null> {
+        // Events are automatically emitted by parent class
+        const response = await fetch('/api/your-endpoint')
+        return response.json()
+    }
 }
 
 // ✅ Usage in React component
 const MyModuleComponent: React.FC = () => {
-  const eventBus = useEventBus()
-  const [data, setData] = useState<ModuleData | null>(null)
-  const [loading, setLoading] = useState(false)
+    const eventBus = useEventBus()
+    const [data, setData] = useState<ModuleData | null>(null)
+    const [loading, setLoading] = useState(false)
 
-  const service = useMemo(() => 
-    new CustomModuleService({ name: 'my-module', version: '1.0.0' }, eventBus),
-    [eventBus]
-  )
+    const service = useMemo(
+        () => new CustomModuleService({ name: 'my-module', version: '1.0.0' }, eventBus),
+        [eventBus]
+    )
 
-  useEffect(() => {
-    // ✅ Direct event subscription - no intermediate layers
-    const unsubscribeLoad = eventBus.subscribe('module:loaded', ({ data }) => {
-      if (data.source === 'my-module') {
-        setData(data.data)
-        setLoading(false)
-      }
-    })
+    useEffect(() => {
+        // ✅ Direct event subscription - no intermediate layers
+        const unsubscribeLoad = eventBus.subscribe('module:loaded', ({ data }) => {
+            if (data.source === 'my-module') {
+                setData(data.data)
+                setLoading(false)
+            }
+        })
 
-    const unsubscribeError = eventBus.subscribe('module:load:failed', ({ data }) => {
-      if (data.source === 'my-module') {
-        setLoading(false)
-        // Handle error
-      }
-    })
+        const unsubscribeError = eventBus.subscribe('module:load:failed', ({ data }) => {
+            if (data.source === 'my-module') {
+                setLoading(false)
+                // Handle error
+            }
+        })
 
-    return () => {
-      unsubscribeLoad()
-      unsubscribeError()
+        return () => {
+            unsubscribeLoad()
+            unsubscribeError()
+        }
+    }, [eventBus])
+
+    const handleLoad = async () => {
+        setLoading(true)
+        await service.load() // Events emitted automatically
     }
-  }, [eventBus])
 
-  const handleLoad = async () => {
-    setLoading(true)
-    await service.load() // Events emitted automatically
-  }
-
-  return (
-    <div>
-      {loading ? 'Loading...' : data?.name}
-      <button onClick={handleLoad}>Load Data</button>
-    </div>
-  )
+    return (
+        <div>
+            {loading ? 'Loading...' : data?.name}
+            <button onClick={handleLoad}>Load Data</button>
+        </div>
+    )
 }
 ```
 
@@ -191,24 +195,24 @@ import { useEventBus } from '../../../contexts/EventBusContext'
 const eventBus = useEventBus()
 
 // ✅ Single event system - no duplication
-eventBus.publish('module:data:updated', { 
-  source: 'your-module',
-  moduleId, 
-  data,
-  timestamp: Date.now()
+eventBus.publish('module:data:updated', {
+    source: 'your-module',
+    moduleId,
+    data,
+    timestamp: Date.now(),
 })
 
 // ✅ Direct subscription - no intermediate layers
 eventBus.subscribe('artifact:created', ({ data }) => {
-  // React directly to events
-  handleArtifactCreated(data.artifact)
+    // React directly to events
+    handleArtifactCreated(data.artifact)
 })
 
 // ✅ Semantic event naming
 eventBus.publish('module:validation:completed', {
-  source: 'your-module',
-  isValid: true,
-  errors: []
+    source: 'your-module',
+    isValid: true,
+    errors: [],
 })
 ```
 
@@ -221,8 +225,9 @@ Follow this **DRY-compliant** naming pattern:
 ```
 
 Examples:
+
 - `artifact:item:created`
-- `module:validation:failed` 
+- `module:validation:failed`
 - `user:session:expired`
 - `system:backup:completed`
 
@@ -238,9 +243,7 @@ The template uses Tailwind CSS with a dark theme:
 ### Custom Styling
 
 ```tsx
-<ModuleContainer className="custom-module-styles">
-  {/* Your content */}
-</ModuleContainer>
+<ModuleContainer className="custom-module-styles">{/* Your content */}</ModuleContainer>
 ```
 
 ## 🧪 Testing
@@ -252,52 +255,55 @@ import { render, screen } from '@testing-library/react'
 import { ModulePage } from './index'
 
 test('renders module page', () => {
-  render(<ModulePage />)
-  expect(screen.getByText('Generic Module')).toBeInTheDocument()
+    render(<ModulePage />)
+    expect(screen.getByText('Generic Module')).toBeInTheDocument()
 })
 ```
 
 ## � Aenti-Patterns to Avoid (DRY Violations)
 
 ### ❌ **Don't Create Duplicate Event Systems**
+
 ```tsx
 // ❌ BAD: Double event handling
 class ModuleService extends EventEmitter {
-  create(data) {
-    this.emit('item:created', data)  // Local event
-    eventBus.publish('module:item:created', data)  // Global event
-  }
+    create(data) {
+        this.emit('item:created', data) // Local event
+        eventBus.publish('module:item:created', data) // Global event
+    }
 }
 
 // ✅ GOOD: Single event system
 class ModuleService {
-  create(data) {
-    eventBus.publish('module:item:created', { 
-      source: 'module-name',
-      data,
-      timestamp: Date.now()
-    })
-  }
+    create(data) {
+        eventBus.publish('module:item:created', {
+            source: 'module-name',
+            data,
+            timestamp: Date.now(),
+        })
+    }
 }
 ```
 
 ### ❌ **Don't Create Unnecessary Abstraction Layers**
+
 ```tsx
 // ❌ BAD: Over-abstraction
 class EventBusIntegration {
-  constructor(eventBus, moduleService) {
-    this.setupEventHandlers()  // Unnecessary layer
-  }
+    constructor(eventBus, moduleService) {
+        this.setupEventHandlers() // Unnecessary layer
+    }
 }
 
 // ✅ GOOD: Direct integration
 const moduleService = new ModuleService()
-moduleService.onCreate = (data) => {
-  eventBus.publish('module:item:created', data)
+moduleService.onCreate = data => {
+    eventBus.publish('module:item:created', data)
 }
 ```
 
 ### ❌ **Don't Duplicate State Management**
+
 ```tsx
 // ❌ BAD: Multiple state sources
 const [localState, setLocalState] = useState()

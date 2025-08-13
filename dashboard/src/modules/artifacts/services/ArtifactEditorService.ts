@@ -64,10 +64,7 @@ export class ArtifactEditorService {
         }
     }
 
-    static createArtifactFromFormData(
-        formData: ArtifactFormData,
-        existingArtifact?: Artifact
-    ): Artifact {
+    static createArtifactFromFormData(formData: ArtifactFormData, existingArtifact?: Artifact): Artifact {
         return {
             id: existingArtifact?.id || this.generateId(),
             name: formData.name.trim(),
@@ -83,10 +80,7 @@ export class ArtifactEditorService {
         }
     }
 
-    static hasUnsavedChanges(
-        formData: ArtifactFormData,
-        originalArtifact?: Artifact
-    ): boolean {
+    static hasUnsavedChanges(formData: ArtifactFormData, originalArtifact?: Artifact): boolean {
         if (!originalArtifact) {
             return formData.name.trim() !== '' || formData.description.trim() !== ''
         }
@@ -98,10 +92,7 @@ export class ArtifactEditorService {
         )
     }
 
-    static shouldShowCancelConfirmation(
-        formData: ArtifactFormData,
-        originalArtifact?: Artifact
-    ): boolean {
+    static shouldShowCancelConfirmation(formData: ArtifactFormData, originalArtifact?: Artifact): boolean {
         return this.hasUnsavedChanges(formData, originalArtifact)
     }
-} 
+}

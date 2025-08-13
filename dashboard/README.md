@@ -28,22 +28,22 @@ dashboard/
 ## Principios SOLID Aplicados
 
 1. **Principio de Responsabilidad Única (SRP)**: Cada clase tiene una única responsabilidad.
-   - `GraphService`: Gestionar la visualización del grafo.
-   - `EditorService`: Gestionar el editor de texto.
-   - `ArtifactParser`: Analizar y procesar artefactos.
-   - `ConfigService`: Gestionar la configuración del grafo.
+    - `GraphService`: Gestionar la visualización del grafo.
+    - `EditorService`: Gestionar el editor de texto.
+    - `ArtifactParser`: Analizar y procesar artefactos.
+    - `ConfigService`: Gestionar la configuración del grafo.
 
 2. **Principio de Abierto/Cerrado (OCP)**: Las clases están abiertas para extensión pero cerradas para modificación.
-   - Se pueden añadir nuevos tipos de artefactos sin modificar el código existente.
+    - Se pueden añadir nuevos tipos de artefactos sin modificar el código existente.
 
 3. **Principio de Sustitución de Liskov (LSP)**: Las clases derivadas pueden sustituir a sus clases base.
-   - No hay herencia en este proyecto, pero se ha diseñado para permitirla en el futuro.
+    - No hay herencia en este proyecto, pero se ha diseñado para permitirla en el futuro.
 
 4. **Principio de Segregación de Interfaces (ISP)**: Los clientes no deben depender de interfaces que no utilizan.
-   - Cada servicio expone solo los métodos necesarios para su funcionalidad.
+    - Cada servicio expone solo los métodos necesarios para su funcionalidad.
 
 5. **Principio de Inversión de Dependencias (DIP)**: Los módulos de alto nivel no deben depender de los de bajo nivel.
-   - Se utilizan inyecciones de dependencias para desacoplar los módulos.
+    - Se utilizan inyecciones de dependencias para desacoplar los módulos.
 
 ## Cómo Ejecutar
 

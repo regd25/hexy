@@ -4,12 +4,12 @@ export { ModuleContent } from './ModuleContent'
 export { ModuleFooter } from './ModuleFooter'
 export { ModuleActions } from './ModuleActions'
 
-export type { 
-  ModuleContainerProps,
-  ModuleHeaderProps,
-  ModuleContentProps,
-  ModuleFooterProps,
-  ModuleActionsProps
+export type {
+    ModuleContainerProps,
+    ModuleHeaderProps,
+    ModuleContentProps,
+    ModuleFooterProps,
+    ModuleActionsProps,
 } from './ModuleContainer'
 export type { ModuleHeaderProps } from './ModuleHeader'
 export type { ModuleContentProps } from './ModuleContent'

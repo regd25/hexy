@@ -4,6 +4,6 @@
  * Following DRY principles with direct EventBus integration
  */
 
-export * from './ArtifactRepository';
-export * from './ArtifactService';
-export * from './ValidationService';
+export * from './ArtifactRepository'
+export * from './ArtifactService'
+export * from './ValidationService'

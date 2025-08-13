@@ -1,2 +1,2 @@
-export * from './FloatingEditor';
-export * from './InlineEditor';
+export * from './FloatingEditor'
+export * from './InlineEditor'

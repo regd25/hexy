@@ -3,10 +3,7 @@
  */
 export interface EventBus {
     publish(event: string, data: unknown): void
-    subscribe<T = unknown>(
-        event: string,
-        handler: (event: EventData<T>) => void
-    ): () => void
+    subscribe<T = unknown>(event: string, handler: (event: EventData<T>) => void): () => void
     addMiddleware(middleware: (event: EventData) => EventData): void
     clear(): void
 }

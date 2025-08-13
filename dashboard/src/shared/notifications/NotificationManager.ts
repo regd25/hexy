@@ -69,11 +69,7 @@ export class NotificationManager {
         return this.show(message, 'info', duration)
     }
 
-    custom(
-        message: string,
-        customStyle: Record<string, string> = {},
-        duration = 3000
-    ) {
+    custom(message: string, customStyle: Record<string, string> = {}, duration = 3000) {
         return Toastify({
             text: message,
             duration,

@@ -45,11 +45,7 @@ export const useNotifications = () => {
     )
 
     const showCustom = useCallback(
-        (
-            message: string,
-            customStyle: Record<string, string> = {},
-            duration = 3000
-        ) => {
+        (message: string, customStyle: Record<string, string> = {}, duration = 3000) => {
             return notificationManager.custom(message, customStyle, duration)
         },
         [notificationManager]

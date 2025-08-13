@@ -11,11 +11,8 @@ export const useArtifactValidation = () => {
     const validateName = useCallback(
         async (name: string): Promise<string[]> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact({ name })
-                return validation.errors
-                    .filter(err => err.field === 'name')
-                    .map(err => err.message)
+                const validation: ValidationResult = await validationService.validatePartialArtifact({ name })
+                return validation.errors.filter(err => err.field === 'name').map(err => err.message)
             } catch (error) {
                 console.error('Error validating name:', error)
                 return ['Error al validar nombre']
@@ -27,13 +24,10 @@ export const useArtifactValidation = () => {
     const validateDescription = useCallback(
         async (description: string): Promise<string[]> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact({
-                        description,
-                    })
-                return validation.errors
-                    .filter(err => err.field === 'description')
-                    .map(err => err.message)
+                const validation: ValidationResult = await validationService.validatePartialArtifact({
+                    description,
+                })
+                return validation.errors.filter(err => err.field === 'description').map(err => err.message)
             } catch (error) {
                 console.error('Error validating description:', error)
                 return ['Error al validar descripción']
@@ -45,10 +39,7 @@ export const useArtifactValidation = () => {
     const validateArtifactForSave = useCallback(
         async (artifactData: Partial<Artifact>): Promise<string[]> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact(
-                        artifactData
-                    )
+                const validation: ValidationResult = await validationService.validatePartialArtifact(artifactData)
                 return validation.errors.map(err => err.message)
             } catch (error) {
                 console.error('Error validating artifact for save:', error)
@@ -59,18 +50,12 @@ export const useArtifactValidation = () => {
     )
 
     const validateAndShowErrors = useCallback(
-        async (
-            artifact: Partial<Artifact> | TemporalArtifact,
-            entityName: string
-        ): Promise<boolean> => {
+        async (artifact: Partial<Artifact> | TemporalArtifact, entityName: string): Promise<boolean> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact(artifact)
+                const validation: ValidationResult = await validationService.validatePartialArtifact(artifact)
 
                 if (!validation.isValid) {
-                    const errorMessages = validation.errors
-                        .map(err => err.message)
-                        .join(', ')
+                    const errorMessages = validation.errors.map(err => err.message).join(', ')
                     showError(`Errores en ${entityName}: ${errorMessages}`)
                     return false
                 }
@@ -113,9 +98,7 @@ export const useArtifactValidation = () => {
     const validateTemporalArtifact = useCallback(
         async (temporal: TemporalArtifact): Promise<ValidationResult> => {
             try {
-                return await validationService.validateTemporalArtifact(
-                    temporal
-                )
+                return await validationService.validateTemporalArtifact(temporal)
             } catch (error) {
                 console.error('Error validating temporal artifact:', error)
                 return {

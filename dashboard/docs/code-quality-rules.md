@@ -7,49 +7,58 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 ## Reglas Principales
 
 ### 1. Límite de Tamaño de Archivo
+
 - **Regla**: Refactorizar cualquier archivo que exceda 300 líneas
 - **Acción**: Extraer hooks personalizados y componentes
 - **Beneficio**: Mantenibilidad y legibilidad mejoradas
 
 ### 2. Variables No Utilizadas
+
 - **Regla**: Eliminar todas las variables e imports no utilizados
 - **Herramienta**: ESLint con regla `no-unused-vars`
 - **Comando**: `npm run lint:check`
 
 ### 3. Cumplimiento de ESLint
+
 - **Regla**: Todo el código debe pasar la validación de ESLint
 - **Configuración**: `.eslintrc.js`
 - **Comandos**:
-  - `npm run lint` - Verificar errores
-  - `npm run lint:fix` - Corregir automáticamente
-  - `npm run lint:check` - Verificar sin warnings
+    - `npm run lint` - Verificar errores
+    - `npm run lint:fix` - Corregir automáticamente
+    - `npm run lint:check` - Verificar sin warnings
 
 ### 4. Principio de Responsabilidad Única
+
 - **Regla**: Cada archivo debe contener máximo 1 clase/componente
 - **Beneficio**: Código más modular y reutilizable
 
 ### 5. Tipado Estricto
+
 - **Regla**: Usar TypeScript con tipado estricto en todo el proyecto
 - **Configuración**: `tsconfig.json` con `strict: true`
 
 ### 6. Convenciones de Nomenclatura
+
 - **Regla**: Nombres semánticos siguiendo patrones establecidos
 - **Ejemplos**:
-  - Hooks: `use[Feature]`
-  - Componentes: `[Feature]Component`
-  - Tipos: `[Feature]Type`
+    - Hooks: `use[Feature]`
+    - Componentes: `[Feature]Component`
+    - Tipos: `[Feature]Type`
 
 ### 7. Validación Consistente
+
 - **Regla**: Validación uniforme en todas las operaciones de artefactos
 - **Implementación**: Hook `useArtifactValidation`
 
 ### 8. Manejo de Errores
+
 - **Regla**: Manejo completo de errores con feedback al usuario
 - **Herramienta**: Sistema de notificaciones con `useNotifications`
 
 ## Configuración de ESLint
 
 ### Reglas de Calidad de Código
+
 ```javascript
 'no-unused-vars': 'error',
 'no-console': 'warn',
@@ -58,6 +67,7 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 ```
 
 ### Reglas de TypeScript
+
 ```javascript
 '@typescript-eslint/no-unused-vars': 'error',
 '@typescript-eslint/no-explicit-any': 'warn',
@@ -65,12 +75,14 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 ```
 
 ### Reglas de React
+
 ```javascript
 'react-hooks/rules-of-hooks': 'error',
 'react-hooks/exhaustive-deps': 'warn',
 ```
 
 ### Reglas de Tamaño de Archivo
+
 ```javascript
 'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
 'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
@@ -79,6 +91,7 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 ## Comandos de Desarrollo
 
 ### Verificación de Calidad
+
 ```bash
 # Verificar errores de ESLint
 npm run lint
@@ -94,6 +107,7 @@ npm run format
 ```
 
 ### Flujo de Trabajo Recomendado
+
 1. **Desarrollo**: Escribir código siguiendo las reglas
 2. **Pre-commit**: Ejecutar `npm run lint:fix`
 3. **Pre-push**: Ejecutar `npm run lint:check`
@@ -102,14 +116,16 @@ npm run format
 ## Ejemplos de Refactorización
 
 ### Antes (422 líneas)
+
 ```typescript
 // GraphContainer.tsx - Archivo muy grande
 export const GraphContainer = () => {
-  // 422 líneas de código...
+    // 422 líneas de código...
 }
 ```
 
 ### Después (95 líneas)
+
 ```typescript
 // GraphContainer.tsx - Orquestador principal
 export const GraphContainer = () => {
@@ -117,7 +133,7 @@ export const GraphContainer = () => {
   const { temporalArtifacts } = useTemporalArtifacts()
   const canvasLogic = useGraphCanvas()
   const editorLogic = useGraphEditors()
-  
+
   return (
     <div>
       <GraphHeader />
@@ -142,4 +158,4 @@ export const GraphContainer = () => {
 - **Herramientas**: ESLint, Prettier, TypeScript
 - **Automatización**: Scripts de npm para verificación
 - **Documentación**: Este documento actualizado regularmente
-- **Revisión**: Revisión de código siguiendo estas reglas 
+- **Revisión**: Revisión de código siguiendo estas reglas

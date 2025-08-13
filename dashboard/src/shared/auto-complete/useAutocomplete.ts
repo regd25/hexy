@@ -33,12 +33,7 @@ export const useAutocomplete = <T>({
             .filter(item => {
                 return filterKeys.some(key => {
                     const value = item[key]
-                    return (
-                        value &&
-                        String(value)
-                            .toLowerCase()
-                            .includes(query.toLowerCase())
-                    )
+                    return value && String(value).toLowerCase().includes(query.toLowerCase())
                 })
             })
             .slice(0, maxResults)
@@ -47,8 +42,7 @@ export const useAutocomplete = <T>({
     const calculatePosition = useCallback(
         (textarea: HTMLTextAreaElement, beforeCursor: string) => {
             const rect = textarea.getBoundingClientRect()
-            const lineHeight =
-                parseInt(getComputedStyle(textarea).lineHeight) || 20
+            const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
             const lines = beforeCursor.split('\n').length
             const charWidth = 8 // Approximate character width
             const triggerPosition = beforeCursor.lastIndexOf(trigger)
@@ -102,8 +96,7 @@ export const useAutocomplete = <T>({
             const displayValue = getDisplayValue(item)
 
             const newValue = `${beforeTrigger}${trigger}${displayValue} ${afterCursor}`
-            const newCursorPos =
-                triggerIndex + trigger.length + displayValue.length + 1
+            const newCursorPos = triggerIndex + trigger.length + displayValue.length + 1
 
             textarea.value = newValue
             textarea.setSelectionRange(newCursorPos, newCursorPos)
@@ -127,16 +120,12 @@ export const useAutocomplete = <T>({
             switch (e.key) {
                 case 'ArrowDown':
                     e.preventDefault()
-                    setSelectedIndex(prev =>
-                        prev < filteredItems.length - 1 ? prev + 1 : 0
-                    )
+                    setSelectedIndex(prev => (prev < filteredItems.length - 1 ? prev + 1 : 0))
                     break
 
                 case 'ArrowUp':
                     e.preventDefault()
-                    setSelectedIndex(prev =>
-                        prev > 0 ? prev - 1 : filteredItems.length - 1
-                    )
+                    setSelectedIndex(prev => (prev > 0 ? prev - 1 : filteredItems.length - 1))
                     break
 
                 case 'Enter':

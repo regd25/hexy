@@ -13,10 +13,7 @@ export class InMemoryEventBus implements EventBus {
         this.sourceId = sourceId
     }
 
-    subscribe<T = unknown>(
-        event: string,
-        handler: (data: EventData<T>) => void
-    ) {
+    subscribe<T = unknown>(event: string, handler: (data: EventData<T>) => void) {
         if (!this.subscribers.has(event)) {
             this.subscribers.set(event, [])
         }
@@ -26,11 +23,7 @@ export class InMemoryEventBus implements EventBus {
         }
         this.subscribers.get(event)?.push(subscription)
 
-        return () =>
-            this.unsubscribe(
-                event,
-                handler as unknown as (data: EventData) => void
-            )
+        return () => this.unsubscribe(event, handler as unknown as (data: EventData) => void)
     }
 
     publish(event: string, data: unknown) {
@@ -71,10 +64,7 @@ export class InMemoryEventBus implements EventBus {
     }
 
     private applyMiddleware(eventData: EventData): EventData {
-        return this.middleware.reduce(
-            (data, middleware) => middleware(data),
-            eventData
-        )
+        return this.middleware.reduce((data, middleware) => middleware(data), eventData)
     }
 
     clear() {
