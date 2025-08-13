@@ -74,7 +74,6 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 onCanvasClick(e)
             }}
             onMouseMove={e => {
-                if (blockInteractions) return
                 onMouseMove(e)
             }}
             onMouseUp={onMouseUp}
