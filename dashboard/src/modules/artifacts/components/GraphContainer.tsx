@@ -36,6 +36,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
         temporalArtifacts,
         createTemporalArtifact,
         updateTemporalArtifactName,
+        updateTemporalArtifactDescription,
         saveTemporalArtifact,
         cancelTemporalArtifact,
         getTemporalArtifact,
@@ -169,20 +170,18 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             return
         }
         try {
-            const newArtifact = await saveTemporalArtifact(currentTemporalId)
-            if (!newArtifact) return
             setIsNameEditorVisible(false)
-            setCurrentTemporalId(null)
-            setCurrentName('')
+            const temp = getTemporalArtifact(currentTemporalId)
             const rect = canvasRef.current.getBoundingClientRect()
-            const windowX = rect.left + newArtifact.visualProperties.x
-            const windowY = rect.top + newArtifact.visualProperties.y + 80
-            setEditingArtifact(newArtifact)
+            const baseX = temp?.visualProperties.x ?? newArtifactPosition.x
+            const baseY = temp?.visualProperties.y ?? newArtifactPosition.y
+            const windowX = rect.left + baseX
+            const windowY = rect.top + baseY + 80
+            setEditingArtifact(null)
             setEditorPosition({ x: windowX, y: windowY })
             setIsDescriptionEditorVisible(true)
-            showSuccess(`Artefacto "${newArtifact.name}" creado`)
         } catch (error) {
-            showError(`Error al crear artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+            showError(`Error al preparar editor: ${error instanceof Error ? error.message : 'Error desconocido'}`)
         }
     }
 
@@ -216,12 +215,31 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     })
 
     const handleSaveDescription = async (description: string) => {
-        if (editingArtifact) {
-            const descriptionErrors = validateDescription(description)
-            if (descriptionErrors.length > 0) {
-                showError(`Error en la descripción: ${descriptionErrors.join(', ')}`)
+        const descriptionErrors = validateDescription(description)
+        if (descriptionErrors.length > 0) {
+            showError(`Error en la descripción: ${descriptionErrors.join(', ')}`)
+            return
+        }
+
+        if (currentTemporalId) {
+            try {
+                const ok = await updateTemporalArtifactDescription(currentTemporalId, description)
+                if (!ok) return
+                const newArtifact = await saveTemporalArtifact(currentTemporalId)
+                if (!newArtifact) return
+                setIsDescriptionEditorVisible(false)
+                setCurrentTemporalId(null)
+                setCurrentName('')
+                setEditingArtifact(null)
+                showSuccess(`Artefacto "${newArtifact.name}" creado`)
+                return
+            } catch (error) {
+                showError(`Error al crear artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`)
                 return
             }
+        }
+
+        if (editingArtifact) {
             try {
                 await artifactService.updateArtifact(editingArtifact.id, { id: editingArtifact.id, description })
                 showSuccess(`Artefacto "${editingArtifact.name}" actualizado`)
@@ -231,11 +249,17 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 )
             }
         }
+
         setIsDescriptionEditorVisible(false)
         setEditingArtifact(null)
     }
 
     const handleCancelDescription = () => {
+        if (currentTemporalId) {
+            cancelTemporalArtifact(currentTemporalId).catch(() => {})
+            setCurrentTemporalId(null)
+            setCurrentName('')
+        }
         setIsDescriptionEditorVisible(false)
         setEditingArtifact(null)
     }
@@ -290,9 +314,24 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 position={editorPosition}
                 onSave={handleSaveDescription}
                 onCancel={handleCancelDescription}
-                initialText={editingArtifact?.description || ''}
-                title={editingArtifact ? `Editando: ${editingArtifact.name}` : ''}
-                subtitle={editingArtifact ? `Tipo: ${editingArtifact.type}` : ''}
+                initialText={
+                    editingArtifact?.description ||
+                    (currentTemporalId ? getTemporalArtifact(currentTemporalId)?.description || '' : '')
+                }
+                title={
+                    editingArtifact
+                        ? `Editando: ${editingArtifact.name}`
+                        : currentTemporalId
+                          ? `Nuevo artefacto: ${getTemporalArtifact(currentTemporalId)?.name || ''}`
+                          : ''
+                }
+                subtitle={
+                    editingArtifact
+                        ? `Tipo: ${editingArtifact.type}`
+                        : currentTemporalId
+                          ? `Tipo: ${getTemporalArtifact(currentTemporalId)?.type || ''}`
+                          : ''
+                }
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}
                 validateText={validateDescription}
