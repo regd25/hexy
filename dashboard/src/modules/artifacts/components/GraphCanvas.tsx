@@ -1,41 +1,51 @@
 import React from 'react'
-import { Artifact } from '../../../shared/types/Artifact'
-import { ArtifactNode } from './ArtifactNode'
+import type { Artifact, TemporalArtifact } from '../types'
+import { ArtifactNode } from './node/ArtifactNode'
+
+interface RelationLine {
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+}
 
 interface GraphCanvasProps {
+    canvasRef: React.RefObject<HTMLDivElement>
+    className?: string
     artifacts: Artifact[]
-    temporalArtifacts: any[]
-    relationLine: {
-        x1: number
-        y1: number
-        x2: number
-        y2: number
-    } | null
-    onCanvasClick: (event: React.MouseEvent) => void
-    onMouseMove: (event: React.MouseEvent) => void
-    onMouseUp: (event: React.MouseEvent) => void
-    onArtifactClick: (artifact: Artifact, event: React.MouseEvent) => void
-    onTemporalArtifactClick: (artifact: any, event: React.MouseEvent) => void
-    onArtifactDoubleClick: (artifact: Artifact, event: React.MouseEvent) => void
-    canvasRef: React.RefObject<HTMLDivElement | null>
+    temporals: TemporalArtifact[]
+    relationLine: RelationLine | null
+    isDragging: boolean
+    draggingArtifactId?: string
+    currentTemporalId?: string | null
+    onCanvasClick: (e: React.MouseEvent) => void
+    onMouseMove: (e: React.MouseEvent) => void
+    onMouseUp: (e: React.MouseEvent) => void
+    onArtifactClick: (artifact: Artifact, e: React.MouseEvent) => void
+    onArtifactDoubleClick: (artifact: Artifact, e: React.MouseEvent) => void
+    onArtifactMouseDown: (artifact: Artifact, e: React.MouseEvent) => void
 }
 
 export const GraphCanvas: React.FC<GraphCanvasProps> = ({
+    canvasRef,
+    className,
     artifacts,
-    temporalArtifacts,
+    temporals,
     relationLine,
+    isDragging,
+    draggingArtifactId,
+    currentTemporalId,
     onCanvasClick,
     onMouseMove,
     onMouseUp,
     onArtifactClick,
-    onTemporalArtifactClick,
     onArtifactDoubleClick,
-    canvasRef
+    onArtifactMouseDown,
 }) => {
     return (
         <div
             ref={canvasRef}
-            className="flex-1 relative bg-slate-950 cursor-pointer"
+            className={`flex-1 relative bg-slate-950 cursor-pointer ${className || ''}`}
             onClick={onCanvasClick}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
@@ -54,37 +64,30 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 </svg>
             )}
 
-            {artifacts.length === 0 && temporalArtifacts.length === 0 ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-                    <p className="text-lg mb-2">
-                        Haz clic en el canvas para crear un artefacto
-                    </p>
-                    <p className="text-sm">Grafo D3.js - En desarrollo</p>
-                </div>
-            ) : (
-                <div className="relative w-full h-full">
-                    {/* Render temporal artifacts */}
-                    {temporalArtifacts.map(temporalArtifact => (
-                        <ArtifactNode
-                            key={temporalArtifact.id}
-                            artifact={temporalArtifact}
-                            isTemporary={true}
-                            onClick={onTemporalArtifactClick}
-                            onDoubleClick={onArtifactDoubleClick}
-                        />
-                    ))}
+            <div className="relative w-full h-full">
+                {temporals.map(temporal => (
+                    <ArtifactNode
+                        key={temporal.temporaryId}
+                        artifact={temporal}
+                        isTemporary={true}
+                        isActive={currentTemporalId === temporal.temporaryId}
+                        validationErrors={temporal.validationErrors}
+                    />
+                ))}
 
-                    {/* Render existing artifacts */}
-                    {artifacts.map(artifact => (
-                        <ArtifactNode
-                            key={artifact.id}
-                            artifact={artifact}
-                            onClick={onArtifactClick}
-                            onDoubleClick={onArtifactDoubleClick}
-                        />
-                    ))}
-                </div>
-            )}
+                {artifacts.map(artifact => (
+                    <ArtifactNode
+                        key={artifact.id}
+                        artifact={artifact}
+                        onClick={(a, e) => onArtifactClick(a as Artifact, e as React.MouseEvent)}
+                        onDoubleClick={(a, e) => onArtifactDoubleClick(a as Artifact, e as React.MouseEvent)}
+                        onMouseDown={(a, e) => onArtifactMouseDown(a as Artifact, e as React.MouseEvent)}
+                        isDraggingCurrent={isDragging && draggingArtifactId === artifact.id}
+                    />
+                ))}
+            </div>
         </div>
     )
-} 
+}
+
+export default GraphCanvas

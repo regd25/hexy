@@ -18,7 +18,6 @@ import {
 /**
  * Repository interface for artifact persistence
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface IArtifactRepository {
     create(payload: CreateArtifactPayload): Promise<Artifact>
     findById(id: string): Promise<Artifact | null>
@@ -29,9 +28,7 @@ export interface IArtifactRepository {
     filter(criteria: ArtifactFilter): Promise<Artifact[]>
 
     // Relationship management
-    createRelationship(
-        relationship: Omit<Relationship, 'id' | 'createdAt'>
-    ): Promise<Relationship>
+    createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship>
     deleteRelationship(id: string): Promise<boolean>
     findRelationshipsByArtifact(artifactId: string): Promise<Relationship[]>
 
@@ -157,10 +154,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return this.getArtifacts()
     }
 
-    async update(
-        id: string,
-        payload: UpdateArtifactPayload
-    ): Promise<Artifact> {
+    async update(id: string, payload: UpdateArtifactPayload): Promise<Artifact> {
         const artifacts = this.getArtifacts()
         const index = artifacts.findIndex(a => a.id === id)
 
@@ -173,30 +167,13 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
             ...existing,
             name: payload.name !== undefined ? payload.name : existing.name,
             type: payload.type !== undefined ? payload.type : existing.type,
-            description:
-                payload.description !== undefined
-                    ? payload.description
-                    : existing.description,
-            purpose:
-                payload.purpose !== undefined
-                    ? payload.purpose
-                    : existing.purpose,
-            context:
-                payload.context !== undefined
-                    ? payload.context
-                    : existing.context,
-            authority:
-                payload.authority !== undefined
-                    ? payload.authority
-                    : existing.authority,
+            description: payload.description !== undefined ? payload.description : existing.description,
+            purpose: payload.purpose !== undefined ? payload.purpose : existing.purpose,
+            context: payload.context !== undefined ? payload.context : existing.context,
+            authority: payload.authority !== undefined ? payload.authority : existing.authority,
             evaluationCriteria:
-                payload.evaluationCriteria !== undefined
-                    ? payload.evaluationCriteria
-                    : existing.evaluationCriteria,
-            coordinates:
-                payload.coordinates !== undefined
-                    ? payload.coordinates
-                    : existing.coordinates,
+                payload.evaluationCriteria !== undefined ? payload.evaluationCriteria : existing.evaluationCriteria,
+            coordinates: payload.coordinates !== undefined ? payload.coordinates : existing.coordinates,
             semanticMetadata: payload.semanticMetadata
                 ? {
                       ...existing.semanticMetadata,
@@ -261,18 +238,9 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return artifacts.filter(artifact => {
             if (criteria.type && artifact.type !== criteria.type) return false
             if (criteria.validity === 'valid' && !artifact.isValid) return false
-            if (criteria.validity === 'invalid' && artifact.isValid)
-                return false
-            if (
-                criteria.createdAfter &&
-                artifact.createdAt < criteria.createdAfter
-            )
-                return false
-            if (
-                criteria.createdBefore &&
-                artifact.createdAt > criteria.createdBefore
-            )
-                return false
+            if (criteria.validity === 'invalid' && artifact.isValid) return false
+            if (criteria.createdAfter && artifact.createdAt < criteria.createdAfter) return false
+            if (criteria.createdBefore && artifact.createdAt > criteria.createdBefore) return false
 
             return true
         })
@@ -316,10 +284,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
                 throw new Error('Invalid backup format')
             }
 
-            localStorage.setItem(
-                this.ARTIFACTS_KEY,
-                JSON.stringify(backup.artifacts)
-            )
+            localStorage.setItem(this.ARTIFACTS_KEY, JSON.stringify(backup.artifacts))
 
             return true
         } catch {
@@ -328,9 +293,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
     }
 
     // Relationship management methods
-    async createRelationship(
-        relationship: Omit<Relationship, 'id' | 'createdAt'>
-    ): Promise<Relationship> {
+    async createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
         // For simplified implementation, we'll just return a mock relationship
         // In a real implementation, this would store relationships separately
         const newRelationship: Relationship = {
@@ -342,31 +305,20 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
     }
 
     async deleteRelationship(id: string): Promise<boolean> {
-        const relationships: Relationship[] = JSON.parse(
-            localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]'
-        )
+        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         const index = relationships.findIndex(r => r.id === id)
 
         if (index === -1) {
             return false
         }
         relationships.splice(index, 1)
-        localStorage.setItem(
-            this.RELATIONSHIPS_KEY,
-            JSON.stringify(relationships)
-        )
+        localStorage.setItem(this.RELATIONSHIPS_KEY, JSON.stringify(relationships))
         return true
     }
 
-    async findRelationshipsByArtifact(
-        artifactId: string
-    ): Promise<Relationship[]> {
-        const relationships: Relationship[] = JSON.parse(
-            localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]'
-        )
-        return relationships.filter(
-            r => r.sourceId === artifactId || r.targetId === artifactId
-        )
+    async findRelationshipsByArtifact(artifactId: string): Promise<Relationship[]> {
+        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+        return relationships.filter(r => r.sourceId === artifactId || r.targetId === artifactId)
     }
 
     // Bulk operations
@@ -410,16 +362,12 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
     }
 
     // Temporal artifact operations
-    async saveTemporalArtifact(
-        temporal: TemporalArtifact
-    ): Promise<TemporalArtifact> {
+    async saveTemporalArtifact(temporal: TemporalArtifact): Promise<TemporalArtifact> {
         try {
             const data = localStorage.getItem(this.TEMPORAL_KEY)
             const temporalArtifacts = data ? JSON.parse(data) : []
 
-            const index = temporalArtifacts.findIndex(
-                (t: TemporalArtifact) => t.temporaryId === temporal.temporaryId
-            )
+            const index = temporalArtifacts.findIndex((t: TemporalArtifact) => t.temporaryId === temporal.temporaryId)
 
             if (index >= 0) {
                 temporalArtifacts[index] = temporal
@@ -427,29 +375,20 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
                 temporalArtifacts.push(temporal)
             }
 
-            localStorage.setItem(
-                this.TEMPORAL_KEY,
-                JSON.stringify(temporalArtifacts)
-            )
+            localStorage.setItem(this.TEMPORAL_KEY, JSON.stringify(temporalArtifacts))
             return temporal
         } catch {
             throw new Error('Failed to save temporal artifact')
         }
     }
 
-    async getTemporalArtifact(
-        temporaryId: string
-    ): Promise<TemporalArtifact | null> {
+    async getTemporalArtifact(temporaryId: string): Promise<TemporalArtifact | null> {
         try {
             const data = localStorage.getItem(this.TEMPORAL_KEY)
             if (!data) return null
 
             const temporalArtifacts = JSON.parse(data)
-            return (
-                temporalArtifacts.find(
-                    (t: TemporalArtifact) => t.temporaryId === temporaryId
-                ) || null
-            )
+            return temporalArtifacts.find((t: TemporalArtifact) => t.temporaryId === temporaryId) || null
         } catch {
             return null
         }
@@ -461,9 +400,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
             if (!data) return false
 
             const temporalArtifacts = JSON.parse(data)
-            const filtered = temporalArtifacts.filter(
-                (t: TemporalArtifact) => t.temporaryId !== temporaryId
-            )
+            const filtered = temporalArtifacts.filter((t: TemporalArtifact) => t.temporaryId !== temporaryId)
 
             localStorage.setItem(this.TEMPORAL_KEY, JSON.stringify(filtered))
             return true

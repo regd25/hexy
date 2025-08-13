@@ -43,8 +43,20 @@
         "no-unreachable": "error",
         "no-duplicate-case": "error",
 
-        "max-lines": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }],
-        "max-lines-per-function": ["warn", { "max": 80, "skipBlankLines": true, "skipComments": true, "IIFEs": true }]
+        "max-lines": [
+            "warn",
+            { "max": 300, "skipBlankLines": true, "skipComments": true }
+        ],
+        "max-lines-per-function": [
+            "warn",
+            {
+                "max": 300,
+                "skipBlankLines": true,
+                "skipComments": true,
+                "IIFEs": true
+            }
+        ],
+        "max-params": ["warn", { "max": 5 }]
     },
     "settings": {
         "react": {

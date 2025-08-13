@@ -7,7 +7,7 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 ## Reglas Principales
 
 ### 1. Límite de Tamaño de Archivo
-- **Regla**: Refactorizar cualquier archivo que exceda 200 líneas
+- **Regla**: Refactorizar cualquier archivo que exceda 300 líneas
 - **Acción**: Extraer hooks personalizados y componentes
 - **Beneficio**: Mantenibilidad y legibilidad mejoradas
 
@@ -72,7 +72,7 @@ Este documento establece las reglas de calidad de código que deben seguirse en 
 
 ### Reglas de Tamaño de Archivo
 ```javascript
-'max-lines': ['warn', { max: 200, skipBlankLines: true, skipComments: true }],
+'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
 'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
 ```
 

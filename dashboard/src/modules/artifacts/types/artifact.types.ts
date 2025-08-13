@@ -120,8 +120,7 @@ export type ValidationState = 'valid' | 'invalid' | 'pending' | 'warning'
 /**
  * Enhanced temporal artifact with validation progress and visual state
  */
-export interface TemporalArtifact
-    extends Omit<Artifact, 'id' | 'createdAt' | 'updatedAt' | 'version'> {
+export interface TemporalArtifact extends Omit<Artifact, 'id' | 'createdAt' | 'updatedAt' | 'version'> {
     id?: string
     status: 'creating' | 'editing' | 'validating' | 'error'
     temporaryId: string
@@ -211,8 +210,7 @@ export const RELATIONSHIP_TYPES = {
     DERIVES_FROM: 'derives_from',
 } as const
 
-export type RelationshipType =
-    (typeof RELATIONSHIP_TYPES)[keyof typeof RELATIONSHIP_TYPES]
+export type RelationshipType = (typeof RELATIONSHIP_TYPES)[keyof typeof RELATIONSHIP_TYPES]
 
 /**
  * Enhanced artifact validation schema using Zod
@@ -256,12 +254,7 @@ export const relationshipSchema = z.object({
     id: z.string().uuid(),
     sourceId: z.string().uuid(),
     targetId: z.string().uuid(),
-    type: z.enum(
-        Object.values(RELATIONSHIP_TYPES) as [
-            RelationshipType,
-            ...RelationshipType[],
-        ]
-    ),
+    type: z.enum(Object.values(RELATIONSHIP_TYPES) as [RelationshipType, ...RelationshipType[]]),
     weight: z.number().min(0).max(1),
     description: z.string().optional(),
     metadata: z.record(z.string(), z.unknown()),
@@ -278,9 +271,7 @@ export const relationshipSchema = z.object({
 export const artifactSchema = z.object({
     id: z.string().uuid(),
     name: z.string().min(1).max(200),
-    type: z.enum(
-        Object.values(ARTIFACT_TYPES) as [ArtifactType, ...ArtifactType[]]
-    ),
+    type: z.enum(Object.values(ARTIFACT_TYPES) as [ArtifactType, ...ArtifactType[]]),
     description: z.string().min(10).max(2000),
     purpose: z.string().min(10).max(500),
     context: z.record(z.string(), z.unknown()),
@@ -441,9 +432,7 @@ export const isArtifact = (value: unknown): value is Artifact => {
     return artifactSchema.safeParse(value).success
 }
 
-export const isTemporalArtifact = (
-    value: unknown
-): value is TemporalArtifact => {
+export const isTemporalArtifact = (value: unknown): value is TemporalArtifact => {
     return temporalArtifactSchema.safeParse(value).success
 }
 
@@ -455,9 +444,7 @@ export const isValidArtifactType = (type: string): type is ArtifactType => {
     return Object.values(ARTIFACT_TYPES).includes(type as ArtifactType)
 }
 
-export const isValidRelationshipType = (
-    type: string
-): type is RelationshipType => {
+export const isValidRelationshipType = (type: string): type is RelationshipType => {
     return Object.values(RELATIONSHIP_TYPES).includes(type as RelationshipType)
 }
 
@@ -557,9 +544,7 @@ export const createDefaultSemanticMetadata = (): SemanticMetadata => {
     }
 }
 
-export const createDefaultRelationshipVisualProperties = (
-    type: RelationshipType
-): RelationshipVisualProperties => {
+export const createDefaultRelationshipVisualProperties = (type: RelationshipType): RelationshipVisualProperties => {
     return {
         strokeWidth: 2,
         strokeColor: RELATIONSHIP_COLORS[type],
@@ -573,27 +558,27 @@ export const createDefaultRelationshipVisualProperties = (
  * Basic artifact type configurations (simplified for now)
  */
 export const ARTIFACT_TYPE_CONFIGS: Partial<Record<ArtifactType, ArtifactTypeConfig>> = {
-  [ARTIFACT_TYPES.PURPOSE]: {
-    color: ARTIFACT_COLORS[ARTIFACT_TYPES.PURPOSE],
-    icon: 'Target',
-    description: 'Organizational intention and direction',
-    validationRules: z.object({
-      description: z.string().min(50).max(1000),
-      purpose: z.string().min(20).max(500)
-    }),
-    defaultPurpose: 'Define organizational direction and intention',
-    defaultAuthority: 'Executive Leadership',
-    defaultEvaluationCriteria: ['Alignment with mission', 'Measurable impact', 'Stakeholder buy-in'],
-    semanticProperties: {
-      defaultBusinessValue: 8,
-      defaultSemanticWeight: 0.9,
-      suggestedStakeholders: ['Executive Team', 'Board of Directors', 'Strategic Planning'],
-      commonTags: ['strategy', 'direction', 'mission', 'goals']
+    [ARTIFACT_TYPES.PURPOSE]: {
+        color: ARTIFACT_COLORS[ARTIFACT_TYPES.PURPOSE],
+        icon: 'Target',
+        description: 'Organizational intention and direction',
+        validationRules: z.object({
+            description: z.string().min(50).max(1000),
+            purpose: z.string().min(20).max(500),
+        }),
+        defaultPurpose: 'Define organizational direction and intention',
+        defaultAuthority: 'Executive Leadership',
+        defaultEvaluationCriteria: ['Alignment with mission', 'Measurable impact', 'Stakeholder buy-in'],
+        semanticProperties: {
+            defaultBusinessValue: 8,
+            defaultSemanticWeight: 0.9,
+            suggestedStakeholders: ['Executive Team', 'Board of Directors', 'Strategic Planning'],
+            commonTags: ['strategy', 'direction', 'mission', 'goals'],
+        },
+        visualDefaults: {
+            radius: 25,
+            strokeWidth: 3,
+            opacity: 0.9,
+        },
     },
-    visualDefaults: {
-      radius: 25,
-      strokeWidth: 3,
-      opacity: 0.9
-    }
-  }
-};
+}

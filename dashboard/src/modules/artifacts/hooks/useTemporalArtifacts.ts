@@ -2,74 +2,55 @@ import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useEventBus } from '../../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../../shared/notifications/useNotifications'
 import { ArtifactService, ValidationService } from '../services'
-import {
-    TemporalArtifact,
-    Artifact,
-    CreateArtifactPayload,
-    ValidationResult,
-} from '../types'
+import { TemporalArtifact, Artifact, CreateArtifactPayload, ValidationResult } from '../types'
 
 export const useTemporalArtifacts = () => {
     const eventBus = useEventBus()
     const { showSuccess, showError } = useNotifications()
 
-    const artifactService = useMemo(
-        () => new ArtifactService(eventBus),
-        [eventBus]
-    )
+    const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
     const validationService = useMemo(() => new ValidationService(), [])
 
-    const [temporalArtifacts, setTemporalArtifacts] = useState<
-        TemporalArtifact[]
-    >([])
+    const [temporalArtifacts, setTemporalArtifacts] = useState<TemporalArtifact[]>([])
 
     useEffect(() => {
-        const unsubscribeTemporalCreated = eventBus.subscribe(
+        const unsubscribeTemporalCreated = eventBus.subscribe<{ source: string; temporal: TemporalArtifact }>(
             'temporal:created',
-            ({ data }) => {
-                if (data.source === 'artifacts-module') {
-                    setTemporalArtifacts(prev => [...prev, data.temporal])
+            event => {
+                if (event.data.source === 'artifacts-module') {
+                    setTemporalArtifacts(prev => {
+                        const exists = prev.some(t => t.temporaryId === event.data.temporal.temporaryId)
+                        return exists ? prev.map(t => (t.temporaryId === event.data.temporal.temporaryId ? event.data.temporal : t)) : [...prev, event.data.temporal]
+                    })
                 }
             }
         )
 
-        const unsubscribeTemporalUpdated = eventBus.subscribe(
+        const unsubscribeTemporalUpdated = eventBus.subscribe<{ source: string; temporal: TemporalArtifact }>(
             'temporal:updated',
-            ({ data }) => {
-                if (data.source === 'artifacts-module') {
+            event => {
+                if (event.data.source === 'artifacts-module') {
                     setTemporalArtifacts(prev =>
-                        prev.map(temp =>
-                            temp.temporaryId === data.temporal.temporaryId
-                                ? data.temporal
-                                : temp
-                        )
+                        prev.map(temp => (temp.temporaryId === event.data.temporal.temporaryId ? event.data.temporal : temp))
                     )
                 }
             }
         )
 
-        const unsubscribeTemporalPromoted = eventBus.subscribe(
+        const unsubscribeTemporalPromoted = eventBus.subscribe<{ source: string; temporalId: string }>(
             'temporal:promoted',
-            ({ data }) => {
-                if (data.source === 'artifacts-module') {
-                    setTemporalArtifacts(prev =>
-                        prev.filter(
-                            temp => temp.temporaryId !== data.temporalId
-                        )
-                    )
+            event => {
+                if (event.data.source === 'artifacts-module') {
+                    setTemporalArtifacts(prev => prev.filter(temp => temp.temporaryId !== event.data.temporalId))
                 }
             }
         )
 
-        const unsubscribeTemporalDeleted = eventBus.subscribe(
+        const unsubscribeTemporalDeleted = eventBus.subscribe<{ source: string; temporalId: string }>(
             'temporal:deleted',
-            ({ data }) => {
-                if (data.source === 'artifacts-module') {
-                    setTemporalArtifacts(prev =>
-                        prev.filter(
-                            temp => temp.temporaryId !== data.temporalId
-                        )
-                    )
+            event => {
+                if (event.data.source === 'artifacts-module') {
+                    setTemporalArtifacts(prev => prev.filter(temp => temp.temporaryId !== event.data.temporalId))
                 }
             }
         )
@@ -92,8 +73,12 @@ export const useTemporalArtifacts = () => {
                     coordinates: { x, y },
                 }
 
-                const temporalArtifact =
-                    await artifactService.createTemporalArtifact(payload)
+                const temporalArtifact = await artifactService.createTemporalArtifact(payload)
+                // Optimistic insert (guarded). Event will sync it too.
+                setTemporalArtifacts(prev => {
+                    const exists = prev.some(t => t.temporaryId === temporalArtifact.temporaryId)
+                    return exists ? prev : [...prev, temporalArtifact]
+                })
                 return temporalArtifact
             } catch (error) {
                 console.error('Error creating temporal artifact:', error)
@@ -107,11 +92,8 @@ export const useTemporalArtifacts = () => {
     const updateTemporalArtifactName = useCallback(
         async (temporaryId: string, name: string): Promise<boolean> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact({ name })
-                const nameErrors = validation.errors.filter(
-                    err => err.field === 'name'
-                )
+                const validation: ValidationResult = await validationService.validatePartialArtifact({ name })
+                const nameErrors = validation.errors.filter(err => err.field === 'name')
 
                 const updates: Partial<TemporalArtifact> = {
                     name,
@@ -119,10 +101,7 @@ export const useTemporalArtifacts = () => {
                     validationErrors: nameErrors.map(err => err.message),
                 }
 
-                await artifactService.updateTemporalArtifact(
-                    temporaryId,
-                    updates
-                )
+                await artifactService.updateTemporalArtifact(temporaryId, updates)
                 return true
             } catch (error) {
                 console.error('Error updating temporal artifact name:', error)
@@ -136,13 +115,10 @@ export const useTemporalArtifacts = () => {
     const updateTemporalArtifactDescription = useCallback(
         async (temporaryId: string, description: string): Promise<boolean> => {
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact({
-                        description,
-                    })
-                const descriptionErrors = validation.errors.filter(
-                    err => err.field === 'description'
-                )
+                const validation: ValidationResult = await validationService.validatePartialArtifact({
+                    description,
+                })
+                const descriptionErrors = validation.errors.filter(err => err.field === 'description')
 
                 const updates: Partial<TemporalArtifact> = {
                     description,
@@ -150,16 +126,10 @@ export const useTemporalArtifacts = () => {
                     validationErrors: descriptionErrors.map(err => err.message),
                 }
 
-                await artifactService.updateTemporalArtifact(
-                    temporaryId,
-                    updates
-                )
+                await artifactService.updateTemporalArtifact(temporaryId, updates)
                 return descriptionErrors.length === 0
             } catch (error) {
-                console.error(
-                    'Error updating temporal artifact description:',
-                    error
-                )
+                console.error('Error updating temporal artifact description:', error)
                 showError('Error al actualizar descripción del artefacto')
                 return false
             }
@@ -170,42 +140,33 @@ export const useTemporalArtifacts = () => {
     const saveTemporalArtifact = useCallback(
         async (temporaryId: string): Promise<Artifact | null> => {
             try {
-                const temporalArtifact =
-                    await artifactService.getTemporalArtifact(temporaryId)
+                const temporalArtifact = await artifactService.getTemporalArtifact(temporaryId)
 
                 if (!temporalArtifact) {
                     showError('Artefacto temporal no encontrado')
                     return null
                 }
 
-                const validation =
-                    await validationService.validatePartialArtifact({
-                        name: temporalArtifact.name,
-                    })
+                const validation = await validationService.validatePartialArtifact({
+                    name: temporalArtifact.name,
+                })
 
                 if (!validation.isValid) {
                     const updates: Partial<TemporalArtifact> = {
                         status: 'error',
-                        validationErrors: validation.errors.map(
-                            err => err.message
-                        ),
+                        validationErrors: validation.errors.map(err => err.message),
                     }
-                    await artifactService.updateTemporalArtifact(
-                        temporaryId,
-                        updates
-                    )
-                    showError(
-                        `Errores de validación: ${validation.errors.map(e => e.message).join(', ')}`
-                    )
+                    await artifactService.updateTemporalArtifact(temporaryId, updates)
+                    showError(`Errores de validación: ${validation.errors.map(e => e.message).join(', ')}`)
                     return null
                 }
 
-                const permanentArtifact =
-                    await artifactService.promoteTemporalArtifact(temporaryId)
+                const permanentArtifact = await artifactService.promoteTemporalArtifact(temporaryId)
 
-                showSuccess(
-                    `Artefacto "${permanentArtifact.name}" creado exitosamente`
-                )
+                // Ensure local removal even if event is missed
+                setTemporalArtifacts(prev => prev.filter(t => t.temporaryId !== temporaryId))
+
+                showSuccess(`Artefacto "${permanentArtifact.name}" creado exitosamente`)
                 return permanentArtifact
             } catch (error) {
                 console.error('Error saving temporal artifact:', error)
@@ -220,6 +181,7 @@ export const useTemporalArtifacts = () => {
         async (temporaryId: string): Promise<void> => {
             try {
                 await artifactService.deleteTemporalArtifact(temporaryId)
+                setTemporalArtifacts(prev => prev.filter(t => t.temporaryId !== temporaryId))
             } catch (error) {
                 console.error('Error canceling temporal artifact:', error)
                 showError('Error al cancelar artefacto temporal')
@@ -230,18 +192,14 @@ export const useTemporalArtifacts = () => {
 
     const getTemporalArtifact = useCallback(
         (temporaryId: string): TemporalArtifact | undefined => {
-            return temporalArtifacts.find(
-                temp => temp.temporaryId === temporaryId
-            )
+            return temporalArtifacts.find(temp => temp.temporaryId === temporaryId)
         },
         [temporalArtifacts]
     )
 
     const getTemporalArtifactsByStatus = useCallback(
         (status: TemporalArtifact['status']): TemporalArtifact[] => {
-            return temporalArtifacts.filter(
-                artifact => artifact.status === status
-            )
+            return temporalArtifacts.filter(artifact => artifact.status === status)
         },
         [temporalArtifacts]
     )
@@ -249,10 +207,7 @@ export const useTemporalArtifacts = () => {
     const hasValidationErrors = useCallback(
         (temporaryId: string): boolean => {
             const artifact = getTemporalArtifact(temporaryId)
-            return (
-                artifact?.validationErrors &&
-                artifact.validationErrors.length > 0
-            )
+            return Boolean(artifact?.validationErrors && artifact.validationErrors.length > 0)
         },
         [getTemporalArtifact]
     )
@@ -271,13 +226,10 @@ export const useTemporalArtifacts = () => {
             if (!artifact) return false
 
             try {
-                const validation =
-                    await validationService.validatePartialArtifact(artifact)
+                const validation = await validationService.validatePartialArtifact(artifact)
 
                 if (!validation.isValid) {
-                    showError(
-                        `Errores de validación: ${validation.errors.map(e => e.message).join(', ')}`
-                    )
+                    showError(`Errores de validación: ${validation.errors.map(e => e.message).join(', ')}`)
                 }
 
                 return validation.isValid

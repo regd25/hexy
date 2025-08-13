@@ -14,6 +14,7 @@ interface InlineEditorProps {
     maxWidth?: string
     autoSave?: boolean
     allowEmpty?: boolean
+    validationErrors?: string[]
 }
 
 export const InlineEditor: React.FC<InlineEditorProps> = ({
@@ -23,13 +24,14 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
     onSave,
     onCancel,
     position,
-    placeholder = "Enter text...",
-    className = "fixed z-50 bg-slate-800/90 backdrop-blur-sm rounded-md px-3 py-2 shadow-lg border border-slate-600",
-    inputClassName = "bg-transparent text-white text-sm font-medium outline-none w-full px-1 placeholder-slate-400",
-    minWidth = "120px",
-    maxWidth = "200px",
+    placeholder = 'Enter text...',
+    className = 'fixed z-50 bg-slate-800/90 backdrop-blur-sm rounded-md px-3 py-2 shadow-lg border border-slate-600',
+    inputClassName = 'bg-transparent text-white text-sm font-medium outline-none w-full px-1 placeholder-slate-400',
+    minWidth = '120px',
+    maxWidth = '200px',
     autoSave = true,
     allowEmpty = false,
+    validationErrors = [],
 }) => {
     const [value, setValue] = useState(initialValue)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -66,12 +68,12 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
         if (autoSave) {
             const trimmed = value.trim()
             if (trimmed || allowEmpty) {
-            onChange(trimmed)
-            onSave()
-        } else {
-            onCancel()
+                onChange(trimmed)
+                onSave()
+            } else {
+                onCancel()
+            }
         }
-    }
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,14 +88,8 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
         <div
             className={className}
             style={{
-                left: Math.max(
-                    10,
-                    Math.min(position.x - 60, window.innerWidth - 140)
-                ),
-                top: Math.max(
-                    10,
-                    Math.min(position.y, window.innerHeight - 40)
-                ),
+                left: Math.max(10, Math.min(position.x - 60, window.innerWidth - 140)),
+                top: Math.max(10, Math.min(position.y, window.innerHeight - 40)),
                 minWidth,
                 maxWidth,
             }}
@@ -108,6 +104,7 @@ export const InlineEditor: React.FC<InlineEditorProps> = ({
                 placeholder={placeholder}
                 className={inputClassName}
             />
+            {validationErrors.length > 0 && <div className="mt-1 text-[10px] text-red-400">{validationErrors[0]}</div>}
         </div>
     )
 }

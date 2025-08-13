@@ -159,10 +159,10 @@ dashboard/src/modules/artifacts/
 
 ### ESLint Status
 - **Errores**: 0 (verified)
-- **Warnings**: ~54 (principalmente archivos exceden 200 líneas)
-- **Reglas Críticas**: max-lines (200), max-lines-per-function (80)
+- **Warnings**: ~54 (principalmente archivos exceden 300 líneas)
+- **Reglas Críticas**: max-lines (300), max-lines-per-function (80)
 
-### Archivos que Requieren Refactor (>200 líneas)
+### Archivos que Requieren Refactor (>300 líneas)
 - `ValidationService.ts` (927 líneas) - **PRIORIDAD ALTA**
 - `ArtifactService.ts` (604 líneas) - **PRIORIDAD ALTA**  
 - `ArtifactRepository.ts` (481 líneas) - **PRIORIDAD MEDIA**

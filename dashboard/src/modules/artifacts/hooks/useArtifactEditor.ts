@@ -2,12 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useEventBus } from '../../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../../shared/notifications/useNotifications'
 import { ArtifactService, ValidationService } from '../services'
-import {
-    Artifact,
-    ArtifactType,
-    CreateArtifactPayload,
-    ValidationResult,
-} from '../types'
+import { Artifact, ArtifactType, CreateArtifactPayload, ValidationResult } from '../types'
 
 interface ArtifactFormData {
     name: string
@@ -24,18 +19,11 @@ interface UseArtifactEditorProps {
     onCancel: () => void
 }
 
-export const useArtifactEditor = ({
-    artifact,
-    onSave,
-    onCancel,
-}: UseArtifactEditorProps) => {
+export const useArtifactEditor = ({ artifact, onSave, onCancel }: UseArtifactEditorProps) => {
     const eventBus = useEventBus()
     const { showSuccess, showError } = useNotifications()
 
-    const artifactService = useMemo(
-        () => new ArtifactService(eventBus),
-        [eventBus]
-    )
+    const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
     const validationService = useMemo(() => new ValidationService(), [])
 
     const [formData, setFormData] = useState<ArtifactFormData>({
@@ -54,8 +42,7 @@ export const useArtifactEditor = ({
         const validateForm = async () => {
             setIsValidating(true)
             try {
-                const validation: ValidationResult =
-                    await validationService.validatePartialArtifact(formData)
+                const validation: ValidationResult = await validationService.validatePartialArtifact(formData)
                 setValidationErrors(validation.errors.map(err => err.message))
             } catch (error) {
                 console.error('Error validating form:', error)
@@ -68,44 +55,30 @@ export const useArtifactEditor = ({
         validateForm()
     }, [formData, validationService])
 
-    const handleInputChange = useCallback(
-        (
-            field: keyof ArtifactFormData,
-            value: string | ArtifactType | string[]
-        ) => {
-            setFormData(prev => ({
-                ...prev,
-                [field]: value,
-            }))
-        },
-        []
-    )
+    const handleInputChange = useCallback((field: keyof ArtifactFormData, value: string | ArtifactType | string[]) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value,
+        }))
+    }, [])
 
     const handleSave = useCallback(async () => {
         setIsValidating(true)
         try {
-            const validation: ValidationResult =
-                await validationService.validateTemporalArtifact(formData)
+            const validation: ValidationResult = await validationService.validatePartialArtifact(formData)
 
             if (!validation.isValid) {
-                showError(
-                    'Por favor corrige los errores de validación antes de guardar'
-                )
+                showError('Por favor corrige los errores de validación antes de guardar')
                 return
             }
 
             if (artifact) {
-                const updatedArtifact = await artifactService.updateArtifact(
-                    artifact.id,
-                    {
-                        id: artifact.id,
-                        ...formData,
-                    }
-                )
+                const updatedArtifact = await artifactService.updateArtifact(artifact.id, {
+                    id: artifact.id,
+                    ...formData,
+                })
                 onSave(updatedArtifact)
-                showSuccess(
-                    `Artefacto "${updatedArtifact.name}" actualizado correctamente`
-                )
+                showSuccess(`Artefacto "${updatedArtifact.name}" actualizado correctamente`)
             } else {
                 const payload: CreateArtifactPayload = {
                     name: formData.name,
@@ -116,12 +89,9 @@ export const useArtifactEditor = ({
                     evaluationCriteria: formData.evaluationCriteria || [],
                 }
 
-                const newArtifact =
-                    await artifactService.createArtifact(payload)
+                const newArtifact = await artifactService.createArtifact(payload)
                 onSave(newArtifact)
-                showSuccess(
-                    `Artefacto "${newArtifact.name}" creado correctamente`
-                )
+                showSuccess(`Artefacto "${newArtifact.name}" creado correctamente`)
             }
         } catch (error) {
             console.error('Error saving artifact:', error)
@@ -129,15 +99,7 @@ export const useArtifactEditor = ({
         } finally {
             setIsValidating(false)
         }
-    }, [
-        formData,
-        artifact,
-        artifactService,
-        validationService,
-        onSave,
-        showSuccess,
-        showError,
-    ])
+    }, [formData, artifact, artifactService, validationService, onSave, showSuccess, showError])
 
     const handleCancel = useCallback(() => {
         const hasChanges =
@@ -148,9 +110,7 @@ export const useArtifactEditor = ({
             formData.authority !== (artifact?.authority || '')
 
         if (hasChanges) {
-            const shouldCancel = window.confirm(
-                '¿Estás seguro de que quieres cancelar? Se perderán los cambios.'
-            )
+            const shouldCancel = window.confirm('¿Estás seguro de que quieres cancelar? Se perderán los cambios.')
             if (shouldCancel) {
                 onCancel()
             }
@@ -161,34 +121,24 @@ export const useArtifactEditor = ({
 
     const hasFieldError = useCallback(
         (fieldName: string): boolean => {
-            return validationErrors.some(error =>
-                error.toLowerCase().includes(fieldName.toLowerCase())
-            )
+            return validationErrors.some(error => error.toLowerCase().includes(fieldName.toLowerCase()))
         },
         [validationErrors]
     )
 
     const getFieldError = useCallback(
         (fieldName: string): string | undefined => {
-            return validationErrors.find(error =>
-                error.toLowerCase().includes(fieldName.toLowerCase())
-            )
+            return validationErrors.find(error => error.toLowerCase().includes(fieldName.toLowerCase()))
         },
         [validationErrors]
     )
 
-    const isFormValid =
-        !isValidating &&
-        validationErrors.length === 0 &&
-        formData.name.trim().length > 0
+    const isFormValid = !isValidating && validationErrors.length === 0 && formData.name.trim().length > 0
 
     const addEvaluationCriterion = useCallback(
         (criterion: string) => {
             if (criterion.trim().length > 0) {
-                const newCriteria = [
-                    ...(formData.evaluationCriteria || []),
-                    criterion.trim(),
-                ]
+                const newCriteria = [...(formData.evaluationCriteria || []), criterion.trim()]
                 handleInputChange('evaluationCriteria', newCriteria)
             }
         },

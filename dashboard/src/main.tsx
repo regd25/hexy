@@ -1,12 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
+import { ArtifactsApp } from './apps/ArtifactsApp'
+import './main.css'
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+const rootElement = document.getElementById('root')
+
+if (!rootElement) {
+    throw new Error('No root element found')
+}
+
+const root = ReactDOM.createRoot(rootElement)
 
 root.render(
     <React.StrictMode>
-        <App />
+        <div className="flex flex-col h-screen app bg-background-primary">
+            <ArtifactsApp />
+        </div>
     </React.StrictMode>
 )

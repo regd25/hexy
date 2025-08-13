@@ -82,9 +82,7 @@ export class ValidationService {
     /**
      * Validate temporal artifact during creation/editing
      */
-    async validateTemporalArtifact(
-        temporal: TemporalArtifact
-    ): Promise<ValidationResult> {
+    async validateTemporalArtifact(temporal: TemporalArtifact): Promise<ValidationResult> {
         // Convert temporal to artifact for validation
         const artifact: Partial<Artifact> = {
             ...temporal,
@@ -134,9 +132,7 @@ export class ValidationService {
         }
 
         // Calculate semantic score
-        const semanticScore = this.calculateRelationshipSemanticScore(
-            relationship
-        )
+        const semanticScore = this.calculateRelationshipSemanticScore(relationship)
 
         return {
             isValid: errors.length === 0,
@@ -150,10 +146,7 @@ export class ValidationService {
     /**
      * Validate purpose-context alignment (Hexy foundational principle)
      */
-    validatePurposeContextAlignment(
-        purpose: string,
-        context: Record<string, unknown>
-    ): ValidationResult {
+    validatePurposeContextAlignment(purpose: string, context: Record<string, unknown>): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
@@ -162,8 +155,7 @@ export class ValidationService {
         if (purpose.length < 10) {
             errors.push({
                 field: 'purpose',
-                message:
-                    'Purpose must be clearly articulated with at least 10 characters',
+                message: 'Purpose must be clearly articulated with at least 10 characters',
                 code: 'PURPOSE_TOO_SHORT',
                 severity: 'error',
             })
@@ -172,8 +164,7 @@ export class ValidationService {
         if (purpose.length > 500) {
             warnings.push({
                 field: 'purpose',
-                message:
-                    'Purpose should be concise. Consider breaking into multiple artifacts.',
+                message: 'Purpose should be concise. Consider breaking into multiple artifacts.',
                 suggestion: 'Refactor into smaller, focused purposes',
             })
         }
@@ -186,32 +177,25 @@ export class ValidationService {
             warnings.push({
                 field: 'context',
                 message: `Missing recommended context: ${missingKeys.join(', ')}`,
-                suggestion:
-                    'Add domain, timeframe, and stakeholders for better context',
+                suggestion: 'Add domain, timeframe, and stakeholders for better context',
             })
         }
 
         // Purpose-context semantic alignment
-        const alignmentScore = this.calculatePurposeContextAlignment(
-            purpose,
-            context
-        )
+        const alignmentScore = this.calculatePurposeContextAlignment(purpose, context)
         if (alignmentScore < 0.6) {
             warnings.push({
                 field: 'alignment',
                 message: 'Purpose and context may not be well aligned',
-                suggestion:
-                    'Review context to ensure it supports the stated purpose',
+                suggestion: 'Review context to ensure it supports the stated purpose',
             })
         }
 
         // Provide alignment suggestions
         suggestions.push({
             field: 'purpose',
-            suggestion:
-                'Consider using action-oriented language that clearly states the intended outcome',
-            reasoning:
-                'Clear, actionable purposes improve organizational understanding',
+            suggestion: 'Consider using action-oriented language that clearly states the intended outcome',
+            reasoning: 'Clear, actionable purposes improve organizational understanding',
             confidence: 0.8,
         })
 
@@ -227,10 +211,7 @@ export class ValidationService {
     /**
      * Validate authority legitimacy (Hexy foundational principle)
      */
-    validateAuthorityLegitimacy(
-        authority: string,
-        artifactType: ArtifactType
-    ): ValidationResult {
+    validateAuthorityLegitimacy(authority: string, artifactType: ArtifactType): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
@@ -239,19 +220,15 @@ export class ValidationService {
         if (!authority || authority.trim().length === 0) {
             errors.push({
                 field: 'authority',
-                message:
-                    'Authority must be specified for organizational legitimacy',
+                message: 'Authority must be specified for organizational legitimacy',
                 code: 'AUTHORITY_MISSING',
                 severity: 'error',
             })
         }
 
         // Authority appropriateness for artifact type
-        const appropriateAuthorities =
-            this.getAppropriateAuthorities(artifactType)
-        const isAppropriate = appropriateAuthorities.some(auth =>
-            authority.toLowerCase().includes(auth.toLowerCase())
-        )
+        const appropriateAuthorities = this.getAppropriateAuthorities(artifactType)
+        const isAppropriate = appropriateAuthorities.some(auth => authority.toLowerCase().includes(auth.toLowerCase()))
 
         if (!isAppropriate && appropriateAuthorities.length > 0) {
             warnings.push({
@@ -262,31 +239,19 @@ export class ValidationService {
         }
 
         // Authority specificity
-        const genericAuthorities = [
-            'management',
-            'team',
-            'organization',
-            'company',
-        ]
-        const isGeneric = genericAuthorities.some(generic =>
-            authority.toLowerCase().includes(generic)
-        )
+        const genericAuthorities = ['management', 'team', 'organization', 'company']
+        const isGeneric = genericAuthorities.some(generic => authority.toLowerCase().includes(generic))
 
         if (isGeneric) {
             suggestions.push({
                 field: 'authority',
-                suggestion:
-                    'Consider specifying a more specific authority role or position',
-                reasoning:
-                    'Specific authority improves accountability and legitimacy',
+                suggestion: 'Consider specifying a more specific authority role or position',
+                reasoning: 'Specific authority improves accountability and legitimacy',
                 confidence: 0.7,
             })
         }
 
-        const legitimacyScore = this.calculateAuthorityLegitimacy(
-            authority,
-            artifactType
-        )
+        const legitimacyScore = this.calculateAuthorityLegitimacy(authority, artifactType)
 
         return {
             isValid: errors.length === 0,
@@ -300,10 +265,7 @@ export class ValidationService {
     /**
      * Validate evaluation criteria coherence (Hexy foundational principle)
      */
-    validateEvaluationCoherence(
-        criteria: string[],
-        purpose: string
-    ): ValidationResult {
+    validateEvaluationCoherence(criteria: string[], purpose: string): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
@@ -312,8 +274,7 @@ export class ValidationService {
         if (!criteria || criteria.length === 0) {
             errors.push({
                 field: 'evaluationCriteria',
-                message:
-                    'Evaluation criteria must be defined to assess purpose fulfillment',
+                message: 'Evaluation criteria must be defined to assess purpose fulfillment',
                 code: 'CRITERIA_MISSING',
                 severity: 'error',
             })
@@ -325,39 +286,28 @@ export class ValidationService {
             if (shortCriteria.length > 0) {
                 warnings.push({
                     field: 'evaluationCriteria',
-                    message:
-                        'Some evaluation criteria are too brief to be meaningful',
-                    suggestion:
-                        'Expand criteria to clearly describe what success looks like',
+                    message: 'Some evaluation criteria are too brief to be meaningful',
+                    suggestion: 'Expand criteria to clearly describe what success looks like',
                 })
             }
 
             // Criteria-purpose alignment
-            const alignmentScore = this.calculateCriteriaPurposeAlignment(
-                criteria,
-                purpose
-            )
+            const alignmentScore = this.calculateCriteriaPurposeAlignment(criteria, purpose)
             if (alignmentScore < 0.6) {
                 warnings.push({
                     field: 'evaluationCriteria',
-                    message:
-                        'Evaluation criteria may not align well with the stated purpose',
-                    suggestion:
-                        'Review criteria to ensure they measure purpose achievement',
+                    message: 'Evaluation criteria may not align well with the stated purpose',
+                    suggestion: 'Review criteria to ensure they measure purpose achievement',
                 })
             }
 
             // Measurability assessment
-            const measurableCriteria = criteria.filter(c =>
-                this.isMeasurable(c)
-            )
+            const measurableCriteria = criteria.filter(c => this.isMeasurable(c))
             if (measurableCriteria.length < criteria.length * 0.5) {
                 suggestions.push({
                     field: 'evaluationCriteria',
-                    suggestion:
-                        'Consider making more criteria measurable with specific metrics',
-                    reasoning:
-                        'Measurable criteria enable objective evaluation',
+                    suggestion: 'Consider making more criteria measurable with specific metrics',
+                    reasoning: 'Measurable criteria enable objective evaluation',
                     confidence: 0.8,
                 })
             }
@@ -381,44 +331,31 @@ export class ValidationService {
         this.semanticRules = [
             {
                 name: 'Purpose Clarity',
-                description:
-                    'Validates that the artifact purpose is clear and actionable',
+                description: 'Validates that the artifact purpose is clear and actionable',
                 weight: 0.9,
                 validate: (artifact: Artifact) => {
-                    return this.validatePurposeContextAlignment(
-                        artifact.purpose,
-                        artifact.context
-                    )
+                    return this.validatePurposeContextAlignment(artifact.purpose, artifact.context)
                 },
             },
             {
                 name: 'Authority Legitimacy',
-                description:
-                    'Validates that the authority is appropriate and legitimate',
+                description: 'Validates that the authority is appropriate and legitimate',
                 weight: 0.8,
                 validate: (artifact: Artifact) => {
-                    return this.validateAuthorityLegitimacy(
-                        artifact.authority,
-                        artifact.type
-                    )
+                    return this.validateAuthorityLegitimacy(artifact.authority, artifact.type)
                 },
             },
             {
                 name: 'Evaluation Coherence',
-                description:
-                    'Validates that evaluation criteria align with purpose',
+                description: 'Validates that evaluation criteria align with purpose',
                 weight: 0.85,
                 validate: (artifact: Artifact) => {
-                    return this.validateEvaluationCoherence(
-                        artifact.evaluationCriteria,
-                        artifact.purpose
-                    )
+                    return this.validateEvaluationCoherence(artifact.evaluationCriteria, artifact.purpose)
                 },
             },
             {
                 name: 'Semantic Metadata Quality',
-                description:
-                    'Validates semantic metadata completeness and quality',
+                description: 'Validates semantic metadata completeness and quality',
                 weight: 0.7,
                 validate: (artifact: Artifact) => {
                     return this.validateSemanticMetadata(artifact)
@@ -435,8 +372,7 @@ export class ValidationService {
             {
                 id: 'strategic_authority',
                 name: 'Strategic Artifact Authority',
-                description:
-                    'Strategic artifacts must have executive-level authority',
+                description: 'Strategic artifacts must have executive-level authority',
                 severity: 'warning',
                 applies: (artifact: Artifact) => {
                     const strategicTypes: ArtifactType[] = [
@@ -447,13 +383,7 @@ export class ValidationService {
                     return strategicTypes.includes(artifact.type)
                 },
                 validate: (artifact: Artifact) => {
-                    const executiveTerms = [
-                        'executive',
-                        'ceo',
-                        'board',
-                        'leadership',
-                        'strategic',
-                    ]
+                    const executiveTerms = ['executive', 'ceo', 'board', 'leadership', 'strategic']
                     const hasExecutiveAuthority = executiveTerms.some(term =>
                         artifact.authority.toLowerCase().includes(term)
                     )
@@ -465,10 +395,8 @@ export class ValidationService {
                             warnings: [
                                 {
                                     field: 'authority',
-                                    message:
-                                        'Strategic artifacts typically require executive-level authority',
-                                    suggestion:
-                                        'Consider executive leadership or board-level authority',
+                                    message: 'Strategic artifacts typically require executive-level authority',
+                                    suggestion: 'Consider executive leadership or board-level authority',
                                 },
                             ],
                             suggestions: [],
@@ -488,8 +416,7 @@ export class ValidationService {
             {
                 id: 'operational_specificity',
                 name: 'Operational Artifact Specificity',
-                description:
-                    'Operational artifacts must have specific, actionable descriptions',
+                description: 'Operational artifacts must have specific, actionable descriptions',
                 severity: 'error',
                 applies: (artifact: Artifact) => {
                     const operationalTypes: ArtifactType[] = [
@@ -500,10 +427,9 @@ export class ValidationService {
                     return operationalTypes.includes(artifact.type)
                 },
                 validate: (artifact: Artifact) => {
-                    const hasActionWords =
-                        /\b(create|update|delete|process|execute|perform|implement)\b/i.test(
-                            artifact.description
-                        )
+                    const hasActionWords = /\b(create|update|delete|process|execute|perform|implement)\b/i.test(
+                        artifact.description
+                    )
 
                     if (!hasActionWords) {
                         return {
@@ -511,8 +437,7 @@ export class ValidationService {
                             errors: [
                                 {
                                     field: 'description',
-                                    message:
-                                        'Operational artifacts must include specific action words',
+                                    message: 'Operational artifacts must include specific action words',
                                     code: 'OPERATIONAL_NOT_ACTIONABLE',
                                     severity: 'error',
                                 },
@@ -521,10 +446,8 @@ export class ValidationService {
                             suggestions: [
                                 {
                                     field: 'description',
-                                    suggestion:
-                                        'Include action verbs like create, update, process, execute',
-                                    reasoning:
-                                        'Operational artifacts should clearly describe what actions are taken',
+                                    suggestion: 'Include action verbs like create, update, process, execute',
+                                    reasoning: 'Operational artifacts should clearly describe what actions are taken',
                                     confidence: 0.9,
                                 },
                             ],
@@ -579,14 +502,11 @@ export class ValidationService {
     /**
      * Validate partial artifact (for temporal artifacts)
      */
-    validatePartialArtifact(
-        artifact: Partial<Artifact>
-    ): ValidationResult {
+    validatePartialArtifact(artifact: Partial<Artifact>): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
 
-        // Required field validation
         if (!artifact.name || artifact.name.trim().length === 0) {
             errors.push({
                 field: 'name',
@@ -596,23 +516,24 @@ export class ValidationService {
             })
         }
 
-        if (!artifact.type) {
-            errors.push({
-                field: 'type',
-                message: 'Artifact type is required',
-                code: 'TYPE_REQUIRED',
-                severity: 'error',
-            })
+        if (typeof artifact.type !== 'undefined') {
+            const allTypes = Object.values(ARTIFACT_TYPES) as ArtifactType[]
+            const isValidType = allTypes.includes(artifact.type as ArtifactType)
+            if (!isValidType) {
+                errors.push({
+                    field: 'type',
+                    message: 'Artifact type is invalid',
+                    code: 'TYPE_INVALID',
+                    severity: 'error',
+                })
+            }
         }
 
-        // Optional field suggestions
         if (!artifact.purpose || artifact.purpose.length < 10) {
             suggestions.push({
                 field: 'purpose',
-                suggestion:
-                    'Add a clear purpose statement to improve semantic clarity',
-                reasoning:
-                    'Purpose is fundamental to Hexy semantic architecture',
+                suggestion: 'Add a clear purpose statement to improve semantic clarity',
+                reasoning: 'Purpose is fundamental to Hexy semantic architecture',
                 confidence: 0.9,
             })
         }
@@ -649,8 +570,7 @@ export class ValidationService {
             suggestions.push({
                 field: 'semanticMetadata.stakeholders',
                 suggestion: 'Identify key stakeholders for this artifact',
-                reasoning:
-                    'Stakeholder identification improves organizational alignment',
+                reasoning: 'Stakeholder identification improves organizational alignment',
                 confidence: 0.8,
             })
         }
@@ -677,48 +597,32 @@ export class ValidationService {
     /**
      * Helper methods for semantic calculations
      */
-    private calculatePurposeContextAlignment(
-        purpose: string,
-        context: Record<string, unknown>
-    ): number {
+    private calculatePurposeContextAlignment(purpose: string, context: Record<string, unknown>): number {
         // Simple heuristic: more context keys and longer purpose = better alignment
         const contextScore = Math.min(Object.keys(context).length / 5, 1)
         const purposeScore = Math.min(purpose.length / 100, 1)
         return (contextScore + purposeScore) / 2
     }
 
-    private calculateAuthorityLegitimacy(
-        authority: string,
-        artifactType: ArtifactType
-    ): number {
-        const appropriateAuthorities =
-            this.getAppropriateAuthorities(artifactType)
-        const isAppropriate = appropriateAuthorities.some(auth =>
-            authority.toLowerCase().includes(auth.toLowerCase())
-        )
+    private calculateAuthorityLegitimacy(authority: string, artifactType: ArtifactType): number {
+        const appropriateAuthorities = this.getAppropriateAuthorities(artifactType)
+        const isAppropriate = appropriateAuthorities.some(auth => authority.toLowerCase().includes(auth.toLowerCase()))
         return isAppropriate ? 0.9 : 0.6
     }
 
-    private calculateEvaluationCoherence(
-        criteria: string[]
-    ): number {
+    private calculateEvaluationCoherence(criteria: string[]): number {
         if (criteria.length === 0) return 0.0
 
-        const avgCriteriaLength =
-            criteria.reduce((sum, c) => sum + c.length, 0) / criteria.length
+        const avgCriteriaLength = criteria.reduce((sum, c) => sum + c.length, 0) / criteria.length
         const lengthScore = Math.min(avgCriteriaLength / 20, 1)
 
-        const measurableCount = criteria.filter(c =>
-            this.isMeasurable(c)
-        ).length
+        const measurableCount = criteria.filter(c => this.isMeasurable(c)).length
         const measurabilityScore = measurableCount / criteria.length
 
         return (lengthScore + measurabilityScore) / 2
     }
 
-    private calculateRelationshipSemanticScore(
-        relationship: Relationship
-    ): number {
+    private calculateRelationshipSemanticScore(relationship: Relationship): number {
         let score = 0.5 // Base score
 
         if (relationship.semanticStrength > 0.7) score += 0.2
@@ -735,11 +639,7 @@ export class ValidationService {
         }
 
         // Default authorities by type category
-        const strategicTypes: ArtifactType[] = [
-            ARTIFACT_TYPES.VISION,
-            ARTIFACT_TYPES.POLICY,
-            ARTIFACT_TYPES.PRINCIPLE,
-        ]
+        const strategicTypes: ArtifactType[] = [ARTIFACT_TYPES.VISION, ARTIFACT_TYPES.POLICY, ARTIFACT_TYPES.PRINCIPLE]
         const operationalTypes: ArtifactType[] = [
             ARTIFACT_TYPES.PROCESS,
             ARTIFACT_TYPES.PROCEDURE,
@@ -747,11 +647,7 @@ export class ValidationService {
         ]
 
         if (strategicTypes.includes(artifactType)) {
-            return [
-                'Executive Leadership',
-                'Board of Directors',
-                'Strategic Planning',
-            ]
+            return ['Executive Leadership', 'Board of Directors', 'Strategic Planning']
         }
 
         if (operationalTypes.includes(artifactType)) {
@@ -762,19 +658,8 @@ export class ValidationService {
     }
 
     private isMeasurable(criteria: string): boolean {
-        const measurableWords = [
-            'measure',
-            'metric',
-            'count',
-            'percentage',
-            'time',
-            'cost',
-            'quality',
-            'quantity',
-        ]
-        return measurableWords.some(word =>
-            criteria.toLowerCase().includes(word)
-        )
+        const measurableWords = ['measure', 'metric', 'count', 'percentage', 'time', 'cost', 'quality', 'quantity']
+        return measurableWords.some(word => criteria.toLowerCase().includes(word))
     }
 
     private validateRelationshipSemanticCoherence(
@@ -786,17 +671,12 @@ export class ValidationService {
         const suggestions: ValidationSuggestion[] = []
 
         // Type compatibility validation
-        const isCompatible = this.areTypesCompatible(
-            source.type,
-            target.type,
-            relationship.type
-        )
+        const isCompatible = this.areTypesCompatible(source.type, target.type, relationship.type)
         if (!isCompatible) {
             warnings.push({
                 field: 'relationship.type',
                 message: `${relationship.type} relationship may not be semantically appropriate between ${source.type} and ${target.type}`,
-                suggestion:
-                    'Consider a different relationship type or review artifact types',
+                suggestion: 'Consider a different relationship type or review artifact types',
             })
         }
 
@@ -809,10 +689,7 @@ export class ValidationService {
         }
     }
 
-    private calculateCriteriaPurposeAlignment(
-        criteria: string[],
-        purpose: string
-    ): number {
+    private calculateCriteriaPurposeAlignment(criteria: string[], purpose: string): number {
         if (criteria.length === 0) return 0.0
 
         // Simple heuristic: check if criteria contain words from purpose
@@ -820,20 +697,12 @@ export class ValidationService {
         const alignmentScores = criteria.map(criterion => {
             const criterionWords = criterion.toLowerCase().split(/\s+/)
             const commonWords = purposeWords.filter(word =>
-                criterionWords.some(
-                    cWord => cWord.includes(word) || word.includes(cWord)
-                )
+                criterionWords.some(cWord => cWord.includes(word) || word.includes(cWord))
             )
-            return (
-                commonWords.length /
-                Math.max(purposeWords.length, criterionWords.length)
-            )
+            return commonWords.length / Math.max(purposeWords.length, criterionWords.length)
         })
 
-        return (
-            alignmentScores.reduce((sum, score) => sum + score, 0) /
-            alignmentScores.length
-        )
+        return alignmentScores.reduce((sum, score) => sum + score, 0) / alignmentScores.length
     }
 
     private areTypesCompatible(
@@ -843,77 +712,39 @@ export class ValidationService {
     ): boolean {
         // Define semantic compatibility rules
         const compatibilityRules: Partial<
-            Record<
-                RelationshipType,
-                { source: ArtifactType[]; target: ArtifactType[] }
-            >
+            Record<RelationshipType, { source: ArtifactType[]; target: ArtifactType[] }>
         > = {
             [RELATIONSHIP_TYPES.IMPLEMENTS]: {
                 source: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.PROCEDURE],
-                target: [
-                    ARTIFACT_TYPES.POLICY,
-                    ARTIFACT_TYPES.PRINCIPLE,
-                    ARTIFACT_TYPES.GUIDELINE,
-                ],
+                target: [ARTIFACT_TYPES.POLICY, ARTIFACT_TYPES.PRINCIPLE, ARTIFACT_TYPES.GUIDELINE],
             },
             [RELATIONSHIP_TYPES.SUPPORTS]: {
-                source: [
-                    ARTIFACT_TYPES.PROCESS,
-                    ARTIFACT_TYPES.ACTOR,
-                    ARTIFACT_TYPES.AREA,
-                ],
-                target: [
-                    ARTIFACT_TYPES.PURPOSE,
-                    ARTIFACT_TYPES.VISION,
-                    ARTIFACT_TYPES.POLICY,
-                ],
+                source: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.ACTOR, ARTIFACT_TYPES.AREA],
+                target: [ARTIFACT_TYPES.PURPOSE, ARTIFACT_TYPES.VISION, ARTIFACT_TYPES.POLICY],
             },
             [RELATIONSHIP_TYPES.DEPENDS_ON]: {
-                source: [
-                    ARTIFACT_TYPES.PROCESS,
-                    ARTIFACT_TYPES.PROCEDURE,
-                    ARTIFACT_TYPES.RESULT,
-                ],
-                target: [
-                    ARTIFACT_TYPES.PROCESS,
-                    ARTIFACT_TYPES.ACTOR,
-                    ARTIFACT_TYPES.AREA,
-                ],
+                source: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.PROCEDURE, ARTIFACT_TYPES.RESULT],
+                target: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.ACTOR, ARTIFACT_TYPES.AREA],
             },
             [RELATIONSHIP_TYPES.INFLUENCES]: {
-                source: [
-                    ARTIFACT_TYPES.POLICY,
-                    ARTIFACT_TYPES.PRINCIPLE,
-                    ARTIFACT_TYPES.GUIDELINE,
-                ],
-                target: [
-                    ARTIFACT_TYPES.PROCESS,
-                    ARTIFACT_TYPES.PROCEDURE,
-                    ARTIFACT_TYPES.RESULT,
-                ],
+                source: [ARTIFACT_TYPES.POLICY, ARTIFACT_TYPES.PRINCIPLE, ARTIFACT_TYPES.GUIDELINE],
+                target: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.PROCEDURE, ARTIFACT_TYPES.RESULT],
             },
         }
 
         const rule = compatibilityRules[relationshipType]
         if (!rule) return true // Allow if no specific rule
 
-        return (
-            rule.source.includes(sourceType) && rule.target.includes(targetType)
-        )
+        return rule.source.includes(sourceType) && rule.target.includes(targetType)
     }
 
-    private combineValidationResults(
-        results: ValidationResult[]
-    ): ValidationResult {
+    private combineValidationResults(results: ValidationResult[]): ValidationResult {
         const allErrors = results.flatMap(r => r.errors)
         const allWarnings = results.flatMap(r => r.warnings)
         const allSuggestions = results.flatMap(r => r.suggestions)
 
         const avgSemanticScore =
-            results.length > 0
-                ? results.reduce((sum, r) => sum + r.semanticScore, 0) /
-                  results.length
-                : 0
+            results.length > 0 ? results.reduce((sum, r) => sum + r.semanticScore, 0) / results.length : 0
 
         return {
             isValid: allErrors.length === 0,
