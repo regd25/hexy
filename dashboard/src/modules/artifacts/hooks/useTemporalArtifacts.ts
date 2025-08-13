@@ -22,10 +22,7 @@ export const useTemporalArtifacts = () => {
             'temporal:created',
             event => {
                 if (event.data.source === 'artifacts-module') {
-                    setTemporalArtifacts(prev => {
-                        const exists = prev.some(t => t.temporaryId === event.data.temporal.temporaryId)
-                        return exists ? prev.map(t => (t.temporaryId === event.data.temporal.temporaryId ? event.data.temporal : t)) : [...prev, event.data.temporal]
-                    })
+                    setTemporalArtifacts([event.data.temporal])
                 }
             }
         )
@@ -35,7 +32,11 @@ export const useTemporalArtifacts = () => {
             event => {
                 if (event.data.source === 'artifacts-module') {
                     setTemporalArtifacts(prev =>
-                        prev.map(temp => (temp.temporaryId === event.data.temporal.temporaryId ? event.data.temporal : temp))
+                        prev.length === 0
+                            ? [event.data.temporal]
+                            : prev.map(temp =>
+                                  temp.temporaryId === event.data.temporal.temporaryId ? event.data.temporal : temp
+                              )
                     )
                 }
             }
@@ -45,7 +46,7 @@ export const useTemporalArtifacts = () => {
             'temporal:promoted',
             event => {
                 if (event.data.source === 'artifacts-module') {
-                    setTemporalArtifacts(prev => prev.filter(temp => temp.temporaryId !== event.data.temporalId))
+                    setTemporalArtifacts([])
                 }
             }
         )
@@ -88,6 +89,23 @@ export const useTemporalArtifacts = () => {
     const createTemporalArtifact = useCallback(
         async (x: number, y: number): Promise<TemporalArtifact | null> => {
             try {
+                if (temporalArtifacts.length > 0) {
+                    const existing = temporalArtifacts[0]
+                    const updates: Partial<TemporalArtifact> = {
+                        coordinates: { x, y },
+                        visualProperties: {
+                            ...existing.visualProperties,
+                            x,
+                            y,
+                        },
+                        status: 'creating',
+                        validationErrors: [],
+                    }
+                    const updated = await artifactService.updateTemporalArtifact(existing.temporaryId, updates)
+                    setTemporalArtifacts([updated])
+                    return updated
+                }
+
                 const payload: Partial<CreateArtifactPayload> = {
                     name: '',
                     type: 'concept',
@@ -96,11 +114,7 @@ export const useTemporalArtifacts = () => {
                 }
 
                 const temporalArtifact = await artifactService.createTemporalArtifact(payload)
-                // Optimistic insert (guarded). Event will sync it too.
-                setTemporalArtifacts(prev => {
-                    const exists = prev.some(t => t.temporaryId === temporalArtifact.temporaryId)
-                    return exists ? prev : [...prev, temporalArtifact]
-                })
+                setTemporalArtifacts([temporalArtifact])
                 return temporalArtifact
             } catch (error) {
                 console.error('Error creating temporal artifact:', error)
@@ -108,7 +122,7 @@ export const useTemporalArtifacts = () => {
                 return null
             }
         },
-        [artifactService, showError]
+        [artifactService, showError, temporalArtifacts]
     )
 
     const updateTemporalArtifactName = useCallback(
@@ -185,8 +199,7 @@ export const useTemporalArtifacts = () => {
 
                 const permanentArtifact = await artifactService.promoteTemporalArtifact(temporaryId)
 
-                // Ensure local removal even if event is missed
-                setTemporalArtifacts(prev => prev.filter(t => t.temporaryId !== temporaryId))
+                setTemporalArtifacts([])
 
                 showSuccess(`Artefacto "${permanentArtifact.name}" creado exitosamente`)
                 return permanentArtifact
@@ -203,7 +216,7 @@ export const useTemporalArtifacts = () => {
         async (temporaryId: string): Promise<void> => {
             try {
                 await artifactService.deleteTemporalArtifact(temporaryId)
-                setTemporalArtifacts(prev => prev.filter(t => t.temporaryId !== temporaryId))
+                setTemporalArtifacts([])
             } catch (error) {
                 console.error('Error canceling temporal artifact:', error)
                 showError('Error al cancelar artefacto temporal')
