@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback, RefObject } f
 import { useEventBus } from '../../../shared/event-bus'
 import { useNotifications } from '../../../shared/notifications/useNotifications'
 import { InlineEditor } from '../../../shared/editors/InlineEditor'
-import { FloatingEditor as FloatingTextArea } from '../../../shared/editors/FloatingEditor'
+import { FloatingEditor as FloatingTextArea, FloatingEditorHandle } from '../../../shared/editors/FloatingEditor'
 import { ArtifactService } from '../services'
 import { Artifact } from '../types'
 import { useTemporalArtifacts } from '../hooks/useTemporalArtifacts'
@@ -26,6 +26,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(null)
 
     const canvasRef = useRef<HTMLDivElement>(null) as unknown as RefObject<HTMLDivElement>
+    const editorRef = useRef<FloatingEditorHandle>(null)
     const eventBus = useEventBus()
     const { showSuccess, showError } = useNotifications()
 
@@ -132,6 +133,10 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
 
     const handleCanvasClick = async (event: React.MouseEvent) => {
         if (!canvasRef.current) return
+        if (isDescriptionEditorVisible) {
+            editorRef.current?.focus()
+            return
+        }
         if (interactions.shouldBlockCanvasClick()) return
         const rect = canvasRef.current.getBoundingClientRect()
         const x = event.clientX - rect.left
@@ -280,6 +285,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             />
 
             <FloatingTextArea
+                ref={editorRef}
                 isVisible={isDescriptionEditorVisible}
                 position={editorPosition}
                 onSave={handleSaveDescription}
@@ -290,6 +296,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}
                 validateText={validateDescription}
+                onOutsideClick={() => editorRef.current?.focus()}
             />
         </div>
     )
