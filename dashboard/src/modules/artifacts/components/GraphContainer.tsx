@@ -132,6 +132,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
 
     const handleCanvasClick = async (event: React.MouseEvent) => {
         if (!canvasRef.current) return
+        if (interactions.shouldBlockCanvasClick()) return
         const rect = canvasRef.current.getBoundingClientRect()
         const x = event.clientX - rect.left
         const y = event.clientY - rect.top

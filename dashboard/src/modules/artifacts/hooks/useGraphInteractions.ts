@@ -45,6 +45,7 @@ export const useGraphInteractions = ({
 
     const justDraggedRef = useRef<boolean>(false)
     const rafIdRef = useRef<number | null>(null)
+    const dragClickSuppressUntilRef = useRef<number>(0)
 
     const isRelationActive = useMemo(() => Boolean(relationLine && relationSource), [relationLine, relationSource])
 
@@ -126,6 +127,7 @@ export const useGraphInteractions = ({
                 setDraggingArtifact(null)
                 pendingDrag.current = null
                 justDraggedRef.current = true
+                dragClickSuppressUntilRef.current = Date.now() + 250
                 return
             }
 
@@ -138,9 +140,7 @@ export const useGraphInteractions = ({
             const targetArtifact = artifacts.find(
                 artifact =>
                     artifact.id !== relationSource.id &&
-                    Math.sqrt(
-                        Math.pow(x - artifact.visualProperties.x, 2) + Math.pow(y - artifact.visualProperties.y, 2)
-                    ) < 28
+                    Math.sqrt(Math.pow(x - artifact.visualProperties.x, 2) + Math.pow(y - artifact.visualProperties.y, 2)) < 28
             )
 
             if (targetArtifact) {
@@ -171,17 +171,7 @@ export const useGraphInteractions = ({
             setRelationSource(null)
             pendingDrag.current = null
         },
-        [
-            canvasRef,
-            isDragging,
-            draggingArtifact,
-            artifacts,
-            artifactService,
-            isRelationActive,
-            relationSource,
-            showSuccess,
-            showError,
-        ]
+        [canvasRef, isDragging, draggingArtifact, artifacts, artifactService, isRelationActive, relationSource, showSuccess, showError]
     )
 
     const handleArtifactDoubleClick = useCallback((artifact: Artifact, event: React.MouseEvent) => {
@@ -209,6 +199,10 @@ export const useGraphInteractions = ({
         [canvasRef, onOpenEditor]
     )
 
+    const shouldBlockCanvasClick = useCallback((): boolean => {
+        return Date.now() < dragClickSuppressUntilRef.current
+    }, [])
+
     return {
         isDragging,
         draggingArtifact,
@@ -218,5 +212,6 @@ export const useGraphInteractions = ({
         handleMouseUp,
         handleArtifactDoubleClick,
         handleArtifactClick,
+        shouldBlockCanvasClick,
     }
 }
