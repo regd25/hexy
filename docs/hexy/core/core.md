@@ -145,7 +145,3 @@ export async function inferLinkType(a: Artefact, b: Artefact): Promise<{type: Li
 | **S-2** | Embeddings + prototipos                                | 🟡 medio      |
 | **S-3** | LLM fallback + active-learning log                     | 🟠 medio-alto |
 | **S-4** | Consensus tuning, dashboard de precisión, auto-retrain | 🔴 alto       |
-
----
-
-### ¿Te gustaría arrancar con el **patrón léxico (S-1)** o montamos directo el embedding prototype (S-2)?

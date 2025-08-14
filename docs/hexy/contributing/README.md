@@ -16,8 +16,8 @@ Esta sección contiene información sobre cómo contribuir al desarrollo de Hexy
 
 ### Requisitos
 
-- Node.js >= 18.x o Python >= 3.10
-- Conocimiento de TypeScript/JavaScript o Python
+- Node.js >= 20.x
+- Conocimiento de TypeScript/JavaScript
 - Entendimiento de principios SOLID
 - Familiaridad con DDD y arquitectura hexagonal
 
