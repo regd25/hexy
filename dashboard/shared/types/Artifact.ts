@@ -1,5 +1,6 @@
+export type ArtifactId = string
 export interface Artifact {
-    id: string
+    id: ArtifactId
     name: string
     type: ArtifactType
     info: string
@@ -13,7 +14,7 @@ export interface Artifact {
 }
 
 export interface TemporalArtifact extends Omit<Artifact, 'id'> {
-    id: string
+    id: ArtifactId
     isTemporary: true
     createdAt: number
     status: 'creating' | 'editing' | 'saving' | 'error'

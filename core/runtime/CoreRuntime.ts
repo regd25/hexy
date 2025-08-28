@@ -1,9 +1,8 @@
 import { PluginManager } from '../plugins/PluginManager'
 import { ArtifactRepositoryProviderCapability, EventBusProviderCapability, Plugin } from '../plugins/Plugin'
-import { EventBus } from '../events/EventBus'
-import { ArtifactRepository } from '../repository/ArtifactRepository'
-import { InMemoryEventBus } from '../events/InMemoryEventBus'
-import { InMemoryArtifactRepository } from '../repository/InMemoryArtifactRepository'
+import { EventBus, InMemoryEventBus } from '@/shared'
+import { ArtifactRepository } from '../../shared/repository/ArtifactRepository'
+import { InMemoryArtifactRepository } from '../../shared/repository/InMemoryArtifactRepository'
 
 export interface CoreRuntimeConfig {
     eventBusProviderId?: string

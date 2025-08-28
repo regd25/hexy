@@ -1,20 +1,6 @@
+import { Actor, Event, Purpose } from './Artifact'
+
 export type Severity = 'info' | 'warning' | 'error'
-
-export interface Actor {
-    id: string
-    role: string
-}
-
-export interface Purpose {
-    id: string
-    description: string
-}
-
-export interface ExecutionEvent<TPayload = unknown> {
-    name: string
-    payload: TPayload
-    timestamp: number
-}
 
 export interface Observation {
     name: string
@@ -35,7 +21,7 @@ export interface ExecutionContext {
     purpose: Purpose
     inputs: Readonly<Record<string, unknown>>
     createdAt: string
-    events: ReadonlyArray<ExecutionEvent>
+    events: ReadonlyArray<Event>
     observations: ReadonlyArray<Observation>
     violations: ReadonlyArray<Violation>
 }
@@ -58,7 +44,7 @@ export function createExecutionContext(
     }
 }
 
-export function withEvent(context: ExecutionContext, event: ExecutionEvent): ExecutionContext {
+export function withEvent(context: ExecutionContext, event: Event): ExecutionContext {
     const events = Object.freeze([...context.events, event])
     return { ...context, events }
 }

@@ -1,8 +1,6 @@
-import { EventBus } from '../events/EventBus'
-import { Artifact } from '../artifacts/Artifact'
 import { ExecutionContext } from '../execution/ExecutionContext'
-import { Result } from '../utils/Result'
-import { ArtifactRepository } from '../repository/ArtifactRepository'
+import { ArtifactRepository } from '../../shared/repository/ArtifactRepository'
+import { Artifact, EventBus, Result } from '@/shared'
 
 export type Capabilitytype =
     | 'executor'

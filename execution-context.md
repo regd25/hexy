@@ -19,7 +19,17 @@ Hexy es un framework de contexto organizacional diseñado para alinear propósit
 
 ### ✅ **Componentes Base Completados (Fase 1)**
 
-#### 1. Sistema de Tipos Comprensivo
+****#### 1. Single Source of Truth - Sistema Unificado
+- **Status**: ✅ **COMPLETADO** *(Enero 2025)*
+- **Archivos**: `/shared` - arquitectura unificada
+- **Features**:
+  - Artifact único sin duplicación (eliminado SemanticArtifact)
+  - EventBus simplificado con DomainEvent base
+  - InMemoryEventBus con implementación limpia
+  - ArtifactAdapter con utilidades básicas
+  - Convenciones semánticas: EventBus + InMemoryEventBus
+
+#### 2. Sistema de Tipos Comprensivo  
 - **Status**: ✅ **COMPLETADO**
 - **Archivo**: `artifact.types.ts` con tipos semánticos completos
 - **Features**:
@@ -28,7 +38,7 @@ Hexy es un framework de contexto organizacional diseñado para alinear propósit
   - Artefactos temporales con validación
   - Propiedades de visualización D3.js integradas
 
-#### 2. Capa de Servicios (ArtifactService)
+#### 3. Capa de Servicios (ArtifactService)
 - **Status**: ✅ **COMPLETADO**
 - **Archivo**: `ArtifactService.ts` (604 líneas)
 - **Features**:
@@ -37,7 +47,7 @@ Hexy es un framework de contexto organizacional diseñado para alinear propósit
   - Integración con EventBus
   - Validación semántica integrada
 
-#### 3. Servicio de Validación Semántica
+#### 4. Servicio de Validación Semántica
 - **Status**: ✅ **COMPLETADO** 
 - **Archivo**: `ValidationService.ts` (927 líneas)
 - **Features**:
@@ -46,7 +56,7 @@ Hexy es un framework de contexto organizacional diseñado para alinear propósit
   - Validación authority legitimacy
   - Validación evaluation criteria coherence
 
-#### 4. Integración EventBus
+#### 5. Integración EventBus
 - **Status**: ✅ **COMPLETADO**
 - **Archivos**: `EventBus.ts`, `InMemoryEventBus.tsx`
 - **Features**:
@@ -76,9 +86,37 @@ Hexy es un framework de contexto organizacional diseñado para alinear propósit
   - Validación en tiempo real
   - Sistema de guidance semántico
 
+### 🎯 **OBSERVACIÓN: Single Source of Truth Implementado**
+
+**Funcionalidad Completada**: Unificación de tipos y EventBus entre core y dashboard
+
+**Problema Resuelto**: 
+- Duplicación de tipos: `CoreArtifact` vs `SemanticArtifact` vs `DashboardArtifact`
+- EventBus duplicado: `core/events/EventBus.ts` vs `dashboard/shared/event-bus/EventBus.ts`
+- Adaptadores complejos innecesarios
+
+**Solución Implementada**:
+```
+/shared/ (Single Source of Truth)
+├── types/Artifact.ts          # UN solo tipo Artifact con campos semánticos
+├── events/EventBus.ts         # DomainEvent + EventBus interface
+├── events/InMemoryEventBus.ts # Implementación simple y limpia
+├── adapters/ArtifactAdapter.ts # Utilidades básicas (no conversiones complejas)
+└── index.ts                   # Exports organizados
+```
+
+**Principios Aplicados**:
+- **KISS**: Eliminada complejidad (no más UnifiedEventBus, CoreEventBus, adapters complejos)
+- **DRY**: Un solo tipo Artifact para todo el sistema
+- **SRP**: Cada archivo una responsabilidad
+- **Extensibilidad**: Cada sistema extiende según necesite sin duplicar base
+
+**Arquitectura Final**: Cada sistema (core/dashboard) usa tipos base compartidos y hace sus propias transformaciones simples.
+
 ### 📋 **Tareas Pendientes Críticas**
 
 #### **Fase 2: Componentes Core (Semanas 2-3)**
+- [x] ~~1. Unificar tipos y buses Core/Dashboard~~ ✅ **COMPLETADO**
 - [ ] 2.1 Implement graph interaction system
 - [ ] 2.2 Create semantic artifact editor  
 - [ ] 2.3 Implement temporal artifact management
@@ -202,10 +240,10 @@ dashboard/src/modules/artifacts/
 - **Fase 5 (Testing & QA)**: 📋 5% completada
 
 ### **Cobertura de Requerimientos**
-- **Req 1 (Architecture)**: ✅ 80% (foundation completa)
+- **Req 1 (Architecture)**: ✅ 100% (Single Source of Truth completado)
 - **Req 2 (Service Layer)**: ✅ 90% (servicios completos)
 - **Req 3 (Component Integration)**: ❌ 0%
-- **Req 4 (Type System)**: ✅ 100%  
+- **Req 4 (Type System)**: ✅ 100% (Artifact unificado)  
 - **Req 5 (Semantic Validation)**: ❌ 20% (servicio creado)
 - **Req 6 (Graph Visualization)**: ❌ 20% (básico implementado)
 - **Req 7 (Testing)**: ❌ 5% (framework básico)

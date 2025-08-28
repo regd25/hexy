@@ -1,5 +1,4 @@
-import { Artifact, ArtifactId, Link } from '../artifacts/Artifact'
-import { Result } from '../utils/Result'
+import { Artifact, ArtifactId, Link, Result } from '@/shared'
 
 export interface ArtifactRepository {
     getById(id: ArtifactId): Promise<Result<Artifact | null>>

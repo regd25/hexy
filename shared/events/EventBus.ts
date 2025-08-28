@@ -1,3 +1,8 @@
+/**
+ * EventBus - Single Source of Truth for events
+ * Base types and interface, each system makes its transformation
+ */
+
 export type DomainEvent<TName extends string = string, TPayload = unknown> = {
     name: TName
     payload: TPayload
@@ -12,6 +17,8 @@ export interface Subscription {
 }
 
 export interface EventBus {
-    publish<TEvent extends DomainEvent>(event: TEvent): Promise<void>
-    subscribe<TEvent extends DomainEvent>(eventName: TEvent['name'], handler: EventHandler<TEvent>): Subscription
+    publish<T extends DomainEvent>(event: T): void
+    subscribe<T extends DomainEvent>(eventName: T['name'], handler: EventHandler<T>): Subscription
+    addMiddleware(middleware: (event: DomainEvent) => DomainEvent): void
+    clear(): void
 }

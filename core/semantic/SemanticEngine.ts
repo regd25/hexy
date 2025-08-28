@@ -1,7 +1,5 @@
-import { Artifact, Link, LinkType } from '../artifacts/Artifact'
+import { Artifact, EventBus, Link, LinkType, Result, err, ok } from '@/shared'
 import { PluginManager } from '../plugins/PluginManager'
-import { Result, err, ok } from '../utils/Result'
-import { EventBus } from '../events/EventBus'
 
 export class SemanticEngine {
     private readonly plugins: PluginManager

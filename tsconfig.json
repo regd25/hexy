@@ -19,10 +19,10 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "paths": {
-            "@/*": ["./dashboard/*"]
+            "@/*": ["./*"]
         }
     },
-    "include": ["./dashboard", "**/*.ts", "**/*.tsx"],
+    "include": ["./dashboard", "./core", "./shared", "**/*.ts", "**/*.tsx"],
     "exclude": ["node_modules", "dist"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

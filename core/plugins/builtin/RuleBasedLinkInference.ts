@@ -1,6 +1,5 @@
-import { Artifact } from '../../artifacts/Artifact'
-import { LinkTypeInferenceCapability, Plugin, PluginInitDeps } from '../Plugin'
-import { Result, ok } from '../../utils/Result'
+import { LinkTypeInferenceCapability, Plugin } from '../Plugin'
+import { Artifact, Result, ok } from '@/shared'
 
 function score(text: string, pattern: RegExp): number {
     const matches = text.match(pattern)
@@ -41,7 +40,7 @@ export class RuleBasedLinkInferencePlugin implements Plugin {
 
     capabilities = [this.capability]
 
-    async init(_deps: PluginInitDeps): Promise<void> {
+    async init(): Promise<void> {
         // noop
     }
 
