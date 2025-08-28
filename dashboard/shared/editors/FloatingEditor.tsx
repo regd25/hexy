@@ -17,6 +17,10 @@ interface FloatingEditorProps {
     width?: string
     height?: string
     className?: string
+    textareaRefExternal?: React.RefObject<HTMLTextAreaElement>
+    onTextareaInput?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
+    onTextareaKeyDownExtra?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+    ignoreOutsideClickSelectors?: string[]
 }
 
 export interface FloatingEditorHandle {
@@ -42,6 +46,10 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
             width = 'min(400px, 90vw)',
             height = 'h-24',
             className = '',
+            textareaRefExternal,
+            onTextareaInput,
+            onTextareaKeyDownExtra,
+            ignoreOutsideClickSelectors = [],
         },
         ref
     ) => {
@@ -90,14 +98,22 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
             const handler = (e: MouseEvent) => {
                 const target = e.target as Node | null
                 if (containerRef.current && target && !containerRef.current.contains(target)) {
+                    if (
+                        ignoreOutsideClickSelectors.length > 0 &&
+                        target instanceof Element &&
+                        ignoreOutsideClickSelectors.some(sel => (target as Element).closest(sel))
+                    ) {
+                        return
+                    }
                     onCancel()
                 }
             }
             document.addEventListener('mousedown', handler, { capture: true })
             return () => document.removeEventListener('mousedown', handler, { capture: true })
-        }, [isVisible, onCancel])
+        }, [isVisible, onCancel, ignoreOutsideClickSelectors])
 
-        const handleKeyDown = (e: React.KeyboardEvent) => {
+        const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+            if (onTextareaKeyDownExtra) onTextareaKeyDownExtra(e)
             if (e.key === 'Escape') {
                 onCancel()
             } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
@@ -141,9 +157,17 @@ export const FloatingEditor = forwardRef<FloatingEditorHandle, FloatingEditorPro
                     )}
 
                     <textarea
-                        ref={textareaRef}
+                        ref={el => {
+                            textareaRef.current = el
+                            if (textareaRefExternal && 'current' in textareaRefExternal) {
+                                ;(textareaRefExternal as React.RefObject<HTMLTextAreaElement>).current = el
+                            }
+                        }}
                         value={text}
-                        onChange={e => setText(e.target.value)}
+                        onChange={e => {
+                            setText(e.target.value)
+                            onTextareaInput?.(e)
+                        }}
                         onKeyDown={handleKeyDown}
                         placeholder={placeholder}
                         className={`w-full ${height} px-3 py-2 bg-slate-700/50 text-white rounded-md border focus:outline-none resize-none text-sm transform transition-transform duration-100 ${

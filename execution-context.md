@@ -230,8 +230,24 @@ Infrastructure Layer (Repository + EventBus)
 - **Evaluation Coherence**: Criterios de evaluación validados
 - **Relationship Semantics**: Validación de relaciones entre artefactos
 
+### **Backend Core (Arquitectura Hexagonal basada en Plugins)**
+- **Estado**: Iniciado
+- **Módulos creados**:
+  - `core/utils/Result.ts`
+  - `core/events/EventBus.ts`, `core/events/InMemoryEventBus.ts`
+  - `core/artifacts/Artifact.ts`
+  - `core/repository/ArtifactRepository.ts`, `core/repository/InMemoryArtifactRepository.ts`
+  - `core/execution/ExecutionContext.ts`
+  - `core/plugins/Plugin.ts`, `core/plugins/PluginManager.ts`
+  - `core/plugins/builtin/RuleBasedLinkInference.ts`
+  - `core/semantic/SemanticEngine.ts`
+  - `core/index.ts`
+- **APIs públicas**: `ExecutionContext`, `SemanticEngine`, `PluginManager`, `ArtifactRepository`, `InMemoryEventBus`.
+- **Eventos**: `link.inferred` (emitido por `SemanticEngine`).
+- **Próximos pasos**: pruebas unitarias de `core`, añadir plugin de embeddings/LLM, soporte de configuración externa de reglas.
+
 ---
 
-**Last Updated**: 12 August 2025  
-**Version**: 2.0.0-artifacts-module  
-**Context**: Implementación activa del módulo artifacts siguiendo especificaciones
+**Last Updated**: 14 August 2025  
+**Version**: 2.1.0-core-bootstrap  
+**Context**: Implementación activa del módulo artifacts y arranque del backend core (plugins)

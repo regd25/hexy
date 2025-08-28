@@ -25,4 +25,3 @@ Esta sección cubre los agentes reflexivos de Hexy Framework, que detectan incoh
 - **Validation Agents**: Validan la coherencia de artefactos
 - **Improvement Agents**: Sugieren mejoras y optimizaciones
 - **Monitoring Agents**: Monitorean el estado del sistema
-- **Learning Agents**: Aprenden de patrones de uso y ejecución 

@@ -10,6 +10,15 @@ import { GraphHeader } from './GraphHeader'
 import { GraphCanvas } from './GraphCanvas'
 import { useGraphInteractions } from '../hooks/useGraphInteractions'
 import ContextMenu from './ContextMenu'
+import { AutocompleteDropdown } from '../../shared/auto-complete/AutocompleteDropdown'
+import { useAutocomplete } from '../../shared/auto-complete/useAutocomplete'
+import {
+    RELATIONSHIP_TYPES,
+    createDefaultRelationshipVisualProperties,
+    type RelationshipType,
+    type Relationship,
+} from '../types/artifact.types'
+import { ValidationService } from '../services/ValidationService'
 
 interface GraphContainerProps {
     className?: string
@@ -25,6 +34,8 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const [nameValidationErrors, setNameValidationErrors] = useState<string[]>([])
     const [artifacts, setArtifacts] = useState<Artifact[]>([])
     const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(null)
+    const [pendingRelationFromId, setPendingRelationFromId] = useState<string | null>(null)
+    const [pendingMentionName, setPendingMentionName] = useState<string | null>(null)
 
     const canvasRef = useRef<HTMLDivElement>(null) as unknown as RefObject<HTMLDivElement>
     const editorRef = useRef<FloatingEditorHandle>(null)
@@ -32,6 +43,15 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const { showSuccess, showError } = useNotifications()
 
     const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
+    const validationService = useMemo(() => new ValidationService(), [])
+
+    const autocomplete = useAutocomplete<Artifact>({
+        items: artifacts,
+        filterKeys: ['name', 'id', 'type'],
+        trigger: '@',
+        maxResults: 8,
+        getDisplayValue: (item: Artifact) => item.name.replace(/\s+/g, ''),
+    })
 
     const {
         temporalArtifacts,
@@ -222,6 +242,14 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             return
         }
 
+        const parseMentions = (text: string): string[] => {
+            const matches = text.match(/@([A-Za-zÁÉÍÓÚÑáéíóú0-9-]+)/g) || []
+            return matches.map(m => m.slice(1))
+        }
+
+        const sanitize = (s: string) => s.replace(/\s+/g, '').toLowerCase()
+        const mentions = parseMentions(description)
+
         if (currentTemporalId) {
             try {
                 const ok = await updateTemporalArtifactDescription(currentTemporalId, description)
@@ -233,6 +261,94 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 setCurrentName('')
                 setEditingArtifact(null)
                 showSuccess(`Artefacto "${newArtifact.name}" creado`)
+
+                if (pendingRelationFromId) {
+                    const source = artifacts.find(a => a.id === pendingRelationFromId)
+                    if (source) {
+                        const proposedType: RelationshipType = RELATIONSHIP_TYPES.DEPENDS_ON
+                        const relationshipCandidate: Relationship = {
+                            id: crypto.randomUUID(),
+                            sourceId: source.id,
+                            targetId: newArtifact.id,
+                            type: proposedType,
+                            weight: 0.5,
+                            description: '',
+                            metadata: {},
+                            createdAt: new Date(),
+                            visualProperties: createDefaultRelationshipVisualProperties(proposedType),
+                            semanticStrength: 0.5,
+                            businessImpact: 'low',
+                            validationStatus: 'valid',
+                            contextualRelevance: 0.5,
+                            temporalRelevance: 0.5,
+                            stakeholderImpact: [],
+                        }
+                        try {
+                            const validation = await validationService.validateRelationship(
+                                relationshipCandidate,
+                                source,
+                                newArtifact
+                            )
+                            const finalType: RelationshipType = validation.isValid
+                                ? proposedType
+                                : RELATIONSHIP_TYPES.REFERENCES
+                            const { id: _id, createdAt: _createdAt, ...payload } = relationshipCandidate
+                            await artifactService.createRelationship({
+                                ...payload,
+                                type: finalType,
+                                visualProperties: createDefaultRelationshipVisualProperties(finalType),
+                            })
+                        } catch {}
+                    }
+                    setPendingRelationFromId(null)
+                    setPendingMentionName(null)
+                }
+
+                if (mentions.length > 0) {
+                    for (const m of mentions) {
+                        const target = artifacts.find(a => sanitize(a.name) === sanitize(m))
+                        if (!target) continue
+
+                        const proposedType: RelationshipType = RELATIONSHIP_TYPES.DEPENDS_ON
+                        const relationshipCandidate: Relationship = {
+                            id: crypto.randomUUID(),
+                            sourceId: newArtifact.id,
+                            targetId: target.id,
+                            type: proposedType,
+                            weight: 0.5,
+                            description: '',
+                            metadata: {},
+                            createdAt: new Date(),
+                            visualProperties: createDefaultRelationshipVisualProperties(proposedType),
+                            semanticStrength: 0.5,
+                            businessImpact: 'low',
+                            validationStatus: 'valid',
+                            contextualRelevance: 0.5,
+                            temporalRelevance: 0.5,
+                            stakeholderImpact: [],
+                        }
+
+                        try {
+                            const validation = await validationService.validateRelationship(
+                                relationshipCandidate,
+                                newArtifact,
+                                target
+                            )
+                            const finalType: RelationshipType = validation.isValid
+                                ? proposedType
+                                : RELATIONSHIP_TYPES.REFERENCES
+
+                            const { id: _id, createdAt: _createdAt, ...payload } = relationshipCandidate
+                            await artifactService.createRelationship({
+                                ...payload,
+                                type: finalType,
+                                visualProperties: createDefaultRelationshipVisualProperties(finalType),
+                            })
+                        } catch (e) {
+                            console.error('Error creando relación desde mención:', e)
+                        }
+                    }
+                }
                 return
             } catch (error) {
                 showError(`Error al crear artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`)
@@ -244,6 +360,51 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             try {
                 await artifactService.updateArtifact(editingArtifact.id, { id: editingArtifact.id, description })
                 showSuccess(`Artefacto "${editingArtifact.name}" actualizado`)
+
+                if (mentions.length > 0) {
+                    for (const m of mentions) {
+                        const target = artifacts.find(a => sanitize(a.name) === sanitize(m))
+                        if (!target) continue
+
+                        const proposedType: RelationshipType = RELATIONSHIP_TYPES.DEPENDS_ON
+                        const relationshipCandidate: Relationship = {
+                            id: crypto.randomUUID(),
+                            sourceId: editingArtifact.id,
+                            targetId: target.id,
+                            type: proposedType,
+                            weight: 0.5,
+                            description: '',
+                            metadata: {},
+                            createdAt: new Date(),
+                            visualProperties: createDefaultRelationshipVisualProperties(proposedType),
+                            semanticStrength: 0.5,
+                            businessImpact: 'low',
+                            validationStatus: 'valid',
+                            contextualRelevance: 0.5,
+                            temporalRelevance: 0.5,
+                            stakeholderImpact: [],
+                        }
+
+                        try {
+                            const validation = await validationService.validateRelationship(
+                                relationshipCandidate,
+                                editingArtifact,
+                                target
+                            )
+                            const finalType: RelationshipType = validation.isValid
+                                ? proposedType
+                                : RELATIONSHIP_TYPES.REFERENCES
+
+                            await artifactService.createRelationship({
+                                ...relationshipCandidate,
+                                type: finalType,
+                                visualProperties: createDefaultRelationshipVisualProperties(finalType),
+                            })
+                        } catch (e) {
+                            console.error('Error creando relación desde mención:', e)
+                        }
+                    }
+                }
             } catch (error) {
                 showError(
                     `Error al actualizar artefacto: ${error instanceof Error ? error.message : 'Error desconocido'}`
@@ -365,6 +526,55 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}
                 validateText={validateDescription}
+                textareaRefExternal={autocomplete.textareaRef}
+                onTextareaInput={autocomplete.handleInput}
+                onTextareaKeyDownExtra={e => {
+                    if (!autocomplete.showAutocomplete) return
+                    if (e.key === 'Enter') {
+                        const items = autocomplete.filteredItems
+                        if (!items || items.length === 0) {
+                            e.preventDefault()
+                            const nameFromQuery = autocomplete.query
+                            if (!canvasRef.current) return
+                            const base = editingArtifact?.visualProperties || { x: 200, y: 200 }
+                            const x = base.x + 120
+                            const y = base.y + 20
+                            createTemporalArtifact(x, y)
+                                .then(async temporal => {
+                                    if (!temporal) return
+                                    setCurrentTemporalId(temporal.temporaryId)
+                                    setNewArtifactPosition({ x, y })
+                                    setIsDescriptionEditorVisible(false)
+                                    setIsNameEditorVisible(true)
+                                    setCurrentName(nameFromQuery)
+                                    if (editingArtifact) {
+                                        setPendingRelationFromId(editingArtifact.id)
+                                        setPendingMentionName(nameFromQuery)
+                                    }
+                                    try {
+                                        await updateTemporalArtifactName(temporal.temporaryId, nameFromQuery)
+                                    } catch {}
+                                })
+                                .catch(() => {})
+                        }
+                    }
+                }}
+                ignoreOutsideClickSelectors={[".autocomplete-dropdown"]}
+            />
+
+            <AutocompleteDropdown
+                query={autocomplete.query}
+                items={artifacts.map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    type: a.type,
+                    description: a.description,
+                }))}
+                onSelect={item => autocomplete.insertReference(item as unknown as Artifact)}
+                position={autocomplete.position}
+                visible={autocomplete.showAutocomplete}
+                searchFields={["name", "id", "type"]}
+                maxItems={8}
             />
         </div>
     )

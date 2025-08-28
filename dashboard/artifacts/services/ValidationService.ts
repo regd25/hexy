@@ -516,7 +516,14 @@ export class ValidationService {
             })
         }
 
-        if (typeof artifact.type !== 'undefined') {
+        if (typeof artifact.type === 'undefined' || artifact.type === null) {
+            errors.push({
+                field: 'type',
+                message: 'Artifact type is required',
+                code: 'TYPE_REQUIRED',
+                severity: 'error',
+            })
+        } else {
             const allTypes = Object.values(ARTIFACT_TYPES) as ArtifactType[]
             const isValidType = allTypes.includes(artifact.type as ArtifactType)
             if (!isValidType) {

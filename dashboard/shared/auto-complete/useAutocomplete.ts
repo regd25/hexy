@@ -44,13 +44,13 @@ export const useAutocomplete = <T>({
             const rect = textarea.getBoundingClientRect()
             const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
             const lines = beforeCursor.split('\n').length
-            const charWidth = 8 // Approximate character width
+            const charWidth = 8
             const triggerPosition = beforeCursor.lastIndexOf(trigger)
             const charsAfterTrigger = beforeCursor.length - triggerPosition
 
             return {
-                x: rect.left + charsAfterTrigger * charWidth,
-                y: rect.top + lines * lineHeight + 20,
+                x: rect.left + Math.min(charsAfterTrigger * charWidth, rect.width - 12),
+                y: rect.top + Math.min(lines * lineHeight + 20, rect.height - 12),
             }
         },
         [trigger]
@@ -62,7 +62,7 @@ export const useAutocomplete = <T>({
             const cursorPos = e.target.selectionStart
 
             const beforeCursor = value.slice(0, cursorPos)
-            const triggerRegex = new RegExp(`\\${trigger}(\\w*)$`)
+            const triggerRegex = new RegExp(`\\${trigger}([A-Za-zÁÉÍÓÚÑáéíóú0-9-]*)$`)
             const match = beforeCursor.match(triggerRegex)
 
             if (match) {

@@ -182,6 +182,10 @@ export class ArtifactService {
                 throw new Error(`Target artifact ${relationship.targetId} not found`)
             }
 
+            if (!relationship.type) {
+                throw new Error('Relationship type is required')
+            }
+
             const created = await this.repository.createRelationship(relationship)
 
             // ✅ Single event emission - no duplication

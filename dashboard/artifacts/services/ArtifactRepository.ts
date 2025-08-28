@@ -294,8 +294,9 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
 
     // Relationship management methods
     async createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
-        // For simplified implementation, we'll just return a mock relationship
-        // In a real implementation, this would store relationships separately
+        if (!relationship.type) {
+            throw new Error('Relationship type is required')
+        }
         const newRelationship: Relationship = {
             ...relationship,
             id: this.generateId(),

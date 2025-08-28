@@ -45,16 +45,10 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
     if (filteredItems.length === 0) {
         return (
             <div
-                className="autocomplete-dropdown no-results"
-                style={{
-                    left: position.x,
-                    top: position.y,
-                    display: visible ? 'block' : 'none',
-                }}
+                className="fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm"
+                style={{ left: position.x, top: position.y, display: visible ? 'block' : 'none' }}
             >
-                <div className="autocomplete-item disabled">
-                    <span>{noResultsText}</span>
-                </div>
+                <div className="px-3 py-2 text-slate-300">{noResultsText}</div>
             </div>
         )
     }
@@ -71,23 +65,25 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
 
     return (
         <div
-            className="autocomplete-dropdown"
-            style={{
-                left: position.x,
-                top: position.y,
-                display: visible ? 'block' : 'none',
-            }}
+            className="fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm max-w-[360px]"
+            style={{ left: position.x, top: position.y, display: visible ? 'block' : 'none' }}
         >
             {filteredItems.map(item => (
                 <div
                     key={item.id}
-                    className="autocomplete-item"
+                    className="px-3 py-2 hover:bg-slate-700/70 cursor-pointer border-b border-slate-700/40 last:border-0"
                     onClick={() => onSelect(item)}
                 >
-                    {renderItem ? renderItem(item) : defaultRenderItem(item)}
-                    <div className="autocomplete-item-preview">
-                        {getItemPreview ? getItemPreview(item) : defaultGetItemPreview(item)}
-                    </div>
+                    {renderItem ? (
+                        renderItem(item)
+                    ) : (
+                        <div className="flex items-center justify-between gap-4">
+                            {defaultRenderItem(item)}
+                            <div className="text-[11px] text-slate-400 truncate">
+                                {getItemPreview ? getItemPreview(item) : defaultGetItemPreview(item)}
+                            </div>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
