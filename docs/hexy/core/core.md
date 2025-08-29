@@ -26,7 +26,7 @@ flowchart LR
 | **Pre-procesamiento** | Normaliza texto, extrae POS & dependencias                            | `compromise` o `spaCy` (Node bindings)                      |
 | **Reglas léxicas**    | Match de verbos/frases (“contains”, “implements”, “measures…”) → tipo | Yaml/JSON de patrones + `regexp`                            |
 | **Embeddings**        | Vectoriza descripciones y compara vs. *prototypes* de cada tipo       | `@pinecone-database/vecs` + OpenAI `text-embedding-3-small` |
-| **LLM Classifier**    | Prompt few-shot: devuelve `LinkType` + score                          | OpenAI function-call (cheap, 1-2 ¢)                         |
+| **LLM Classifier**    | Prompt few-shot: devuelve `RelationType` + score                          | OpenAI function-call (cheap, 1-2 ¢)                         |
 | **Consensus Engine**  | Pondera: Regla > Similitud > LLM  (votos + umbral)                    | simple TS función                                           |
 
 ---
@@ -103,8 +103,8 @@ import {matchLinkTypeByRules} from './rules';
 import {similarityType}       from './embeddings';
 import {classifyWithLLM}      from './llm';
 
-export async function inferLinkType(a: Artefact, b: Artefact): Promise<{type: LinkType, confidence:number}> {
-  const candidates: Record<LinkType, number> = {};
+export async function inferLinkType(a: Artefact, b: Artefact): Promise<{type: RelationType, confidence:number}> {
+  const candidates: Record<RelationType, number> = {};
 
   // 1. reglas
   const rule = matchLinkTypeByRules(a, b);
@@ -123,7 +123,7 @@ export async function inferLinkType(a: Artefact, b: Artefact): Promise<{type: Li
 
   // 4. consenso
   const [type, confidence] = Object.entries(candidates).sort(([,s1],[,s2])=>s2-s1)[0];
-  return {type: type as LinkType, confidence};
+  return {type: type as RelationType, confidence};
 }
 ```
 

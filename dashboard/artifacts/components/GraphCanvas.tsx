@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Artifact, TemporalArtifact } from '../types'
+import type { VisualArtifact, VisualTemporalArtifact } from '../types'
 import { ArtifactNode } from './node/ArtifactNode'
 
 interface RelationLine {
@@ -19,8 +19,8 @@ interface SelectionRect {
 interface GraphCanvasProps {
     canvasRef: React.RefObject<HTMLDivElement>
     className?: string
-    artifacts: Artifact[]
-    temporals: TemporalArtifact[]
+    artifacts: VisualArtifact[]
+    temporals: VisualTemporalArtifact[]
     relationLine: RelationLine | null
     isDragging: boolean
     draggingArtifactId?: string
@@ -28,9 +28,9 @@ interface GraphCanvasProps {
     onCanvasClick: (e: React.MouseEvent) => void
     onMouseMove: (e: React.MouseEvent) => void
     onMouseUp: (e: React.MouseEvent) => void
-    onArtifactClick: (artifact: Artifact, e: React.MouseEvent) => void
-    onArtifactDoubleClick: (artifact: Artifact, e: React.MouseEvent) => void
-    onArtifactMouseDown: (artifact: Artifact, e: React.MouseEvent) => void
+    onArtifactClick: (artifact: VisualArtifact, e: React.MouseEvent) => void
+    onArtifactDoubleClick: (artifact: VisualArtifact, e: React.MouseEvent) => void
+    onArtifactMouseDown: (artifact: VisualArtifact, e: React.MouseEvent) => void
     onCanvasMouseDown: (e: React.MouseEvent) => void
     onCanvasContextMenu: (e: React.MouseEvent) => void
     selectionRect: SelectionRect | null
@@ -128,11 +128,11 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
                     <ArtifactNode
                         key={artifact.id}
                         artifact={artifact}
-                        onClick={(a, e) => onArtifactClick(a as Artifact, e as React.MouseEvent)}
-                        onDoubleClick={(a, e) => onArtifactDoubleClick(a as Artifact, e as React.MouseEvent)}
+                        onClick={(a, e) => onArtifactClick(a as VisualArtifact, e as React.MouseEvent)}
+                        onDoubleClick={(a, e) => onArtifactDoubleClick(a as VisualArtifact, e as React.MouseEvent)}
                         onMouseDown={(a, e) => {
                             if (activeArtifactId && activeArtifactId === artifact.id) return
-                            onArtifactMouseDown(a as Artifact, e as React.MouseEvent)
+                            onArtifactMouseDown(a as VisualArtifact, e as React.MouseEvent)
                         }}
                         isDraggingCurrent={isDragging && draggingArtifactId === artifact.id}
                         isActive={activeArtifactId === artifact.id}

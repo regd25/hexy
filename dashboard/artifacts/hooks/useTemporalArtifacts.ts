@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ArtifactService, ValidationService } from '../services'
-import { TemporalArtifact, Artifact, CreateArtifactPayload, ValidationResult } from '../types'
+import { VisualTemporalArtifact, VisualArtifact, CreateArtifactPayload, ValidationResult } from '../types'
 
 export const useTemporalArtifacts = () => {
     const eventBus = useEventBus()
@@ -11,14 +11,14 @@ export const useTemporalArtifacts = () => {
     const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
     const validationService = useMemo(() => new ValidationService(), [])
 
-    const [temporalArtifacts, setTemporalArtifacts] = useState<TemporalArtifact[]>([])
+    const [temporalArtifacts, setTemporalArtifacts] = useState<VisualTemporalArtifact[]>([])
 
     const isClose = (a: { x: number; y: number }, b: { x: number; y: number }, threshold = 2) => {
         return Math.hypot(a.x - b.x, a.y - b.y) <= threshold
     }
 
     useEffect(() => {
-        const unsubscribeTemporalCreated = eventBus.subscribe<{ source: string; temporal: TemporalArtifact }>(
+        const unsubscribeTemporalCreated = eventBus.subscribe<{ source: string; temporal: VisualTemporalArtifact }>(
             'temporal:created',
             event => {
                 if (event.data.source === 'artifacts-module') {
@@ -27,7 +27,7 @@ export const useTemporalArtifacts = () => {
             }
         )
 
-        const unsubscribeTemporalUpdated = eventBus.subscribe<{ source: string; temporal: TemporalArtifact }>(
+        const unsubscribeTemporalUpdated = eventBus.subscribe<{ source: string; temporal: VisualTemporalArtifact }>(
             'temporal:updated',
             event => {
                 if (event.data.source === 'artifacts-module') {
@@ -60,7 +60,7 @@ export const useTemporalArtifacts = () => {
             }
         )
 
-        const unsubscribeArtifactCreated = eventBus.subscribe<{ source: string; artifact: Artifact }>(
+        const unsubscribeArtifactCreated = eventBus.subscribe<{ source: string; artifact: VisualArtifact }>(
             'artifact:created',
             event => {
                 if (event.data.source === 'artifacts-module') {
@@ -87,11 +87,11 @@ export const useTemporalArtifacts = () => {
     }, [eventBus])
 
     const createTemporalArtifact = useCallback(
-        async (x: number, y: number): Promise<TemporalArtifact | null> => {
+        async (x: number, y: number): Promise<VisualTemporalArtifact | null> => {
             try {
                 if (temporalArtifacts.length > 0) {
                     const existing = temporalArtifacts[0]
-                    const updates: Partial<TemporalArtifact> = {
+                    const updates: Partial<VisualTemporalArtifact> = {
                         coordinates: { x, y },
                         visualProperties: {
                             ...existing.visualProperties,
@@ -131,7 +131,7 @@ export const useTemporalArtifacts = () => {
                 const validation: ValidationResult = await validationService.validatePartialArtifact({ name })
                 const nameErrors = validation.errors.filter(err => err.field === 'name')
 
-                const updates: Partial<TemporalArtifact> = {
+                const updates: Partial<VisualTemporalArtifact> = {
                     name,
                     status: name.trim().length > 0 ? 'editing' : 'creating',
                     validationErrors: nameErrors.map(err => err.message),
@@ -156,7 +156,7 @@ export const useTemporalArtifacts = () => {
                 })
                 const descriptionErrors = validation.errors.filter(err => err.field === 'description')
 
-                const updates: Partial<TemporalArtifact> = {
+                const updates: Partial<VisualTemporalArtifact> = {
                     description,
                     status: 'editing',
                     validationErrors: descriptionErrors.map(err => err.message),
@@ -174,7 +174,7 @@ export const useTemporalArtifacts = () => {
     )
 
     const saveTemporalArtifact = useCallback(
-        async (temporaryId: string): Promise<Artifact | null> => {
+        async (temporaryId: string): Promise<VisualArtifact | null> => {
             try {
                 const temporalArtifact = await artifactService.getTemporalArtifact(temporaryId)
 
@@ -188,7 +188,7 @@ export const useTemporalArtifacts = () => {
                 })
 
                 if (!validation.isValid) {
-                    const updates: Partial<TemporalArtifact> = {
+                    const updates: Partial<VisualTemporalArtifact> = {
                         status: 'error',
                         validationErrors: validation.errors.map(err => err.message),
                     }
@@ -226,14 +226,14 @@ export const useTemporalArtifacts = () => {
     )
 
     const getTemporalArtifact = useCallback(
-        (temporaryId: string): TemporalArtifact | undefined => {
+        (temporaryId: string): VisualTemporalArtifact | undefined => {
             return temporalArtifacts.find(temp => temp.temporaryId === temporaryId)
         },
         [temporalArtifacts]
     )
 
     const getTemporalArtifactsByStatus = useCallback(
-        (status: TemporalArtifact['status']): TemporalArtifact[] => {
+        (status: VisualTemporalArtifact['status']): VisualTemporalArtifact[] => {
             return temporalArtifacts.filter(artifact => artifact.status === status)
         },
         [temporalArtifacts]

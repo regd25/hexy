@@ -1,56 +1,11 @@
-/**
- * Simplified Artifact Repository Implementation
- * Following repository pattern for data persistence abstraction
- */
-
-import {
-    Artifact,
-    TemporalArtifact,
-    Relationship,
-    ArtifactSearchQuery,
-    ArtifactFilter,
-    CreateArtifactPayload,
-    UpdateArtifactPayload,
-    createDefaultSemanticMetadata,
-    createDefaultVisualizationProperties,
-} from '../types'
-
-/**
- * Repository interface for artifact persistence
- */
-export interface IArtifactRepository {
-    create(payload: CreateArtifactPayload): Promise<Artifact>
-    findById(id: string): Promise<Artifact | null>
-    findAll(): Promise<Artifact[]>
-    update(id: string, payload: UpdateArtifactPayload): Promise<Artifact>
-    delete(id: string): Promise<boolean>
-    search(query: ArtifactSearchQuery): Promise<Artifact[]>
-    filter(criteria: ArtifactFilter): Promise<Artifact[]>
-
-    // Relationship management
-    createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship>
-    deleteRelationship(id: string): Promise<boolean>
-    findRelationshipsByArtifact(artifactId: string): Promise<Relationship[]>
-
-    // Temporal artifact operations
-    saveTemporalArtifact(temporal: TemporalArtifact): Promise<TemporalArtifact>
-    getTemporalArtifact(temporaryId: string): Promise<TemporalArtifact | null>
-    deleteTemporalArtifact(temporaryId: string): Promise<boolean>
-
-    // Bulk operations
-    bulkCreate(artifacts: CreateArtifactPayload[]): Promise<Artifact[]>
-    bulkUpdate(updates: UpdateArtifactPayload[]): Promise<Artifact[]>
-    bulkDelete(ids: string[]): Promise<boolean>
-
-    validateDataIntegrity(): Promise<boolean>
-    backup(): Promise<string>
-    restore(backupData: string): Promise<boolean>
-}
+import { Artifact, ArtifactRepository, Relation } from "@/shared"
+import { ArtifactFilter, ArtifactSearchQuery, CreateArtifactPayload, UpdateArtifactPayload, VisualArtifact } from "../types/VisualArtifact"
+import { VisualTemporalArtifact } from "../types/VisualTemporalArtifact"
 
 /**
  * LocalStorage implementation of artifact repository
  */
-export class LocalStorageArtifactRepository implements IArtifactRepository {
+export class LocalStorageArtifactRepository implements ArtifactRepository {
     private readonly ARTIFACTS_KEY = 'hexy_artifacts'
     private readonly RELATIONSHIPS_KEY = 'hexy_relationships'
     private readonly TEMPORAL_KEY = 'hexy_temporal_artifacts'
@@ -76,12 +31,12 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         }
     }
 
-    private getArtifacts(): Artifact[] {
+    private getArtifacts(): VisualArtifact[] {
         try {
             const data = localStorage.getItem(this.ARTIFACTS_KEY)
             if (!data) return []
 
-            const artifacts: Artifact[] = JSON.parse(data)
+            const artifacts: VisualArtifact[] = JSON.parse(data)
             return artifacts.map(artifact => ({
                 ...artifact,
                 createdAt: new Date(artifact.createdAt),
@@ -93,7 +48,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         }
     }
 
-    private saveArtifacts(artifacts: Artifact[]): void {
+    private saveArtifacts(artifacts: VisualArtifact[]): void {
         try {
             localStorage.setItem(this.ARTIFACTS_KEY, JSON.stringify(artifacts))
         } catch {
@@ -109,7 +64,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         const artifacts = this.getArtifacts()
         const now = new Date()
 
-        const artifact: Artifact = {
+        const artifact: VisualArtifact = {
             id: this.generateId(),
             name: payload.name,
             type: payload.type,
@@ -145,25 +100,25 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return artifact
     }
 
-    async findById(id: string): Promise<Artifact | null> {
+    async findById(id: string): Promise<VisualArtifact | null> {
         const artifacts = this.getArtifacts()
         return artifacts.find(a => a.id === id) || null
     }
 
-    async findAll(): Promise<Artifact[]> {
+    async findAll(): Promise<VisualArtifact[]> {
         return this.getArtifacts()
     }
 
-    async update(id: string, payload: UpdateArtifactPayload): Promise<Artifact> {
+    async update(id: string, payload: UpdateArtifactPayload): Promise<VisualArtifact> {
         const artifacts = this.getArtifacts()
         const index = artifacts.findIndex(a => a.id === id)
 
         if (index === -1) {
-            throw new Error(`Artifact with id ${id} not found`)
+            throw new Error(`VisualArtifact with id ${id} not found`)
         }
 
         const existing = artifacts[index]
-        const updated: Artifact = {
+        const updated: VisualArtifact = {
             ...existing,
             name: payload.name !== undefined ? payload.name : existing.name,
             type: payload.type !== undefined ? payload.type : existing.type,
@@ -210,7 +165,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return true
     }
 
-    async search(query: ArtifactSearchQuery): Promise<Artifact[]> {
+    async search(query: ArtifactSearchQuery): Promise<VisualArtifact[]> {
         const artifacts = await this.findAll()
 
         return artifacts.filter(artifact => {
@@ -232,7 +187,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         })
     }
 
-    async filter(criteria: ArtifactFilter): Promise<Artifact[]> {
+    async filter(criteria: ArtifactFilter): Promise<VisualArtifact[]> {
         const artifacts = await this.findAll()
 
         return artifacts.filter(artifact => {
@@ -293,11 +248,11 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
     }
 
     // Relationship management methods
-    async createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
+    async createRelation(relationship: Omit<Relation, 'id' | 'createdAt'>): Promise<Relation> {
         if (!relationship.type) {
             throw new Error('Relationship type is required')
         }
-        const newRelationship: Relationship = {
+        const newRelationship: Relation = {
             ...relationship,
             id: this.generateId(),
             createdAt: new Date(),
@@ -305,8 +260,8 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return newRelationship
     }
 
-    async deleteRelationship(id: string): Promise<boolean> {
-        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+    async deleteRelation(id: string): Promise<boolean> {
+        const relationships: Relation[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         const index = relationships.findIndex(r => r.id === id)
 
         if (index === -1) {
@@ -317,8 +272,8 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         return true
     }
 
-    async findRelationshipsByArtifact(artifactId: string): Promise<Relationship[]> {
-        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+    async findRelationsByArtifact(artifactId: string): Promise<Relation[]> {
+        const relationships: Relation[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         return relationships.filter(r => r.sourceId === artifactId || r.targetId === artifactId)
     }
 
@@ -363,12 +318,12 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
     }
 
     // Temporal artifact operations
-    async saveTemporalArtifact(temporal: TemporalArtifact): Promise<TemporalArtifact> {
+    async saveTemporalArtifact(temporal: VisualTemporalArtifact): Promise<VisualTemporalArtifact> {
         try {
             const data = localStorage.getItem(this.TEMPORAL_KEY)
             const temporalArtifacts = data ? JSON.parse(data) : []
 
-            const index = temporalArtifacts.findIndex((t: TemporalArtifact) => t.temporaryId === temporal.temporaryId)
+            const index = temporalArtifacts.findIndex((t: VisualTemporalArtifact) => t.temporaryId === temporal.temporaryId)
 
             if (index >= 0) {
                 temporalArtifacts[index] = temporal
@@ -383,13 +338,13 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
         }
     }
 
-    async getTemporalArtifact(temporaryId: string): Promise<TemporalArtifact | null> {
+    async getTemporalArtifact(temporaryId: string): Promise<VisualTemporalArtifact | null> {
         try {
             const data = localStorage.getItem(this.TEMPORAL_KEY)
             if (!data) return null
 
             const temporalArtifacts = JSON.parse(data)
-            return temporalArtifacts.find((t: TemporalArtifact) => t.temporaryId === temporaryId) || null
+            return temporalArtifacts.find((t: VisualTemporalArtifact) => t.temporaryId === temporaryId) || null
         } catch {
             return null
         }
@@ -401,7 +356,7 @@ export class LocalStorageArtifactRepository implements IArtifactRepository {
             if (!data) return false
 
             const temporalArtifacts = JSON.parse(data)
-            const filtered = temporalArtifacts.filter((t: TemporalArtifact) => t.temporaryId !== temporaryId)
+            const filtered = temporalArtifacts.filter((t: VisualTemporalArtifact) => t.temporaryId !== temporaryId)
 
             localStorage.setItem(this.TEMPORAL_KEY, JSON.stringify(filtered))
             return true

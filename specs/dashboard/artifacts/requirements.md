@@ -50,7 +50,7 @@ The Hexy Dashboard currently has a partially implemented artifacts module alongs
 
 1. WHEN types are defined THEN the system SHALL use the module's comprehensive type definitions from `artifact.types.ts`
 2. WHEN existing types conflict THEN the system SHALL migrate to the module's semantic artifact types
-3. IF temporal artifacts are used THEN the system SHALL use the module's `TemporalArtifact` interface
+3. IF temporal artifacts are used THEN the system SHALL use the module's `VisualTemporalArtifact` interface
 4. WHEN relationships are managed THEN the system SHALL use the module's `Relationship` interface
 5. WHEN validation occurs THEN the system SHALL use the module's Zod schemas
 

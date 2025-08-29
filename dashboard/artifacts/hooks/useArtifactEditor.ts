@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ArtifactService, ValidationService } from '../services'
-import { Artifact, ArtifactType, CreateArtifactPayload, ValidationResult } from '../types'
+import { VisualArtifact, ArtifactType, CreateArtifactPayload, ValidationResult } from '../types'
 
 interface ArtifactFormData {
     name: string
@@ -14,8 +14,8 @@ interface ArtifactFormData {
 }
 
 interface UseArtifactEditorProps {
-    artifact?: Artifact
-    onSave: (artifact: Artifact) => void
+    artifact?: VisualArtifact
+    onSave: (artifact: VisualArtifact) => void
     onCancel: () => void
 }
 

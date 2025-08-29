@@ -1,4 +1,4 @@
-import { Artifact } from '../shared/types/Artifact'
+import { VisualArtifact } from '../shared/types/VisualArtifact'
 
 export interface GraphLink {
     source: string
@@ -9,7 +9,7 @@ export interface GraphLink {
     justification?: string
 }
 
-export interface GraphNode extends Artifact {
+export interface GraphNode extends VisualArtifact {
     vx: number
     vy: number
     fx: number | null

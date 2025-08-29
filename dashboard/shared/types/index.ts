@@ -1,2 +1,2 @@
-export * from './Artifact'
+export * from './VisualArtifact'
 export * from './DOMEvents'

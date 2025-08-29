@@ -1,4 +1,4 @@
-import { ArtifactRepository, EventBus, InMemoryArtifactRepository, InMemoryEventBus, Result, ok } from '@/shared'
+import { ArtifactRepository, EventBus, InMemoryArtifactRepository, InMemoryEventBus, SystemResult, ok } from '@/shared'
 import { ArtifactRepositoryProviderCapability, EventBusProviderCapability, Plugin } from '../Plugin'
 
 export class InMemoryProvidersPlugin implements Plugin {
@@ -10,7 +10,7 @@ export class InMemoryProvidersPlugin implements Plugin {
         type: 'event-bus-provider',
         providerId: 'in-memory',
         priority: 0,
-        provideEventBus: async (): Promise<Result<EventBus>> => {
+        provideEventBus: async (): Promise<SystemResult<EventBus>> => {
             return ok(new InMemoryEventBus())
         },
     }
@@ -19,7 +19,7 @@ export class InMemoryProvidersPlugin implements Plugin {
         type: 'artifact-repository-provider',
         providerId: 'in-memory',
         priority: 0,
-        provideArtifactRepository: async (): Promise<Result<ArtifactRepository>> => {
+        provideArtifactRepository: async (): Promise<SystemResult<ArtifactRepository>> => {
             return ok(new InMemoryArtifactRepository())
         },
     }

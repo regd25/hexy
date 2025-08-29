@@ -1,5 +1,5 @@
 import { LinkTypeInferenceCapability, Plugin } from '../Plugin'
-import { Artifact, Result, ok } from '@/shared'
+import { Artifact, SystemResult, ok } from '@/shared'
 
 function score(text: string, pattern: RegExp): number {
     const matches = text.match(pattern)
@@ -27,12 +27,12 @@ function inferByRules(a: Artifact, b: Artifact): { type: string; confidence: num
 
 export class RuleBasedLinkInferencePlugin implements Plugin {
     id = 'builtin.rule-link-inference'
-    name = 'Rule-based Link Inference'
+    name = 'Rule-based Relation Inference'
     version = '1.0.0'
 
     private readonly capability: LinkTypeInferenceCapability = {
         type: 'link-inference',
-        inferLinkType: async (a: Artifact, b: Artifact): Promise<Result<{ type: string; confidence: number }>> => {
+        inferLinkType: async (a: Artifact, b: Artifact): Promise<SystemResult<{ type: string; confidence: number }>> => {
             const res = inferByRules(a, b)
             return ok(res)
         },

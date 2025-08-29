@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { ArtifactService } from '../services'
-import { Artifact, ArtifactType, ARTIFACT_TYPES } from '../types'
+import { VisualArtifact, ArtifactType, ARTIFACT_TYPES } from '../types'
 import { Selector } from '../../shared'
 
 interface ArtifactListProps {
@@ -34,7 +34,7 @@ export const ArtifactList: React.FC<ArtifactListProps> = ({ className = '' }) =>
     const eventBus = useEventBus()
     const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
 
-    const [artifacts, setArtifacts] = useState<Artifact[]>([])
+    const [artifacts, setArtifacts] = useState<VisualArtifact[]>([])
     const [query, setQuery] = useState('')
     const [type, setType] = useState<ArtifactType | 'all'>('all')
 
@@ -45,17 +45,17 @@ export const ArtifactList: React.FC<ArtifactListProps> = ({ className = '' }) =>
         }
         load()
 
-        const unsubCreated = eventBus.subscribe<Artifact>('artifact:created', event => {
+        const unsubCreated = eventBus.subscribe<VisualArtifact>('artifact:created', event => {
             if (event.source === 'artifacts-module') {
                 setArtifacts(prev => [...prev, event.data])
             }
         })
-        const unsubUpdated = eventBus.subscribe<Artifact>('artifact:updated', event => {
+        const unsubUpdated = eventBus.subscribe<VisualArtifact>('artifact:updated', event => {
             if (event.source === 'artifacts-module') {
                 setArtifacts(prev => prev.map(a => (a.id === event.data.id ? event.data : a)))
             }
         })
-        const unsubDeleted = eventBus.subscribe<Artifact>('artifact:deleted', event => {
+        const unsubDeleted = eventBus.subscribe<VisualArtifact>('artifact:deleted', event => {
             if (event.source === 'artifacts-module') {
                 setArtifacts(prev => prev.filter(a => a.id !== event.data.id))
             }

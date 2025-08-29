@@ -5,8 +5,8 @@
 
 import { EventBus } from '../../shared'
 import {
-    Artifact,
-    TemporalArtifact,
+    VisualArtifact,
+    VisualTemporalArtifact,
     Relationship,
     CreateArtifactPayload,
     UpdateArtifactPayload,
@@ -33,7 +33,7 @@ export class ArtifactService {
     /**
      * Create a new artifact with semantic defaults
      */
-    async createArtifact(payload: CreateArtifactPayload): Promise<Artifact> {
+    async createArtifact(payload: CreateArtifactPayload): Promise<VisualArtifact> {
         try {
             // Enhance payload with semantic defaults
             const enhancedPayload: CreateArtifactPayload = {
@@ -71,11 +71,11 @@ export class ArtifactService {
     /**
      * Update an existing artifact
      */
-    async updateArtifact(id: string, payload: UpdateArtifactPayload): Promise<Artifact> {
+    async updateArtifact(id: string, payload: UpdateArtifactPayload): Promise<VisualArtifact> {
         try {
             const previous = await this.repository.findById(id)
             if (!previous) {
-                throw new Error(`Artifact with id ${id} not found`)
+                throw new Error(`VisualArtifact with id ${id} not found`)
             }
 
             const updated = await this.repository.update(id, payload)
@@ -121,7 +121,7 @@ export class ArtifactService {
     /**
      * Get artifact by ID
      */
-    async getArtifact(id: string): Promise<Artifact | null> {
+    async getArtifact(id: string): Promise<VisualArtifact | null> {
         try {
             return await this.repository.findById(id)
         } catch (error) {
@@ -133,7 +133,7 @@ export class ArtifactService {
     /**
      * Get all artifacts
      */
-    async getAllArtifacts(): Promise<Artifact[]> {
+    async getAllArtifacts(): Promise<VisualArtifact[]> {
         try {
             return await this.repository.findAll()
         } catch (error) {
@@ -145,7 +145,7 @@ export class ArtifactService {
     /**
      * Search artifacts with semantic capabilities
      */
-    async searchArtifacts(query: ArtifactSearchQuery): Promise<Artifact[]> {
+    async searchArtifacts(query: ArtifactSearchQuery): Promise<VisualArtifact[]> {
         try {
             return await this.repository.search(query)
         } catch (error) {
@@ -157,7 +157,7 @@ export class ArtifactService {
     /**
      * Filter artifacts by criteria
      */
-    async filterArtifacts(criteria: ArtifactFilter): Promise<Artifact[]> {
+    async filterArtifacts(criteria: ArtifactFilter): Promise<VisualArtifact[]> {
         try {
             return await this.repository.filter(criteria)
         } catch (error) {
@@ -244,11 +244,11 @@ export class ArtifactService {
     /**
      * Create a temporal artifact for drafting
      */
-    async createTemporalArtifact(payload: Partial<CreateArtifactPayload>): Promise<TemporalArtifact> {
+    async createTemporalArtifact(payload: Partial<CreateArtifactPayload>): Promise<VisualTemporalArtifact> {
         try {
             const temporaryId = crypto.randomUUID()
 
-            const temporal: TemporalArtifact = {
+            const temporal: VisualTemporalArtifact = {
                 temporaryId,
                 name: payload.name || '',
                 type: payload.type || 'purpose',
@@ -318,14 +318,14 @@ export class ArtifactService {
     /**
      * Update a temporal artifact
      */
-    async updateTemporalArtifact(temporaryId: string, updates: Partial<TemporalArtifact>): Promise<TemporalArtifact> {
+    async updateTemporalArtifact(temporaryId: string, updates: Partial<VisualTemporalArtifact>): Promise<VisualTemporalArtifact> {
         try {
             const existing = await this.repository.getTemporalArtifact(temporaryId)
             if (!existing) {
                 throw new Error(`Temporal artifact ${temporaryId} not found`)
             }
 
-            const updated: TemporalArtifact = {
+            const updated: VisualTemporalArtifact = {
                 ...existing,
                 ...updates,
                 temporaryId: existing.temporaryId, // Ensure ID cannot be changed
@@ -352,7 +352,7 @@ export class ArtifactService {
     /**
      * Promote temporal artifact to permanent artifact
      */
-    async promoteTemporalArtifact(temporaryId: string): Promise<Artifact> {
+    async promoteTemporalArtifact(temporaryId: string): Promise<VisualArtifact> {
         try {
             const temporal = await this.repository.getTemporalArtifact(temporaryId)
             if (!temporal) {
@@ -425,7 +425,7 @@ export class ArtifactService {
     /**
      * Get temporal artifact by ID
      */
-    async getTemporalArtifact(temporaryId: string): Promise<TemporalArtifact | null> {
+    async getTemporalArtifact(temporaryId: string): Promise<VisualTemporalArtifact | null> {
         try {
             return await this.repository.getTemporalArtifact(temporaryId)
         } catch (error) {
@@ -437,7 +437,7 @@ export class ArtifactService {
     /**
      * Bulk operations
      */
-    async bulkCreateArtifacts(payloads: CreateArtifactPayload[]): Promise<Artifact[]> {
+    async bulkCreateArtifacts(payloads: CreateArtifactPayload[]): Promise<VisualArtifact[]> {
         try {
             return await this.repository.bulkCreate(payloads)
         } catch (error) {
@@ -446,7 +446,7 @@ export class ArtifactService {
         }
     }
 
-    async bulkUpdateArtifacts(updates: UpdateArtifactPayload[]): Promise<Artifact[]> {
+    async bulkUpdateArtifacts(updates: UpdateArtifactPayload[]): Promise<VisualArtifact[]> {
         try {
             return await this.repository.bulkUpdate(updates)
         } catch (error) {

@@ -4,7 +4,7 @@ import { useNotifications } from '../../shared/notifications/useNotifications'
 import { InlineEditor } from '../../shared/editors/InlineEditor'
 import { FloatingEditor as FloatingTextArea, FloatingEditorHandle } from '../../shared/editors/FloatingEditor'
 import { ArtifactService } from '../services'
-import { Artifact } from '../types'
+import { VisualArtifact } from '../types'
 import { useTemporalArtifacts } from '../hooks/useTemporalArtifacts'
 import { GraphHeader } from './GraphHeader'
 import { GraphCanvas } from './GraphCanvas'
@@ -27,12 +27,12 @@ interface GraphContainerProps {
 export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => {
     const [isNameEditorVisible, setIsNameEditorVisible] = useState(false)
     const [isDescriptionEditorVisible, setIsDescriptionEditorVisible] = useState(false)
-    const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null)
+    const [editingArtifact, setEditingArtifact] = useState<VisualArtifact | null>(null)
     const [newArtifactPosition, setNewArtifactPosition] = useState({ x: 0, y: 0 })
     const [editorPosition, setEditorPosition] = useState({ x: 0, y: 0 })
     const [currentName, setCurrentName] = useState('')
     const [nameValidationErrors, setNameValidationErrors] = useState<string[]>([])
-    const [artifacts, setArtifacts] = useState<Artifact[]>([])
+    const [artifacts, setArtifacts] = useState<VisualArtifact[]>([])
     const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(null)
     const [pendingRelationFromId, setPendingRelationFromId] = useState<string | null>(null)
     const [pendingMentionName, setPendingMentionName] = useState<string | null>(null)
@@ -45,12 +45,12 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
     const validationService = useMemo(() => new ValidationService(), [])
 
-    const autocomplete = useAutocomplete<Artifact>({
+    const autocomplete = useAutocomplete<VisualArtifact>({
         items: artifacts,
         filterKeys: ['name', 'id', 'type'],
         trigger: '@',
         maxResults: 8,
-        getDisplayValue: (item: Artifact) => item.name.replace(/\s+/g, ''),
+        getDisplayValue: (item: VisualArtifact) => item.name.replace(/\s+/g, ''),
     })
 
     const {
@@ -76,7 +76,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     }, [artifactService])
 
     useEffect(() => {
-        const unsubscribeCreated = eventBus.subscribe<{ source: string; artifact: Artifact }>(
+        const unsubscribeCreated = eventBus.subscribe<{ source: string; artifact: VisualArtifact }>(
             'artifact:created',
             ({ data }) => {
                 if (data.source === 'artifacts-module') {
@@ -85,7 +85,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             }
         )
 
-        const unsubscribeUpdated = eventBus.subscribe<{ source: string; artifact: Artifact }>(
+        const unsubscribeUpdated = eventBus.subscribe<{ source: string; artifact: VisualArtifact }>(
             'artifact:updated',
             ({ data }) => {
                 if (data.source === 'artifacts-module') {
@@ -215,7 +215,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
         setCurrentName('')
     }
 
-    const openDescriptionEditor = useCallback((artifact: Artifact) => {
+    const openDescriptionEditor = useCallback((artifact: VisualArtifact) => {
         if (!canvasRef.current) return
         const rect = canvasRef.current.getBoundingClientRect()
         const windowX = rect.left + artifact.visualProperties.x
@@ -570,7 +570,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                     type: a.type,
                     description: a.description,
                 }))}
-                onSelect={item => autocomplete.insertReference(item as unknown as Artifact)}
+                onSelect={item => autocomplete.insertReference(item as unknown as VisualArtifact)}
                 position={autocomplete.position}
                 visible={autocomplete.showAutocomplete}
                 searchFields={["name", "id", "type"]}

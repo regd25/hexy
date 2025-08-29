@@ -70,7 +70,7 @@ Hexy Framework es una plataforma integral que permite:
 - Configuración de entornos
 - Monitoreo y observabilidad
 
-### 📖 [API Reference](./api-reference/)
+### 📖 [API Relation](./api-reference/)
 - Referencia completa de APIs
 - Documentación de clases
 - Ejemplos de uso

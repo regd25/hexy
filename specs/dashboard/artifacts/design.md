@@ -104,7 +104,7 @@ interface SemanticGraphContainer {
     // Clean D3.js implementation with semantic awareness
     artifacts: Artifact[]
     relationships: Relationship[]
-    temporalArtifacts: TemporalArtifact[]
+    temporalArtifacts: VisualTemporalArtifact[]
 
     // Semantic interactions
     onSemanticArtifactCreate(position: Coordinates, type: ArtifactType): Promise<Artifact>
@@ -146,7 +146,7 @@ interface SemanticArtifactEditor {
 // Use the comprehensive module types directly
 import {
     Artifact,
-    TemporalArtifact,
+    VisualTemporalArtifact,
     Relationship,
     ArtifactType,
     RelationshipType,
@@ -195,7 +195,7 @@ interface SemanticArtifact extends Artifact {
 ### 2. Enhanced Temporal Artifact
 
 ```typescript
-interface SemanticTemporalArtifact extends TemporalArtifact {
+interface SemanticTemporalArtifact extends VisualTemporalArtifact {
     // Enhanced validation state tracking
     validationProgress: {
         name: ValidationState

@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ArtifactService } from '../services'
-import { Artifact, ArtifactType, ARTIFACT_TYPES } from '../types'
+import { VisualArtifact, ArtifactType, ARTIFACT_TYPES } from '../types'
 import { useArtifactValidation } from '../hooks/useArtifactValidation'
 
 interface SemanticArtifactEditorProps {
-    artifact?: Artifact
-    onSaved?: (artifact: Artifact) => void
+    artifact?: VisualArtifact
+    onSaved?: (artifact: VisualArtifact) => void
 }
 
 const TYPE_OPTIONS: { value: ArtifactType; label: string }[] = [
@@ -46,7 +46,7 @@ export const SemanticArtifactEditor: React.FC<SemanticArtifactEditorProps> = ({ 
             } catch {
                 context = {}
             }
-            const partial: Partial<Artifact> = {
+            const partial: Partial<VisualArtifact> = {
                 name,
                 type,
                 description,

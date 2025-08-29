@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useNotifications } from '../../shared/notifications/useNotifications'
 import { ValidationService } from '../services'
-import { Artifact, TemporalArtifact, ValidationResult } from '../types'
+import { VisualArtifact, VisualTemporalArtifact, ValidationResult } from '../types'
 
 export const useArtifactValidation = () => {
     const { showError } = useNotifications()
@@ -37,7 +37,7 @@ export const useArtifactValidation = () => {
     )
 
     const validateArtifactForSave = useCallback(
-        async (artifactData: Partial<Artifact>): Promise<string[]> => {
+        async (artifactData: Partial<VisualArtifact>): Promise<string[]> => {
             try {
                 const validation: ValidationResult = await validationService.validatePartialArtifact(artifactData)
                 return validation.errors.map(err => err.message)
@@ -50,7 +50,7 @@ export const useArtifactValidation = () => {
     )
 
     const validateAndShowErrors = useCallback(
-        async (artifact: Partial<Artifact> | TemporalArtifact, entityName: string): Promise<boolean> => {
+        async (artifact: Partial<VisualArtifact> | VisualTemporalArtifact, entityName: string): Promise<boolean> => {
             try {
                 const validation: ValidationResult = await validationService.validatePartialArtifact(artifact)
 
@@ -71,7 +71,7 @@ export const useArtifactValidation = () => {
     )
 
     const validateFullArtifact = useCallback(
-        async (artifact: Artifact): Promise<ValidationResult> => {
+        async (artifact: VisualArtifact): Promise<ValidationResult> => {
             try {
                 return await validationService.validateArtifact(artifact)
             } catch (error) {
@@ -96,7 +96,7 @@ export const useArtifactValidation = () => {
     )
 
     const validateTemporalArtifact = useCallback(
-        async (temporal: TemporalArtifact): Promise<ValidationResult> => {
+        async (temporal: VisualTemporalArtifact): Promise<ValidationResult> => {
             try {
                 return await validationService.validateTemporalArtifact(temporal)
             } catch (error) {

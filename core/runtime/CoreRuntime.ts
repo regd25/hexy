@@ -1,8 +1,6 @@
 import { PluginManager } from '../plugins/PluginManager'
 import { ArtifactRepositoryProviderCapability, EventBusProviderCapability, Plugin } from '../plugins/Plugin'
-import { EventBus, InMemoryEventBus } from '@/shared'
-import { ArtifactRepository } from '../../shared/repository/ArtifactRepository'
-import { InMemoryArtifactRepository } from '../../shared/repository/InMemoryArtifactRepository'
+import { ArtifactRepository, EventBus, InMemoryArtifactRepository, InMemoryEventBus } from '@/shared'
 
 export interface CoreRuntimeConfig {
     eventBusProviderId?: string
@@ -52,7 +50,7 @@ export class CoreRuntime {
         for (const cap of sorted) {
             if (!matchId || cap.providerId === matchId) {
                 const res = await cap.provideEventBus(config?.eventBusConfig)
-                if (res.ok) return res.value
+                if (res.ok && res.value) return res.value
             }
         }
         return null
@@ -67,7 +65,7 @@ export class CoreRuntime {
         for (const cap of sorted) {
             if (!matchId || cap.providerId === matchId) {
                 const res = await cap.provideArtifactRepository(config?.repositoryConfig)
-                if (res.ok) return res.value
+                if (res.ok && res.value) return res.value
             }
         }
         return null

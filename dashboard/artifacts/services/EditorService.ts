@@ -1,14 +1,14 @@
-import { Artifact } from '../shared/types/Artifact'
+import { VisualArtifact } from '../shared/types/VisualArtifact'
 import { REVERSE_TYPE_MAP, COLORS } from '../modules/artifacts/constants/colors'
 
 export interface EditorContent {
     text: string
-    artifacts: Artifact[]
+    artifacts: VisualArtifact[]
 }
 
 export class EditorService {
     private content: string = ''
-    private artifacts: Artifact[] = []
+    private artifacts: VisualArtifact[] = []
     private onContentChange?: (content: EditorContent) => void
 
     constructor(onContentChange?: (content: EditorContent) => void) {
@@ -24,14 +24,14 @@ export class EditorService {
         return this.content
     }
 
-    public getArtifacts(): Artifact[] {
+    public getArtifacts(): VisualArtifact[] {
         return [...this.artifacts]
     }
 
     private parseContent() {
         try {
             const lines = this.content.split('\n')
-            const artifacts: Artifact[] = []
+            const artifacts: VisualArtifact[] = []
             let currentCategory = ''
 
             for (let i = 0; i < lines.length; i++) {
@@ -46,7 +46,7 @@ export class EditorService {
                         const description = match[2].trim()
                         const type = this.getTypeFromCategory(currentCategory)
 
-                        const artifact: Artifact = {
+                        const artifact: VisualArtifact = {
                             id: name.replace(/\s+/g, ''),
                             name,
                             type,
@@ -87,7 +87,7 @@ export class EditorService {
         return 'concept'
     }
 
-    public updateNodeType(node: Artifact, oldType: string, newType: string) {
+    public updateNodeType(node: VisualArtifact, oldType: string, newType: string) {
         if (oldType === newType) return
 
         const lines = this.content.split('\n')
@@ -160,7 +160,7 @@ export class EditorService {
         this.parseContent()
     }
 
-    public updateNodeName(node: Artifact, oldName: string, newName: string) {
+    public updateNodeName(node: VisualArtifact, oldName: string, newName: string) {
         if (oldName === newName) return
 
         const lines = this.content.split('\n')
@@ -190,7 +190,7 @@ export class EditorService {
         }
     }
 
-    public updateNodeDescription(node: Artifact, oldDescription: string, newDescription: string) {
+    public updateNodeDescription(node: VisualArtifact, oldDescription: string, newDescription: string) {
         if (oldDescription === newDescription) return
 
         const lines = this.content.split('\n')

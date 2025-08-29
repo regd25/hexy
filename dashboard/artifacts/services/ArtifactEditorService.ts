@@ -1,4 +1,5 @@
-import { Artifact, ArtifactType } from '../../shared/types/Artifact'
+import { ARTIFACT_TYPES_LABELS, ArtifactType } from '@/shared'
+import { createDefaultArtifactMetadata, createDefaultVisualizationProperties, VisualArtifact } from '../types/VisualArtifact'
 
 export interface ArtifactFormData {
     name: string
@@ -12,29 +13,12 @@ export interface ValidationResult {
 }
 
 export class ArtifactEditorService {
-    private static readonly ARTIFACT_TYPES: { value: ArtifactType; label: string }[] = [
-        { value: 'purpose', label: 'Propósito' },
-        { value: 'vision', label: 'Visión' },
-        { value: 'policy', label: 'Política' },
-        { value: 'principle', label: 'Principio' },
-        { value: 'guideline', label: 'Guía' },
-        { value: 'context', label: 'Contexto' },
-        { value: 'actor', label: 'Actor' },
-        { value: 'concept', label: 'Concepto' },
-        { value: 'process', label: 'Proceso' },
-        { value: 'procedure', label: 'Procedimiento' },
-        { value: 'event', label: 'Evento' },
-        { value: 'result', label: 'Resultado' },
-        { value: 'observation', label: 'Observación' },
-        { value: 'evaluation', label: 'Evaluación' },
-        { value: 'indicator', label: 'Indicador' },
-        { value: 'area', label: 'Área' },
-        { value: 'authority', label: 'Autoridad' },
-        { value: 'reference', label: 'Referencia' },
-    ]
 
     static getArtifactTypes(): { value: ArtifactType; label: string }[] {
-        return this.ARTIFACT_TYPES
+        return Object.entries(ARTIFACT_TYPES_LABELS).map((entry) => ({
+            value: entry[0] as ArtifactType,
+            label: entry[1],
+        }))
     }
 
     static generateId(): string {
@@ -64,23 +48,23 @@ export class ArtifactEditorService {
         }
     }
 
-    static createArtifactFromFormData(formData: ArtifactFormData, existingArtifact?: Artifact): Artifact {
+    static createArtifactFromFormData(formData: ArtifactFormData, existingArtifact?: VisualArtifact): VisualArtifact {
         return {
             id: existingArtifact?.id || this.generateId(),
             name: formData.name.trim(),
             type: formData.type,
             description: formData.description.trim(),
-            info: formData.description.trim(),
-            x: existingArtifact?.x || 100,
-            y: existingArtifact?.y || 100,
-            vx: 0,
-            vy: 0,
-            fx: null,
-            fy: null,
+            version: '1.0.0',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            metadata: createDefaultArtifactMetadata(),
+            visualProperties: createDefaultVisualizationProperties(formData.type, 100, 100),
+            coordinates: { x: 100, y: 100 },
+            relationships: [],
         }
     }
 
-    static hasUnsavedChanges(formData: ArtifactFormData, originalArtifact?: Artifact): boolean {
+    static hasUnsavedChanges(formData: ArtifactFormData, originalArtifact?: VisualArtifact): boolean {
         if (!originalArtifact) {
             return formData.name.trim() !== '' || formData.description.trim() !== ''
         }
@@ -92,7 +76,7 @@ export class ArtifactEditorService {
         )
     }
 
-    static shouldShowCancelConfirmation(formData: ArtifactFormData, originalArtifact?: Artifact): boolean {
+    static shouldShowCancelConfirmation(formData: ArtifactFormData, originalArtifact?: VisualArtifact): boolean {
         return this.hasUnsavedChanges(formData, originalArtifact)
     }
 }

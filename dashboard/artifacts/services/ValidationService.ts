@@ -4,8 +4,8 @@
  */
 
 import {
-    Artifact,
-    TemporalArtifact,
+    VisualArtifact,
+    VisualTemporalArtifact,
     Relationship,
     ArtifactType,
     RelationshipType,
@@ -26,7 +26,7 @@ import {
 interface SemanticValidationRule {
     name: string
     description: string
-    validate: (artifact: Artifact) => ValidationResult
+    validate: (artifact: VisualArtifact) => ValidationResult
     weight: number // Importance weight (0-1)
 }
 
@@ -37,8 +37,8 @@ interface BusinessRule {
     id: string
     name: string
     description: string
-    applies: (artifact: Artifact) => boolean
-    validate: (artifact: Artifact) => ValidationResult
+    applies: (artifact: VisualArtifact) => boolean
+    validate: (artifact: VisualArtifact) => ValidationResult
     severity: 'error' | 'warning'
 }
 
@@ -57,7 +57,7 @@ export class ValidationService {
     /**
      * Validate artifact with comprehensive semantic analysis
      */
-    async validateArtifact(artifact: Artifact): Promise<ValidationResult> {
+    async validateArtifact(artifact: VisualArtifact): Promise<ValidationResult> {
         const results: ValidationResult[] = []
 
         // Schema validation
@@ -82,9 +82,9 @@ export class ValidationService {
     /**
      * Validate temporal artifact during creation/editing
      */
-    async validateTemporalArtifact(temporal: TemporalArtifact): Promise<ValidationResult> {
+    async validateTemporalArtifact(temporal: VisualTemporalArtifact): Promise<ValidationResult> {
         // Convert temporal to artifact for validation
-        const artifact: Partial<Artifact> = {
+        const artifact: Partial<VisualArtifact> = {
             ...temporal,
             id: temporal.id || crypto.randomUUID(),
             version: '1.0.0',
@@ -101,8 +101,8 @@ export class ValidationService {
      */
     async validateRelationship(
         relationship: Relationship,
-        sourceArtifact?: Artifact,
-        targetArtifact?: Artifact
+        sourceArtifact?: VisualArtifact,
+        targetArtifact?: VisualArtifact
     ): Promise<ValidationResult> {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
@@ -333,7 +333,7 @@ export class ValidationService {
                 name: 'Purpose Clarity',
                 description: 'Validates that the artifact purpose is clear and actionable',
                 weight: 0.9,
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     return this.validatePurposeContextAlignment(artifact.purpose, artifact.context)
                 },
             },
@@ -341,7 +341,7 @@ export class ValidationService {
                 name: 'Authority Legitimacy',
                 description: 'Validates that the authority is appropriate and legitimate',
                 weight: 0.8,
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     return this.validateAuthorityLegitimacy(artifact.authority, artifact.type)
                 },
             },
@@ -349,7 +349,7 @@ export class ValidationService {
                 name: 'Evaluation Coherence',
                 description: 'Validates that evaluation criteria align with purpose',
                 weight: 0.85,
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     return this.validateEvaluationCoherence(artifact.evaluationCriteria, artifact.purpose)
                 },
             },
@@ -357,7 +357,7 @@ export class ValidationService {
                 name: 'Semantic Metadata Quality',
                 description: 'Validates semantic metadata completeness and quality',
                 weight: 0.7,
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     return this.validateSemanticMetadata(artifact)
                 },
             },
@@ -371,10 +371,10 @@ export class ValidationService {
         this.businessRules = [
             {
                 id: 'strategic_authority',
-                name: 'Strategic Artifact Authority',
+                name: 'Strategic VisualArtifact Authority',
                 description: 'Strategic artifacts must have executive-level authority',
                 severity: 'warning',
-                applies: (artifact: Artifact) => {
+                applies: (artifact: VisualArtifact) => {
                     const strategicTypes: ArtifactType[] = [
                         ARTIFACT_TYPES.VISION,
                         ARTIFACT_TYPES.POLICY,
@@ -382,7 +382,7 @@ export class ValidationService {
                     ]
                     return strategicTypes.includes(artifact.type)
                 },
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     const executiveTerms = ['executive', 'ceo', 'board', 'leadership', 'strategic']
                     const hasExecutiveAuthority = executiveTerms.some(term =>
                         artifact.authority.toLowerCase().includes(term)
@@ -415,10 +415,10 @@ export class ValidationService {
             },
             {
                 id: 'operational_specificity',
-                name: 'Operational Artifact Specificity',
+                name: 'Operational VisualArtifact Specificity',
                 description: 'Operational artifacts must have specific, actionable descriptions',
                 severity: 'error',
-                applies: (artifact: Artifact) => {
+                applies: (artifact: VisualArtifact) => {
                     const operationalTypes: ArtifactType[] = [
                         ARTIFACT_TYPES.PROCESS,
                         ARTIFACT_TYPES.PROCEDURE,
@@ -426,7 +426,7 @@ export class ValidationService {
                     ]
                     return operationalTypes.includes(artifact.type)
                 },
-                validate: (artifact: Artifact) => {
+                validate: (artifact: VisualArtifact) => {
                     const hasActionWords = /\b(create|update|delete|process|execute|perform|implement)\b/i.test(
                         artifact.description
                     )
@@ -470,7 +470,7 @@ export class ValidationService {
     /**
      * Validate artifact schema
      */
-    private validateSchema(artifact: Artifact): ValidationResult {
+    private validateSchema(artifact: VisualArtifact): ValidationResult {
         const result = artifactSchema.safeParse(artifact)
 
         if (result.success) {
@@ -502,7 +502,7 @@ export class ValidationService {
     /**
      * Validate partial artifact (for temporal artifacts)
      */
-    validatePartialArtifact(artifact: Partial<Artifact>): ValidationResult {
+    validatePartialArtifact(artifact: Partial<VisualArtifact>): ValidationResult {
         const errors: ValidationError[] = []
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
@@ -510,7 +510,7 @@ export class ValidationService {
         if (!artifact.name || artifact.name.trim().length === 0) {
             errors.push({
                 field: 'name',
-                message: 'Artifact name is required',
+                message: 'VisualArtifact name is required',
                 code: 'NAME_REQUIRED',
                 severity: 'error',
             })
@@ -519,7 +519,7 @@ export class ValidationService {
         if (typeof artifact.type === 'undefined' || artifact.type === null) {
             errors.push({
                 field: 'type',
-                message: 'Artifact type is required',
+                message: 'VisualArtifact type is required',
                 code: 'TYPE_REQUIRED',
                 severity: 'error',
             })
@@ -529,7 +529,7 @@ export class ValidationService {
             if (!isValidType) {
                 errors.push({
                     field: 'type',
-                    message: 'Artifact type is invalid',
+                    message: 'VisualArtifact type is invalid',
                     code: 'TYPE_INVALID',
                     severity: 'error',
                 })
@@ -557,7 +557,7 @@ export class ValidationService {
     /**
      * Validate semantic metadata quality
      */
-    private validateSemanticMetadata(artifact: Artifact): ValidationResult {
+    private validateSemanticMetadata(artifact: VisualArtifact): ValidationResult {
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []
 
@@ -671,8 +671,8 @@ export class ValidationService {
 
     private validateRelationshipSemanticCoherence(
         relationship: Relationship,
-        source: Artifact,
-        target: Artifact
+        source: VisualArtifact,
+        target: VisualArtifact
     ): ValidationResult {
         const warnings: ValidationWarning[] = []
         const suggestions: ValidationSuggestion[] = []

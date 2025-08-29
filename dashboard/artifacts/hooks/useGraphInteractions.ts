@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import type { Artifact } from '../types'
+import type { VisualArtifact } from '../types'
 import { RELATIONSHIP_TYPES, createDefaultRelationshipVisualProperties } from '../types/artifact.types'
 import type { ArtifactService } from '../services/ArtifactService'
 
@@ -19,10 +19,10 @@ interface SelectionRect {
 
 interface UseGraphInteractionsParams {
     canvasRef: React.RefObject<HTMLDivElement>
-    artifacts: Artifact[]
-    setArtifacts: React.Dispatch<React.SetStateAction<Artifact[]>>
+    artifacts: VisualArtifact[]
+    setArtifacts: React.Dispatch<React.SetStateAction<VisualArtifact[]>>
     artifactService: ArtifactService
-    onOpenEditor: (artifact: Artifact) => void
+    onOpenEditor: (artifact: VisualArtifact) => void
     showSuccess: (msg: string) => void
     showError: (msg: string) => void
 }
@@ -37,10 +37,10 @@ export const useGraphInteractions = ({
     showError,
 }: UseGraphInteractionsParams) => {
     const [isDragging, setIsDragging] = useState(false)
-    const [draggingArtifact, setDraggingArtifact] = useState<Artifact | null>(null)
+    const [draggingArtifact, setDraggingArtifact] = useState<VisualArtifact | null>(null)
     const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [relationLine, setRelationLine] = useState<RelationLine | null>(null)
-    const [relationSource, setRelationSource] = useState<Artifact | null>(null)
+    const [relationSource, setRelationSource] = useState<VisualArtifact | null>(null)
 
     const [isSelecting, setIsSelecting] = useState(false)
     const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null)
@@ -49,7 +49,7 @@ export const useGraphInteractions = ({
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
 
     const pendingDrag = useRef<{
-        artifact: Artifact
+        artifact: VisualArtifact
         offsetX: number
         offsetY: number
         startX: number
@@ -121,7 +121,7 @@ export const useGraphInteractions = ({
     )
 
     const handleArtifactMouseDown = useCallback(
-        (artifact: Artifact, event: React.MouseEvent) => {
+        (artifact: VisualArtifact, event: React.MouseEvent) => {
             if (!canvasRef.current) return
             event.stopPropagation()
             const rect = canvasRef.current.getBoundingClientRect()
@@ -347,7 +347,7 @@ export const useGraphInteractions = ({
         }
     }, [isSelecting, canvasRef, selectionStart, computeSelectionFromRect])
 
-    const handleArtifactDoubleClick = useCallback((artifact: Artifact, event: React.MouseEvent) => {
+    const handleArtifactDoubleClick = useCallback((artifact: VisualArtifact, event: React.MouseEvent) => {
         event.preventDefault()
         event.stopPropagation()
         setRelationSource(artifact)
@@ -360,7 +360,7 @@ export const useGraphInteractions = ({
     }, [])
 
     const handleArtifactClick = useCallback(
-        (artifact: Artifact, event: React.MouseEvent) => {
+        (artifact: VisualArtifact, event: React.MouseEvent) => {
             if (!canvasRef.current) return
             if (justDraggedRef.current) {
                 justDraggedRef.current = false
