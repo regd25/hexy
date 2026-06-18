@@ -185,6 +185,8 @@ export const useTemporalArtifacts = () => {
 
                 const validation = await validationService.validatePartialArtifact({
                     name: temporalArtifact.name,
+                    type: temporalArtifact.type,
+                    description: temporalArtifact.description,
                 })
 
                 if (!validation.isValid) {
