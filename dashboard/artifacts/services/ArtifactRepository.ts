@@ -252,7 +252,7 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
     }
 
     // Relationship management methods
-    async createRelation(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
+    async createRelationship(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
         if (!relationship.type) {
             throw new Error('Relationship type is required')
         }
@@ -261,10 +261,13 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
             id: this.generateId(),
             createdAt: new Date(),
         }
+        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+        relationships.push(newRelationship)
+        localStorage.setItem(this.RELATIONSHIPS_KEY, JSON.stringify(relationships))
         return newRelationship
     }
 
-    async deleteRelation(id: string): Promise<boolean> {
+    async deleteRelationship(id: string): Promise<boolean> {
         const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         const index = relationships.findIndex(r => r.id === id)
 
@@ -276,7 +279,7 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
         return true
     }
 
-    async findRelationsByArtifact(artifactId: string): Promise<Relationship[]> {
+    async findRelationshipsByArtifact(artifactId: string): Promise<Relationship[]> {
         const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         return relationships.filter(r => r.sourceId === artifactId || r.targetId === artifactId)
     }
