@@ -45,7 +45,7 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
     if (filteredItems.length === 0) {
         return (
             <div
-                className="fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm"
+                className="autocomplete-dropdown fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm"
                 style={{ left: position.x, top: position.y, display: visible ? 'block' : 'none' }}
             >
                 <div className="px-3 py-2 text-slate-300">{noResultsText}</div>
@@ -65,7 +65,7 @@ export const AutocompleteDropdown = <T extends DropdownItem>({
 
     return (
         <div
-            className="fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm max-w-[360px]"
+            className="autocomplete-dropdown fixed z-[100] bg-slate-800/95 border border-slate-600 rounded-md shadow-xl text-white text-sm max-w-[360px]"
             style={{ left: position.x, top: position.y, display: visible ? 'block' : 'none' }}
         >
             {filteredItems.map(item => (
