@@ -98,7 +98,19 @@ export const useAutocomplete = <T>({
             const newValue = `${beforeTrigger}${trigger}${displayValue} ${afterCursor}`
             const newCursorPos = triggerIndex + trigger.length + displayValue.length + 1
 
-            textarea.value = newValue
+            // El textarea es controlado por React: asignar `.value` directo pasa por el
+            // setter que React intercepta y deja el value-tracker igual, por lo que el evento
+            // `input` no dispara onChange y el re-render restaura el valor previo. Usamos el
+            // setter NATIVO del prototipo para que React detecte el cambio y actualice estado.
+            const nativeSetter = Object.getOwnPropertyDescriptor(
+                Object.getPrototypeOf(textarea),
+                'value'
+            )?.set
+            if (nativeSetter) {
+                nativeSetter.call(textarea, newValue)
+            } else {
+                textarea.value = newValue
+            }
             textarea.setSelectionRange(newCursorPos, newCursorPos)
 
             const event = new Event('input', { bubbles: true })
