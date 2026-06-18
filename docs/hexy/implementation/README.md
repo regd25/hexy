@@ -43,7 +43,7 @@ hexy/  (pnpm + turborepo)
 | # | Feature | Estado | Criterio de validación (desde el dashboard) | Capa | Doc |
 |---|---|---|---|---|---|
 | **F0** | Homologación & monorepo | 📋 Planeado | `pnpm dev` levanta la app Next.js con el dashboard operativo (paridad) | infra | [F0](F0-homologacion.md) |
-| **F1** | Authoring loop (TS-only) ⭐ | 📋 Planeado | Autoro un artefacto, veo validación en vivo y exporto un `.sop` válido | TS | [F1](F1-authoring-loop.md) |
+| **F1** | Authoring loop (TS-only) ⭐ | 🔨 En curso (vía rápida) | Autoro un artefacto, veo validación en vivo y exporto un `.sop` válido | TS | [F1](F1-authoring-loop.md) |
 | **F2** | Round-trip import | 📋 Planeado | Importo el `.sop` de F1 y lo veo como grafo válido | TS | [F2](F2-round-trip-import.md) |
 | **F3** | Engine bridge (light↔heavy) | 📋 Planeado | Veo inferencias/relaciones que el lado TS no calcula | TS+Py | [F3](F3-engine-bridge.md) |
 | **F4** | El loop (HarnessRuntime mínimo) | 📋 Planeado | Ejecuto un `Process` y veo la traza + violations en vivo | Py | [F4](F4-harness-loop.md) |

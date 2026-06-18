@@ -19,6 +19,7 @@ import {
     type Relationship,
 } from '../types'
 import { ValidationService } from '../services/ValidationService'
+import { serializeSop, validateSop } from '../services/sol'
 
 interface GraphContainerProps {
     className?: string
@@ -43,6 +44,52 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
 
     const artifactService = useMemo(() => new ArtifactService(eventBus), [eventBus])
     const validationService = useMemo(() => new ValidationService(), [])
+
+    // F1 — Eval gate SOL en vivo sobre el modelo autorado.
+    const modelValidity = useMemo(() => {
+        if (artifacts.length === 0) return { isValid: true, errorCount: 0 }
+        const rels = artifacts.flatMap(a => a.relationships ?? [])
+        const result = validateSop(serializeSop(artifacts, rels))
+        return { isValid: result.isValid, errorCount: result.errors.filter(e => e.severity === 'error').length }
+    }, [artifacts])
+
+    // F1 — Export .sop: serializa el grafo completo, lo valida y descarga (bloquea si falla).
+    const handleExportSop = useCallback(async () => {
+        try {
+            const all = await artifactService.getAllArtifacts()
+            const relLists = await Promise.all(all.map(a => artifactService.getArtifactRelationships(a.id)))
+            const seen = new Set<string>()
+            const relationships = relLists.flat().filter(r => {
+                const key = r.id ?? `${r.sourceId}->${r.targetId}:${r.type}`
+                if (seen.has(key)) return false
+                seen.add(key)
+                return true
+            })
+            const sop = serializeSop(all, relationships)
+            const result = validateSop(sop)
+            if (!result.isValid) {
+                const first = result.errors
+                    .filter(e => e.severity === 'error')
+                    .slice(0, 3)
+                    .map(e => `L${e.line}: ${e.message}`)
+                    .join(' · ')
+                showError(`Export bloqueado — el modelo no pasa el eval gate: ${first}`)
+                return
+            }
+            const blob = new Blob([sop], { type: 'text/yaml;charset=utf-8' })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = 'model.sop'
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+            URL.revokeObjectURL(url)
+            showSuccess('Modelo exportado a model.sop (válido)')
+        } catch (error) {
+            showError(`Error al exportar: ${error instanceof Error ? error.message : 'desconocido'}`)
+        }
+    }, [artifactService, showError, showSuccess])
 
     const autocomplete = useAutocomplete<VisualArtifact>({
         items: artifacts,
@@ -430,6 +477,8 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 artifactCount={artifacts.length}
                 temporalArtifactCount={temporalArtifacts.length}
                 selectedCount={interactions.selectedIds.size}
+                validity={modelValidity}
+                onExport={handleExportSop}
             />
 
             <div className="relative flex-1 flex">

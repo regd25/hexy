@@ -3,7 +3,12 @@
 > El primer slice E2E que el usuario valida desde el dashboard. Todo en TS/Next.js, **sin el
 > motor Python**: prueba el Ubiquitous Language y el eval gate. Ver [roadmap](README.md).
 >
-> Estado: 📋 Planeado · Capa: TS · Dependencias: [F0](F0-homologacion.md).
+> Estado: 🔨 En curso (vía rápida sobre el dashboard Vite, sin esperar F0) · Capa: TS ·
+> Dependencias: [F0](F0-homologacion.md) (se difiere; ver nota de implementación).
+>
+> **Implementación vía rápida (entregada):** validador + serializador en
+> `dashboard/artifacts/services/sol/` (con tests `sol.test.ts`), eval gate en vivo y botón
+> **Export .sop** en `GraphHeader`/`GraphContainer`. Se migrará a `@hexy/sol` en F0.
 
 ---
 
