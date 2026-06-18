@@ -69,8 +69,13 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
 }) => {
     const blockInteractions = Boolean(activeArtifactId)
 
+    // GraphNode se posiciona por su esquina (left/top = x/y) con lado NODE_SIZE; el centroide
+    // está desplazado media caja. Las aristas se anclan al centro de cada nodo.
+    const NODE_RADIUS = 28
     const posById = new Map(
-        artifacts.map(a => [a.id, { x: a.visualProperties.x, y: a.visualProperties.y }] as const)
+        artifacts.map(
+            a => [a.id, { x: a.visualProperties.x + NODE_RADIUS, y: a.visualProperties.y + NODE_RADIUS }] as const
+        )
     )
 
     return (
