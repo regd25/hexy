@@ -20,10 +20,15 @@ import {
 } from '../types'
 import { ValidationService } from '../services/ValidationService'
 import { serializeSop, validateSop } from '../services/sol'
+import { Selector } from '../../shared/inputs/Selector'
+import { ARTIFACT_TYPES_LABELS } from '@shared'
+import type { ArtifactType } from '../types'
 
 interface GraphContainerProps {
     className?: string
 }
+
+const ARTIFACT_TYPE_OPTIONS = Object.entries(ARTIFACT_TYPES_LABELS).map(([value, label]) => ({ value, label }))
 
 export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => {
     const [isNameEditorVisible, setIsNameEditorVisible] = useState(false)
@@ -34,8 +39,10 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const [currentName, setCurrentName] = useState('')
     const [nameValidationErrors, setNameValidationErrors] = useState<string[]>([])
     const [artifacts, setArtifacts] = useState<VisualArtifact[]>([])
+    const [relationships, setRelationships] = useState<Relationship[]>([])
     const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(null)
     const [pendingRelationFromId, setPendingRelationFromId] = useState<string | null>(null)
+    const [editingType, setEditingType] = useState<ArtifactType>('intent')
 
     const canvasRef = useRef<HTMLDivElement>(null) as unknown as RefObject<HTMLDivElement>
     const editorRef = useRef<FloatingEditorHandle>(null)
@@ -114,6 +121,18 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             try {
                 const loadedArtifacts = await artifactService.getAllArtifacts()
                 setArtifacts(loadedArtifacts)
+
+                const relLists = await Promise.all(
+                    loadedArtifacts.map(a => artifactService.getArtifactRelationships(a.id))
+                )
+                const seen = new Set<string>()
+                const loadedRelationships = relLists.flat().filter(r => {
+                    const key = r.id ?? `${r.sourceId}->${r.targetId}:${r.type}`
+                    if (seen.has(key)) return false
+                    seen.add(key)
+                    return true
+                })
+                setRelationships(loadedRelationships)
             } catch (error) {
                 console.error('Error loading artifacts:', error)
             }
@@ -145,6 +164,27 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             ({ data }) => {
                 if (data.source === 'artifacts-module') {
                     setArtifacts(prev => prev.filter(a => a.id !== data.id))
+                    setRelationships(prev => prev.filter(r => r.sourceId !== data.id && r.targetId !== data.id))
+                }
+            }
+        )
+
+        const unsubscribeRelCreated = eventBus.subscribe<{ source: string; relationship: Relationship }>(
+            'relationship:created',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setRelationships(prev =>
+                        prev.some(r => r.id === data.relationship.id) ? prev : [...prev, data.relationship]
+                    )
+                }
+            }
+        )
+
+        const unsubscribeRelDeleted = eventBus.subscribe<{ source: string; id: string }>(
+            'relationship:deleted',
+            ({ data }) => {
+                if (data.source === 'artifacts-module') {
+                    setRelationships(prev => prev.filter(r => r.id !== data.id))
                 }
             }
         )
@@ -153,6 +193,8 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             unsubscribeCreated()
             unsubscribeUpdated()
             unsubscribeDeleted()
+            unsubscribeRelCreated()
+            unsubscribeRelDeleted()
         }
     }, [eventBus])
 
@@ -245,12 +287,30 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             const windowX = rect.left + baseX
             const windowY = rect.top + baseY + 80
             setEditingArtifact(null)
+            setEditingType((temp?.type as ArtifactType) ?? 'intent')
             setEditorPosition({ x: windowX, y: windowY })
             setIsDescriptionEditorVisible(true)
         } catch (error) {
             showError(`Error al preparar editor: ${error instanceof Error ? error.message : 'Error desconocido'}`)
         }
     }
+
+    const handleTypeChange = useCallback(
+        async (value: string) => {
+            const type = value as ArtifactType
+            setEditingType(type)
+            try {
+                if (currentTemporalId) {
+                    await artifactService.updateTemporalArtifact(currentTemporalId, { type })
+                } else if (editingArtifact) {
+                    await artifactService.updateArtifact(editingArtifact.id, { id: editingArtifact.id, type })
+                }
+            } catch (error) {
+                console.error('Error updating artifact type:', error)
+            }
+        },
+        [artifactService, currentTemporalId, editingArtifact]
+    )
 
     const handleNameCancel = () => {
         setIsNameEditorVisible(false)
@@ -267,6 +327,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
         const windowX = rect.left + artifact.visualProperties.x
         const windowY = rect.top + artifact.visualProperties.y + 80
         setEditingArtifact(artifact)
+        setEditingType(artifact.type)
         setEditorPosition({ x: windowX, y: windowY })
         setIsDescriptionEditorVisible(true)
     }, [])
@@ -486,6 +547,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                     canvasRef={canvasRef}
                     artifacts={artifacts}
                     temporals={temporalArtifacts}
+                    relationships={relationships}
                     relationLine={
                         interactions.relationLine as unknown as {
                             x1: number
@@ -563,12 +625,17 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                           ? `Nuevo artefacto: ${getTemporalArtifact(currentTemporalId)?.name || ''}`
                           : ''
                 }
-                subtitle={
-                    editingArtifact
-                        ? `Tipo: ${editingArtifact.type}`
-                        : currentTemporalId
-                          ? `Tipo: ${getTemporalArtifact(currentTemporalId)?.type || ''}`
-                          : ''
+                subtitle="Elige el tipo y describe el artefacto"
+                beforeButton={
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">Tipo:</span>
+                        <Selector
+                            size="sm"
+                            options={ARTIFACT_TYPE_OPTIONS}
+                            value={editingType}
+                            onChange={handleTypeChange}
+                        />
+                    </div>
                 }
                 placeholder="Describe este artefacto... (Ctrl+Enter para guardar)"
                 showCancelButton={true}

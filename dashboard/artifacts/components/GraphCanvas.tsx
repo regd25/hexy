@@ -16,11 +16,18 @@ interface SelectionRect {
     height: number
 }
 
+interface GraphEdge {
+    sourceId: string
+    targetId: string
+    type?: string
+}
+
 interface GraphCanvasProps {
     canvasRef: React.RefObject<HTMLDivElement>
     className?: string
     artifacts: VisualArtifact[]
     temporals: VisualTemporalArtifact[]
+    relationships?: GraphEdge[]
     relationLine: RelationLine | null
     isDragging: boolean
     draggingArtifactId?: string
@@ -43,6 +50,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     className,
     artifacts,
     temporals,
+    relationships = [],
     relationLine,
     isDragging,
     draggingArtifactId,
@@ -60,6 +68,10 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     activeArtifactId,
 }) => {
     const blockInteractions = Boolean(activeArtifactId)
+
+    const posById = new Map(
+        artifacts.map(a => [a.id, { x: a.visualProperties.x, y: a.visualProperties.y }] as const)
+    )
 
     return (
         <div
@@ -114,6 +126,40 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
             )}
 
             <div className="relative w-full h-full">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+                    <defs>
+                        <marker
+                            id="hexy-edge-arrow"
+                            viewBox="0 0 10 10"
+                            refX="9"
+                            refY="5"
+                            markerWidth="6"
+                            markerHeight="6"
+                            orient="auto-start-reverse"
+                        >
+                            <path d="M0,0 L10,5 L0,10 z" fill="#64748b" />
+                        </marker>
+                    </defs>
+                    {relationships.map((r, i) => {
+                        const s = posById.get(r.sourceId)
+                        const t = posById.get(r.targetId)
+                        if (!s || !t) return null
+                        return (
+                            <line
+                                key={`${r.sourceId}-${r.targetId}-${i}`}
+                                x1={s.x}
+                                y1={s.y}
+                                x2={t.x}
+                                y2={t.y}
+                                stroke="#64748b"
+                                strokeWidth={2}
+                                markerEnd="url(#hexy-edge-arrow)"
+                                opacity={0.8}
+                            />
+                        )
+                    })}
+                </svg>
+
                 {temporals.map(temporal => (
                     <ArtifactNode
                         key={temporal.temporaryId}

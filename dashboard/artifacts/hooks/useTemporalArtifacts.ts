@@ -108,7 +108,7 @@ export const useTemporalArtifacts = () => {
 
                 const payload: Partial<CreateArtifactPayload> = {
                     name: '',
-                    type: 'concept',
+                    type: 'intent',
                     description: '',
                     coordinates: { x, y },
                 }
