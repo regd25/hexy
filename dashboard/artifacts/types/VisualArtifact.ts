@@ -10,14 +10,13 @@ import {
     ARTIFACT_TYPES,
     RelationType,
     Artifact,
-    Relation,
     RELATION_TYPES,
     RELATION_COLORS,
     ARTIFACT_COLORS,
-    ArtifactMetadata,
     CreateArtifactPayload,
-    UpdateArtifactPayload
-} from '@/shared'
+    UpdateArtifactPayload,
+} from '@shared'
+import type { Relationship } from './artifact.types'
 
 /**
  * D3.js visualization properties for graph rendering
@@ -37,12 +36,26 @@ export interface VisualizationProperties {
     strokeColor: string
 }
 
-
 /**
  * Enhanced artifact interface with visualization and semantic properties
  * Extends base artifact from shared SSOT
  */
-export interface VisualArtifact extends Artifact {
+export interface VisualArtifact extends Omit<Artifact, 'createdAt' | 'updatedAt'> {
+    createdAt: Date
+    updatedAt: Date
+    purpose: string
+    context: Record<string, unknown>
+    authority: string
+    evaluationCriteria: string[]
+    semanticMetadata: {
+        semanticTags: string[]
+        businessValue: number
+        stakeholders: string[]
+        dependencies: string[]
+        semanticWeight: number
+        contextualRelevance: number
+        temporalRelevance: number
+    }
     visualProperties: VisualizationProperties
     coordinates: {
         x: number
@@ -51,14 +64,15 @@ export interface VisualArtifact extends Artifact {
     }
 
     // Enhanced relationships
-    relationships: Relation[]
+    relationships: Relationship[]
+    isValid: boolean
+    validationErrors: string[]
 }
 
 /**
  * Validation state for individual artifact fields
  */
 export type ValidationState = 'valid' | 'invalid' | 'pending' | 'warning'
-
 
 /**
  * Visual properties for relationship rendering
@@ -72,7 +86,6 @@ export interface RelationVisualProperties {
     curvature: number
     arrowSize: number
 }
-
 
 /**
  * Enhanced artifact validation schema using Zod
@@ -135,8 +148,8 @@ export const visualArtifactSchema = z.object({
     description: z.string().min(10).max(2000),
     version: z.string().regex(/^\d+\.\d+\.\d+$/),
     metadata: z.record(z.string(), z.unknown()).optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
     semanticMetadata: semanticMetadataSchema,
     visualProperties: visualizationPropertiesSchema,
     coordinates: z.object({
@@ -145,6 +158,12 @@ export const visualArtifactSchema = z.object({
         z: z.number().optional(),
     }),
     relationships: z.array(relationSchema),
+    purpose: z.string().default(''),
+    context: z.record(z.string(), z.unknown()).default({}),
+    authority: z.string().default(''),
+    evaluationCriteria: z.array(z.string()).default([]),
+    isValid: z.boolean().default(true),
+    validationErrors: z.array(z.string()).default([]),
 })
 
 export interface CreateVisualArtifactPayload extends CreateArtifactPayload {
@@ -155,7 +174,6 @@ export interface UpdateVisualArtifactPayload extends UpdateArtifactPayload {
     visualProperties?: Partial<VisualizationProperties>
 }
 
-
 /**
  * Type guards for runtime type checking
  */
@@ -163,15 +181,13 @@ export const isVisualArtifact = (value: unknown): value is VisualArtifact => {
     return visualArtifactSchema.safeParse(value).success
 }
 
-
-    export const isRelation = (value: unknown): value is Relation => {
+export const isRelation = (value: unknown): value is Relationship => {
     return relationSchema.safeParse(value).success
 }
 
 export const isValidRelationType = (type: string): type is RelationType => {
     return Object.values(RELATION_TYPES).includes(type as RelationType)
 }
-
 
 /**
  * Utility functions for semantic operations
@@ -192,7 +208,6 @@ export const createDefaultVisualizationProperties = (
         strokeColor: '#374151',
     }
 }
-
 
 export const createDefaultRelationVisualProperties = (type: RelationType): RelationVisualProperties => {
     const strokeColor = RELATION_COLORS[type as RelationType]

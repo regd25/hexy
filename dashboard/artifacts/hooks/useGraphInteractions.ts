@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import type { VisualArtifact } from '../types'
-import { RELATIONSHIP_TYPES, createDefaultRelationshipVisualProperties } from '../types/artifact.types'
+import { RELATIONSHIP_TYPES, createDefaultRelationshipVisualProperties } from '../types'
 import type { ArtifactService } from '../services/ArtifactService'
 
 interface RelationLine {

@@ -11,7 +11,7 @@ interface SemanticArtifactEditorProps {
 }
 
 const TYPE_OPTIONS: { value: ArtifactType; label: string }[] = [
-    { value: ARTIFACT_TYPES.PURPOSE, label: 'Propósito' },
+    { value: ARTIFACT_TYPES.INTENT, label: 'Intención' },
     { value: ARTIFACT_TYPES.CONTEXT, label: 'Contexto' },
     { value: ARTIFACT_TYPES.AUTHORITY, label: 'Autoridad' },
     { value: ARTIFACT_TYPES.EVALUATION, label: 'Evaluación' },

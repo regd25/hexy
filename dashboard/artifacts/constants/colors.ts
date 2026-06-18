@@ -1,5 +1,5 @@
 export const COLORS: Record<string, string> = {
-    purpose: '#a855f7',
+    intent: '#a855f7',
     context: '#14b8a6',
     authority: '#10b981',
     evaluation: '#f59e0b',
@@ -20,7 +20,7 @@ export const COLORS: Record<string, string> = {
 }
 
 export const REVERSE_TYPE_MAP: Record<string, string> = {
-    purpose: 'Propósitos',
+    intent: 'Intenciones',
     context: 'Contextos',
     authority: 'Autoridades',
     evaluation: 'Evaluaciones',

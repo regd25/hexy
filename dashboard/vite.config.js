@@ -1,16 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { resolve } from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
-            '@': resolve(__dirname, './'),
+            '@': fileURLToPath(new URL('./', import.meta.url)),
+            '@dashboard': fileURLToPath(new URL('./', import.meta.url)),
+            '@shared': fileURLToPath(new URL('../shared/index.ts', import.meta.url)),
+            '@core': fileURLToPath(new URL('../core', import.meta.url)),
         },
     },
     server: {

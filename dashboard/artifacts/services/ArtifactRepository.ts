@@ -1,5 +1,7 @@
-import { Artifact, ArtifactRepository, Relation } from "@/shared"
-import { ArtifactFilter, ArtifactSearchQuery, CreateArtifactPayload, UpdateArtifactPayload, VisualArtifact } from "../types/VisualArtifact"
+import { Artifact, ArtifactRepository, normalizeArtifactType } from "@shared"
+import type { Relationship } from "../types"
+import { ArtifactFilter, ArtifactSearchQuery, VisualArtifact } from "../types/VisualArtifact"
+import { CreateArtifactPayload, UpdateArtifactPayload, createDefaultSemanticMetadata, createDefaultVisualizationProperties } from "../types"
 import { VisualTemporalArtifact } from "../types/VisualTemporalArtifact"
 
 /**
@@ -39,6 +41,8 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
             const artifacts: VisualArtifact[] = JSON.parse(data)
             return artifacts.map(artifact => ({
                 ...artifact,
+                // Migrate legacy persisted types (e.g. 'purpose' → 'intent')
+                type: normalizeArtifactType(artifact.type),
                 createdAt: new Date(artifact.createdAt),
                 updatedAt: new Date(artifact.updatedAt),
             }))
@@ -248,11 +252,11 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
     }
 
     // Relationship management methods
-    async createRelation(relationship: Omit<Relation, 'id' | 'createdAt'>): Promise<Relation> {
+    async createRelation(relationship: Omit<Relationship, 'id' | 'createdAt'>): Promise<Relationship> {
         if (!relationship.type) {
             throw new Error('Relationship type is required')
         }
-        const newRelationship: Relation = {
+        const newRelationship: Relationship = {
             ...relationship,
             id: this.generateId(),
             createdAt: new Date(),
@@ -261,7 +265,7 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
     }
 
     async deleteRelation(id: string): Promise<boolean> {
-        const relationships: Relation[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         const index = relationships.findIndex(r => r.id === id)
 
         if (index === -1) {
@@ -272,8 +276,8 @@ export class LocalStorageArtifactRepository implements ArtifactRepository {
         return true
     }
 
-    async findRelationsByArtifact(artifactId: string): Promise<Relation[]> {
-        const relationships: Relation[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
+    async findRelationsByArtifact(artifactId: string): Promise<Relationship[]> {
+        const relationships: Relationship[] = JSON.parse(localStorage.getItem(this.RELATIONSHIPS_KEY) || '[]')
         return relationships.filter(r => r.sourceId === artifactId || r.targetId === artifactId)
     }
 

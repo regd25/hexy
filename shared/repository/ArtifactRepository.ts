@@ -1,11 +1,4 @@
-import {
-    Artifact,
-    ArtifactFilter,
-    ArtifactSearchQuery,
-    CreateArtifactPayload,
-    Relation,
-    UpdateArtifactPayload,
-} from '@/shared'
+import { Artifact, ArtifactFilter, ArtifactSearchQuery, CreateArtifactPayload, Relation, UpdateArtifactPayload } from '../types/Artifact'
 
 export interface ArtifactRepository {
     create(payload: CreateArtifactPayload): Promise<Artifact>

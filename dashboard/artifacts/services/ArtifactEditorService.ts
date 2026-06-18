@@ -1,5 +1,6 @@
-import { ARTIFACT_TYPES_LABELS, ArtifactType } from '@/shared'
-import { createDefaultArtifactMetadata, createDefaultVisualizationProperties, VisualArtifact } from '../types/VisualArtifact'
+import { ARTIFACT_TYPES_LABELS, ArtifactType, ArtifactMetadata } from '@shared'
+import { createDefaultVisualizationProperties, VisualArtifact } from '../types/VisualArtifact'
+import { ArtifactAdapter } from '@shared'
 
 export interface ArtifactFormData {
     name: string
@@ -57,7 +58,7 @@ export class ArtifactEditorService {
             version: '1.0.0',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            metadata: createDefaultArtifactMetadata(),
+            metadata: ArtifactAdapter.createDefaultArtifactMetadata() as ArtifactMetadata,
             visualProperties: createDefaultVisualizationProperties(formData.type, 100, 100),
             coordinates: { x: 100, y: 100 },
             relationships: [],

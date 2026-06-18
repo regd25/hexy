@@ -1,4 +1,4 @@
-import { Actor, Event, Purpose } from './Artifact'
+import { Actor, Event, Intent } from './Artifact'
 
 export type Severity = 'info' | 'warning' | 'error'
 
@@ -18,7 +18,7 @@ export interface Violation {
 export interface ExecutionContext {
     id: string
     actor: Actor
-    purpose: Purpose
+    intent: Intent
     inputs: Readonly<Record<string, unknown>>
     createdAt: string
     events: ReadonlyArray<Event>
@@ -29,13 +29,13 @@ export interface ExecutionContext {
 export function createExecutionContext(
     id: string,
     actor: Actor,
-    purpose: Purpose,
+    intent: Intent,
     inputs: Record<string, unknown>
 ): ExecutionContext {
     return {
         id,
         actor,
-        purpose,
+        intent,
         inputs: Object.freeze({ ...inputs }),
         createdAt: new Date().toISOString(),
         events: Object.freeze([]),

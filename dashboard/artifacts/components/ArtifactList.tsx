@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useEventBus } from '../../shared/event-bus/useEventBus'
 import { ArtifactService } from '../services'
-import { VisualArtifact, ArtifactType, ARTIFACT_TYPES } from '../types'
+import { VisualArtifact } from '../types'
+import { ArtifactType, ARTIFACT_TYPES } from '@shared'
 import { Selector } from '../../shared'
 
 interface ArtifactListProps {
@@ -10,7 +11,7 @@ interface ArtifactListProps {
 
 const TYPE_OPTIONS: { value: ArtifactType | 'all'; label: string }[] = [
     { value: 'all', label: 'Todos' },
-    { value: ARTIFACT_TYPES.PURPOSE, label: 'Propósito' },
+    { value: ARTIFACT_TYPES.INTENT, label: 'Intención' },
     { value: ARTIFACT_TYPES.VISION, label: 'Visión' },
     { value: ARTIFACT_TYPES.POLICY, label: 'Política' },
     { value: ARTIFACT_TYPES.PRINCIPLE, label: 'Principio' },
@@ -27,7 +28,6 @@ const TYPE_OPTIONS: { value: ArtifactType | 'all'; label: string }[] = [
     { value: ARTIFACT_TYPES.INDICATOR, label: 'Indicador' },
     { value: ARTIFACT_TYPES.AREA, label: 'Área' },
     { value: ARTIFACT_TYPES.AUTHORITY, label: 'Autoridad' },
-    { value: ARTIFACT_TYPES.REFERENCE, label: 'Referencia' },
 ]
 
 export const ArtifactList: React.FC<ArtifactListProps> = ({ className = '' }) => {
@@ -76,7 +76,7 @@ export const ArtifactList: React.FC<ArtifactListProps> = ({ className = '' }) =>
             a =>
                 a.name.toLowerCase().includes(q) ||
                 a.description.toLowerCase().includes(q) ||
-                a.semanticMetadata.semanticTags.some(tag => tag.toLowerCase().includes(q))
+                a.semanticMetadata.semanticTags.some((tag: string) => tag.toLowerCase().includes(q))
         )
     }, [artifacts, type, query])
 
@@ -109,7 +109,7 @@ export const ArtifactList: React.FC<ArtifactListProps> = ({ className = '' }) =>
                             <div className="text-sm font-semibold text-white">{a.name}</div>
                             <div className="text-xs text-slate-400 mt-1 line-clamp-2">{a.description}</div>
                             <div className="mt-2 flex flex-wrap gap-1">
-                                {a.semanticMetadata.semanticTags.slice(0, 4).map(tag => (
+                                {a.semanticMetadata.semanticTags.slice(0, 4).map((tag: string) => (
                                     <span
                                         key={tag}
                                         className="text-[10px] px-2 py-0.5 bg-slate-700 text-slate-300 rounded"

@@ -1,0 +1,16 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./*"],
+            "@dashboard/*": ["./*"],
+            "@shared": ["../shared/index.ts"],
+            "@shared/*": ["../shared/*"],
+            "@core/*": ["../core/*"]
+        }
+    },
+    "include": ["./**/*.ts", "./**/*.tsx"]
+}
+
+

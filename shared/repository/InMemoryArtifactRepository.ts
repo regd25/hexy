@@ -1,5 +1,5 @@
-import { Artifact, ArtifactId, Relation, SystemResult } from '@/shared'
-import { err, ok } from '@/shared/adapters/SystemResult'
+import { Artifact, ArtifactId, Relation } from '../types/Artifact'
+import { SystemResult, err, ok } from '../adapters/SystemResult'
 import { ArtifactRepository } from './ArtifactRepository'
 
 export class InMemoryArtifactRepository implements ArtifactRepository {

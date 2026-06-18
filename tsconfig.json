@@ -18,8 +18,15 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["./*"],
+            "@shared": ["./shared/index.ts"],
+            "@shared/*": ["./shared/*"],
+            "@dashboard": ["./dashboard/index.ts"],
+            "@dashboard/*": ["./dashboard/*"],
+            "@core": ["./core/index.ts"],
+            "@core/*": ["./core/*"]
         }
     },
     "include": ["./dashboard", "./core", "./shared", "**/*.ts", "**/*.tsx"],

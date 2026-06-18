@@ -13,8 +13,8 @@ import {
     ArtifactSearchQuery,
     ArtifactFilter,
     createDefaultVisualizationProperties,
-    createDefaultSemanticMetadata,
 } from '../types'
+import { createDefaultSemanticMetadata } from '../types/artifact.types'
 import { IArtifactRepository, LocalStorageArtifactRepository } from './ArtifactRepository'
 
 /**
@@ -251,7 +251,7 @@ export class ArtifactService {
             const temporal: VisualTemporalArtifact = {
                 temporaryId,
                 name: payload.name || '',
-                type: payload.type || 'purpose',
+                type: payload.type || 'intent',
                 description: payload.description || '',
                 purpose: payload.purpose || '',
                 context: payload.context || {},
@@ -263,7 +263,7 @@ export class ArtifactService {
                 },
                 visualProperties: {
                     ...createDefaultVisualizationProperties(
-                        payload.type || 'purpose',
+                        payload.type || 'intent',
                         payload.coordinates?.x || 0,
                         payload.coordinates?.y || 0
                     ),

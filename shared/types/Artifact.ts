@@ -59,7 +59,7 @@ export const RELATION_COLORS: Record<RelationType, string> = {
  * Semantic artifact types following Hexy framework
  */
 export const ARTIFACT_TYPES = {
-    PURPOSE: 'purpose',
+    INTENT: 'intent',
     CONTEXT: 'context',
     AUTHORITY: 'authority',
     EVALUATION: 'evaluation',
@@ -79,7 +79,7 @@ export const ARTIFACT_TYPES = {
 } as const
 
 export const ARTIFACT_TYPES_LABELS: Record<ArtifactType, string> = {
-    [ARTIFACT_TYPES.PURPOSE]: 'Propósito',
+    [ARTIFACT_TYPES.INTENT]: 'Intención',
     [ARTIFACT_TYPES.CONTEXT]: 'Contexto',
     [ARTIFACT_TYPES.AUTHORITY]: 'Autoridad',
     [ARTIFACT_TYPES.EVALUATION]: 'Evaluación',
@@ -99,6 +99,23 @@ export const ARTIFACT_TYPES_LABELS: Record<ArtifactType, string> = {
 }
 
 export type ArtifactType = (typeof ARTIFACT_TYPES)[keyof typeof ARTIFACT_TYPES]
+
+/**
+ * Legacy artifact type aliases for backward compatibility.
+ * Maps deprecated type strings (persisted before a rename) to their canonical value.
+ * `purpose` → `intent` unifies the Ubiquitous Language with SOL — see
+ * docs/hexy/UBIQUITOUS-LANGUAGE.md (SOL is the source of truth).
+ */
+export const LEGACY_ARTIFACT_TYPE_ALIASES: Record<string, ArtifactType> = {
+    purpose: ARTIFACT_TYPES.INTENT,
+}
+
+/**
+ * Normalize a possibly-legacy artifact type string to its canonical value.
+ * Use when reading persisted data that may predate a type rename.
+ */
+export const normalizeArtifactType = (type: string): ArtifactType =>
+    LEGACY_ARTIFACT_TYPE_ALIASES[type] ?? (type as ArtifactType)
 
 /**
  * Semantic metadata for enhanced artifact understanding
@@ -137,8 +154,10 @@ export const isArtifact = (value: unknown): value is Artifact => {
         'id' in value &&
         'name' in value &&
         'type' in value &&
-        'purpose' in value &&
-        'authority' in value
+        'description' in value &&
+        'version' in value &&
+        'createdAt' in value &&
+        'updatedAt' in value
     )
 }
 
@@ -146,7 +165,7 @@ export const isArtifact = (value: unknown): value is Artifact => {
  * Enhanced color palette for artifact types with semantic meaning
  */
 export const ARTIFACT_COLORS: Record<ArtifactType, string> = {
-    [ARTIFACT_TYPES.PURPOSE]: '#3B82F6', // Blue - Direction
+    [ARTIFACT_TYPES.INTENT]: '#3B82F6', // Blue - Direction
     [ARTIFACT_TYPES.VISION]: '#8B5CF6', // Purple - Aspiration
     [ARTIFACT_TYPES.POLICY]: '#EF4444', // Red - Rules
     [ARTIFACT_TYPES.PRINCIPLE]: '#F59E0B', // Amber - Foundation
@@ -265,8 +284,8 @@ export interface ValidationSuggestion {
 /**
  * Foundational Artifacts
  */
-export interface Purpose extends Artifact {
-    type: typeof ARTIFACT_TYPES.PURPOSE
+export interface Intent extends Artifact {
+    type: typeof ARTIFACT_TYPES.INTENT
 }
 
 export interface Context extends Artifact {

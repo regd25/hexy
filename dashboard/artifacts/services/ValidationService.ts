@@ -84,9 +84,11 @@ export class ValidationService {
      */
     async validateTemporalArtifact(temporal: VisualTemporalArtifact): Promise<ValidationResult> {
         // Convert temporal to artifact for validation
+        const typeFromTemporal = (temporal.type as any) ?? ARTIFACT_TYPES.CONCEPT
         const artifact: Partial<VisualArtifact> = {
             ...temporal,
-            id: temporal.id || crypto.randomUUID(),
+            type: typeFromTemporal,
+            id: temporal.id ?? crypto.randomUUID(),
             version: '1.0.0',
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -727,7 +729,7 @@ export class ValidationService {
             },
             [RELATIONSHIP_TYPES.SUPPORTS]: {
                 source: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.ACTOR, ARTIFACT_TYPES.AREA],
-                target: [ARTIFACT_TYPES.PURPOSE, ARTIFACT_TYPES.VISION, ARTIFACT_TYPES.POLICY],
+                target: [ARTIFACT_TYPES.INTENT, ARTIFACT_TYPES.VISION, ARTIFACT_TYPES.POLICY],
             },
             [RELATIONSHIP_TYPES.DEPENDS_ON]: {
                 source: [ARTIFACT_TYPES.PROCESS, ARTIFACT_TYPES.PROCEDURE, ARTIFACT_TYPES.RESULT],

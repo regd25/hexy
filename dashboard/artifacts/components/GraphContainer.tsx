@@ -17,7 +17,7 @@ import {
     createDefaultRelationshipVisualProperties,
     type RelationshipType,
     type Relationship,
-} from '../types/artifact.types'
+} from '../types'
 import { ValidationService } from '../services/ValidationService'
 
 interface GraphContainerProps {
@@ -35,7 +35,6 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
     const [artifacts, setArtifacts] = useState<VisualArtifact[]>([])
     const [currentTemporalId, setCurrentTemporalId] = useState<string | null>(null)
     const [pendingRelationFromId, setPendingRelationFromId] = useState<string | null>(null)
-    const [pendingMentionName, setPendingMentionName] = useState<string | null>(null)
 
     const canvasRef = useRef<HTMLDivElement>(null) as unknown as RefObject<HTMLDivElement>
     const editorRef = useRef<FloatingEditorHandle>(null)
@@ -301,7 +300,6 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                         } catch {}
                     }
                     setPendingRelationFromId(null)
-                    setPendingMentionName(null)
                 }
 
                 if (mentions.length > 0) {
@@ -500,7 +498,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
             />
 
             <FloatingTextArea
-                ref={editorRef}
+                ref={editorRef as any}
                 isVisible={isDescriptionEditorVisible}
                 position={editorPosition}
                 onSave={handleSaveDescription}
@@ -549,7 +547,6 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                                     setCurrentName(nameFromQuery)
                                     if (editingArtifact) {
                                         setPendingRelationFromId(editingArtifact.id)
-                                        setPendingMentionName(nameFromQuery)
                                     }
                                     try {
                                         await updateTemporalArtifactName(temporal.temporaryId, nameFromQuery)
@@ -559,7 +556,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                         }
                     }
                 }}
-                ignoreOutsideClickSelectors={[".autocomplete-dropdown"]}
+                ignoreOutsideClickSelectors={['.autocomplete-dropdown']}
             />
 
             <AutocompleteDropdown
@@ -573,7 +570,7 @@ export const GraphContainer: React.FC<GraphContainerProps> = ({ className }) => 
                 onSelect={item => autocomplete.insertReference(item as unknown as VisualArtifact)}
                 position={autocomplete.position}
                 visible={autocomplete.showAutocomplete}
-                searchFields={["name", "id", "type"]}
+                searchFields={['name', 'id', 'type']}
                 maxItems={8}
             />
         </div>
