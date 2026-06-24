@@ -52,4 +52,5 @@ export const api = {
     importData: (backup) => request('POST', '/import', backup),
     solYaml: () => request('GET', '/sol/yaml'),
     solValidate: (yaml) => request('POST', '/sol/validate', yaml !== undefined ? { yaml } : {}),
+    solImport: (yaml, mode = 'merge') => request('POST', '/sol/import', { yaml, mode }),
 }

@@ -7,6 +7,7 @@ import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 import { serializeYaml, idFromName } from '../src/domain/sol/serializeYaml.js'
 import { validateYaml } from '../src/domain/sol/validateYaml.js'
+import { parseYaml, solRefFor } from '../src/domain/sol/parseYaml.js'
 
 const artifact = (over) => ({
     id: over.id ?? randomUUID(),
@@ -52,4 +53,27 @@ test('derives canonical PascalCase ids, stripping accents and spaces', () => {
     assert.equal(idFromName('Claridad Semántica'), 'ClaridadSemantica')
     assert.equal(idFromName('  área de TI '), 'AreaDeTI')
     assert.equal(idFromName(''), 'Unnamed')
+})
+
+test('round-trips: parse(serialize(g)) preserves artifacts and relations (F2)', () => {
+    const intent = artifact({ id: 'i1', name: 'Claridad Semántica', type: 'intent', description: 'Buscar la claridad en el modelo.' })
+    const process = artifact({ id: 'p1', name: 'Mi Proceso', type: 'process', description: 'Proceso que implementa la claridad.' })
+    const yaml = serializeYaml([intent, process], [relation('p1', 'i1', 'depends_on')])
+
+    const { artifacts } = parseYaml(yaml)
+
+    assert.equal(artifacts.length, 2)
+    const byRef = new Map(artifacts.map((a) => [solRefFor(a), a]))
+    const proc = byRef.get('Process:MiProceso')
+    const claridad = byRef.get('Intent:ClaridadSemantica')
+    assert.ok(proc && claridad)
+    assert.equal(claridad.type, 'intent')
+    assert.equal(claridad.description, 'Buscar la claridad en el modelo.')
+    // La relación depends_on resuelve a la referencia del intent.
+    assert.equal(proc.relationships.length, 1)
+    assert.equal(proc.relationships[0].type, 'depends_on')
+    assert.equal(proc.relationships[0].targetRef, 'Intent:ClaridadSemantica')
+
+    // El grafo re-serializado debe seguir pasando el eval gate.
+    assert.equal(validateYaml(serializeYaml([intent, process], [relation('p1', 'i1')])).isValid, true)
 })

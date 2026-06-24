@@ -1,5 +1,6 @@
-/** Cabecera del grafo: título, badge de validez (eval gate SOL), contadores y export. */
+/** Cabecera del grafo: título, badge de validez (eval gate SOL), contadores, import y export. */
 import { api } from '../api/client.js'
+import { actions, getState } from '../state/store.js'
 import { showSuccess, showError } from '../notifications.js'
 
 export function createHeader() {
@@ -12,7 +13,9 @@ export function createHeader() {
                 <span class="badge-validity" data-validity hidden>
                     <span class="badge-validity__dot"></span><span data-validity-text></span>
                 </span>
+                <button class="btn" data-import title="Importar un .yaml SOL y reconstruir el grafo">Import .yaml</button>
                 <button class="btn btn--primary" data-export>Export .yaml</button>
+                <input type="file" accept=".yaml,.yml,.txt" data-import-file hidden />
             </div>
         </div>
         <div class="graph__counts" data-counts></div>
@@ -22,6 +25,34 @@ export function createHeader() {
     const badgeText = el.querySelector('[data-validity-text]')
     const counts = el.querySelector('[data-counts]')
     const exportBtn = el.querySelector('[data-export]')
+    const importBtn = el.querySelector('[data-import]')
+    const importFile = el.querySelector('[data-import-file]')
+
+    importBtn.addEventListener('click', () => importFile.click())
+    importFile.addEventListener('change', async () => {
+        const file = importFile.files?.[0]
+        if (!file) return
+        try {
+            const yaml = await file.text()
+            // Si ya hay modelo, preguntar si reemplazar o fusionar.
+            let mode = 'merge'
+            if (getState().artifacts.length > 0) {
+                mode = window.confirm(
+                    'Ya hay artefactos en el grafo.\n\nAceptar = reemplazar el modelo actual.\nCancelar = fusionar con lo importado.'
+                )
+                    ? 'replace'
+                    : 'merge'
+            }
+            const result = await api.solImport(yaml, mode)
+            await actions.loadAll()
+            const extra = result.unresolved.length > 0 ? ` · ${result.unresolved.length} referencia(s) sin resolver` : ''
+            showSuccess(`Importados ${result.artifacts} artefactos y ${result.relationships} relaciones${extra}`)
+        } catch (err) {
+            showError(`Error al importar: ${err.message}`)
+        } finally {
+            importFile.value = ''
+        }
+    })
 
     exportBtn.addEventListener('click', async () => {
         try {

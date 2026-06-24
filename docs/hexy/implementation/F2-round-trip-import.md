@@ -1,7 +1,12 @@
 # F2 — Round-trip import
 
-> Estado: 📋 Planeado · Capa: TS · Dependencias: [F1](F1-authoring-loop.md).
-> Nivel de detalle: objetivo + alcance + validación (se profundiza al llegar).
+> Estado: ✅ Implementado · Capa: backend Node.js + dashboard vanilla · Dependencias: [F1](F1-authoring-loop.md).
+>
+> **Implementación:** parser SOL inverso `parseYaml` (`server/src/domain/sol/parseYaml.js`) +
+> `importGraph` (`server/src/domain/sol/importGraph.js`), expuestos en `POST /api/sol/import`
+> (`mode: merge | replace`). UI: botón **Import .yaml** en el header del dashboard
+> (`dashboard/src/components/header.js`) con file picker y confirmación reemplazar/fusionar.
+> Verificado con test de round-trip (`server/test/sol.test.js`) + smoke E2E export→import.
 
 ## 1. Objetivo
 Cerrar el round-trip: **importar un `.yaml`** (el que F1 exportó, o un template de

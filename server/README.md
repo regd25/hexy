@@ -51,4 +51,8 @@ Variables de entorno: `PORT` (4000), `HEXY_DATA_DIR` (`./data`), `HEXY_DB_PATH` 
 `POST /api/relationships` · `DELETE /api/relationships/:id` ·
 `POST /api/temporal` · `GET|PATCH|DELETE /api/temporal/:id` · `POST /api/temporal/:id/promote` ·
 `GET /api/statistics` · `GET /api/export` · `POST /api/import` ·
-`GET /api/sol/yaml` · `POST /api/sol/validate`
+`GET /api/sol/yaml` · `POST /api/sol/validate` · `POST /api/sol/import`
+
+`POST /api/sol/import` cierra el round-trip (F2): recibe `{ yaml, mode }` (`mode`:
+`merge` | `replace`), parsea el `.yaml` SOL, reconstruye el grafo (layout en círculo) y
+devuelve `{ artifacts, relationships, unresolved }`.
