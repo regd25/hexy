@@ -56,3 +56,7 @@ Variables de entorno: `PORT` (4000), `HEXY_DATA_DIR` (`./data`), `HEXY_DB_PATH` 
 `POST /api/sol/import` cierra el round-trip (F2): recibe `{ yaml, mode }` (`mode`:
 `merge` | `replace`), parsea el `.yaml` SOL, reconstruye el grafo (layout en círculo) y
 devuelve `{ artifacts, relationships, unresolved }`.
+
+`POST /api/engine/project` (F3) hace de proxy al motor Python (`HEXY_ENGINE_URL`, default
+`http://localhost:8000`): reenvía el modelo actual y devuelve entidades, relaciones
+**inferidas** (cierre transitivo), ciclos y stats RDF. Responde `502` si el motor no corre.

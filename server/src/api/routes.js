@@ -125,5 +125,38 @@ export function createRouter({ service, validation }) {
         sendJson(res, 200, await importGraph(service, body.yaml, { mode: body.mode }))
     })
 
+    // --- Engine bridge (F3): proxy al motor pesado Python (RDF + inferencias) ---
+    router.post('/api/engine/project', async ({ res }) => {
+        const artifacts = await service.getAllArtifacts()
+        const relLists = await Promise.all(artifacts.map((a) => service.getArtifactRelationships(a.id)))
+        const relationships = [...new Map(relLists.flat().map((r) => [r.id, r])).values()]
+
+        const model = {
+            artifacts: artifacts.map((a) => ({ id: a.id, type: a.type, name: a.name, description: a.description })),
+            relationships: relationships.map((r) => ({ sourceId: r.sourceId, targetId: r.targetId, type: r.type })),
+        }
+
+        const engineUrl = process.env.HEXY_ENGINE_URL ?? 'http://localhost:8000'
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 8000)
+        try {
+            const engineRes = await fetch(`${engineUrl}/model/project`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(model),
+                signal: controller.signal,
+            })
+            if (!engineRes.ok) throw new Error(`engine responded ${engineRes.status}`)
+            sendJson(res, 200, await engineRes.json())
+        } catch (err) {
+            const reason = err.name === 'AbortError' ? 'timeout' : err.message
+            sendJson(res, 502, {
+                error: `No se pudo contactar el motor (${engineUrl}): ${reason}. ¿Está corriendo? (cd core/engine && uvicorn app:app --port 8000)`,
+            })
+        } finally {
+            clearTimeout(timeout)
+        }
+    })
+
     return router
 }

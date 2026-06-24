@@ -53,4 +53,7 @@ export const api = {
     solYaml: () => request('GET', '/sol/yaml'),
     solValidate: (yaml) => request('POST', '/sol/validate', yaml !== undefined ? { yaml } : {}),
     solImport: (yaml, mode = 'merge') => request('POST', '/sol/import', { yaml, mode }),
+
+    // Engine bridge (F3): proyección RDF + inferencias del motor Python.
+    engineProject: () => request('POST', '/engine/project', {}),
 }

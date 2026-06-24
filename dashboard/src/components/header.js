@@ -13,6 +13,7 @@ export function createHeader() {
                 <span class="badge-validity" data-validity hidden>
                     <span class="badge-validity__dot"></span><span data-validity-text></span>
                 </span>
+                <button class="btn" data-analyze title="Proyectar a RDF y inferir relaciones con el motor (Python)">Analizar con el motor</button>
                 <button class="btn" data-import title="Importar un .yaml SOL y reconstruir el grafo">Import .yaml</button>
                 <button class="btn btn--primary" data-export>Export .yaml</button>
                 <input type="file" accept=".yaml,.yml,.txt" data-import-file hidden />
@@ -27,6 +28,27 @@ export function createHeader() {
     const exportBtn = el.querySelector('[data-export]')
     const importBtn = el.querySelector('[data-import]')
     const importFile = el.querySelector('[data-import-file]')
+    const analyzeBtn = el.querySelector('[data-analyze]')
+
+    analyzeBtn.addEventListener('click', async () => {
+        if (getState().artifacts.length === 0) return
+        analyzeBtn.disabled = true
+        analyzeBtn.textContent = 'Analizando…'
+        try {
+            const result = await api.engineProject()
+            actions.setInferred(result.inferred ?? [])
+            const cyc = result.stats?.cycleCount ?? 0
+            const cycMsg = cyc > 0 ? ` · ${cyc} ciclo(s) detectado(s)` : ''
+            showSuccess(
+                `Motor: ${result.stats.nodes} entidades, ${result.rdf.triples} triples RDF, ${result.stats.inferredCount} relación(es) inferida(s)${cycMsg}`
+            )
+        } catch (err) {
+            showError(err.message)
+        } finally {
+            analyzeBtn.disabled = false
+            analyzeBtn.textContent = 'Analizar con el motor'
+        }
+    })
 
     importBtn.addEventListener('click', () => importFile.click())
     importFile.addEventListener('change', async () => {
@@ -88,6 +110,7 @@ export function createHeader() {
         const selectedCount = state.selectedIds.size
 
         exportBtn.disabled = artifactCount === 0
+        analyzeBtn.disabled = artifactCount === 0
 
         if (artifactCount > 0) {
             badge.hidden = false
@@ -103,6 +126,8 @@ export function createHeader() {
         let html = `<span><b>${artifactCount}</b></span><span>artefactos en el grafo</span>`
         if (temporalCount > 0) html += `<span class="sep">|</span><b class="c-temp">${temporalCount}</b><span>temporales</span>`
         if (selectedCount > 0) html += `<span class="sep">|</span><b class="c-sel">${selectedCount}</b><span>seleccionados</span>`
+        if (state.inferred.length > 0)
+            html += `<span class="sep">|</span><b class="c-inferred">${state.inferred.length}</b><span>inferidas</span>`
         counts.innerHTML = html
     }
 

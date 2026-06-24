@@ -73,6 +73,29 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId }) 
         const state = getState()
         const override = isDragging && draggingId && liveDragCenter ? { id: draggingId, center: liveDragCenter } : null
         drawEdges(svg, state.artifacts, state.relationships, override)
+
+        // Overlay de relaciones inferidas por el motor (F3): ámbar punteado.
+        if (state.inferred.length > 0) {
+            const byId = new Map(state.artifacts.map((a) => [a.id, a]))
+            for (const r of state.inferred) {
+                const s = byId.get(r.sourceId)
+                const t = byId.get(r.targetId)
+                if (!s || !t) continue
+                const sc = nodeCenter(s)
+                const tc = nodeCenter(t)
+                const line = document.createElementNS(SVG_NS, 'line')
+                line.setAttribute('x1', sc.x)
+                line.setAttribute('y1', sc.y)
+                line.setAttribute('x2', tc.x)
+                line.setAttribute('y2', tc.y)
+                line.setAttribute('stroke', '#f59e0b')
+                line.setAttribute('stroke-width', '2')
+                line.setAttribute('stroke-dasharray', '2,4')
+                line.setAttribute('opacity', '0.85')
+                svg.appendChild(line)
+            }
+        }
+
         if (relationLine) {
             const line = document.createElementNS(SVG_NS, 'line')
             line.setAttribute('x1', relationLine.x1)

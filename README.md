@@ -70,7 +70,7 @@ dos modos:
 
 ```
 hexy/
-├── core/        # Semantic Engine + Context Orchestration (Python: hexy-*.py)
+├── core/        # Semantic Engine Python: prototipo (hexy-*.py) + engine/ (FastAPI RDF+inferencias, F3)
 ├── server/      # Backend Node.js puro (node:http): YAML (fuente de verdad) + índice SQLite
 ├── shared/      # Single Source of Truth (TS): types/, events/, repository/, adapters/
 ├── dashboard/   # UI de artefactos (vanilla JS + CSS, bundleada con Vite)
@@ -117,7 +117,14 @@ pnpm --filter hexy-server dev        # http://localhost:4000
 
 # Terminal 2 — dashboard vanilla (proxy /api → :4000)
 pnpm --filter hexy-dashboard dev     # http://localhost:3000
+
+# Terminal 3 (opcional) — motor Python (RDF + inferencias, F3)
+cd core/engine && python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+cd core/engine && ./.venv/bin/uvicorn app:app --port 8000   # http://localhost:8000
 ```
+
+> El motor (`core/engine/`) es opcional: el dashboard funciona sin él; el botón **"Analizar
+> con el motor"** requiere que esté corriendo (el backend hace de proxy vía `HEXY_ENGINE_URL`).
 
 - **YAML = fuente de verdad** versionable en `server/data/` (un `.yaml` por artefacto).
 - **SQLite = índice derivado** (`server/data/hexy.db`, gitignored); se reconstruye desde los

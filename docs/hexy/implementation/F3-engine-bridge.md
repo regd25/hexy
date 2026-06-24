@@ -1,7 +1,15 @@
 # F3 — Engine bridge (light ↔ heavy)
 
-> Estado: 📋 Planeado · Capa: TS + Python · Dependencias: [F2](F2-round-trip-import.md).
-> Nivel de detalle: objetivo + alcance + validación (se profundiza al llegar).
+> Estado: ✅ Implementado · Capa: Node (proxy) + Python (motor) · Dependencias: [F2](F2-round-trip-import.md).
+>
+> **Implementación (divergente del plan original):** no hay BFF Next.js — el proxy vive en el
+> backend Node `server/` (`POST /api/engine/project`, reenvía a `HEXY_ENGINE_URL`, default
+> `:8000`, con timeout/AbortController). El motor es un servicio FastAPI mínimo y *real* en
+> `core/engine/` que usa **rdflib + networkx** (puro Python, sin owlready2/HermiT/Java): proyecta
+> a RDF e infiere el **cierre transitivo** de `depends_on`/`contains` + detecta ciclos + stats.
+> UI: botón **"Analizar con el motor"** en el header; las relaciones inferidas se pintan como
+> overlay ámbar punteado (distinto de las declaradas). Verificado con `pytest` (5 casos) + smoke
+> E2E (proxy + overlay en el navegador).
 
 ## 1. Objetivo
 Conectar la capa ligera (Next.js BFF) con el **motor pesado** (Python/FastAPI): enviar un

@@ -360,6 +360,9 @@ body {
 .graph__counts .c-sel {
     color: var(--green);
 }
+.graph__counts .c-inferred {
+    color: #f59e0b;
+}
 .graph__counts .sep {
     color: var(--text-dim);
 }

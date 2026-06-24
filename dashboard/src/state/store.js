@@ -12,6 +12,7 @@ const state = {
     temporals: [],
     selectedIds: new Set(),
     validity: { isValid: true, errorCount: 0 },
+    inferred: [], // relaciones inferidas por el motor (F3); overlay sobre el grafo
     loaded: false,
 }
 
@@ -68,8 +69,20 @@ export const actions = {
         const relLists = await Promise.all(artifacts.map((a) => api.getArtifactRelationships(a.id)))
         state.artifacts = artifacts
         state.relationships = dedupeRelationships(relLists)
+        state.inferred = [] // las inferencias quedan obsoletas al recargar el modelo
         state.loaded = true
         await refreshValidity()
+        emit()
+    },
+
+    /** Overlay de relaciones inferidas por el motor (F3). */
+    setInferred(list) {
+        state.inferred = list ?? []
+        emit()
+    },
+    clearInferred() {
+        if (state.inferred.length === 0) return
+        state.inferred = []
         emit()
     },
 
