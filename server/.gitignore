@@ -1,0 +1,3 @@
+# Datos de runtime: el YamlStore (fuente de verdad local) y el índice SQLite derivado.
+# El servidor recrea data/ al arrancar; no se versiona el estado de cada entorno.
+data/

@@ -8,14 +8,14 @@
 >
 > **Implementación vía rápida (entregada):** validador + serializador en
 > `dashboard/artifacts/services/sol/` (con tests `sol.test.ts`), eval gate en vivo y botón
-> **Export .sop** en `GraphHeader`/`GraphContainer`. Se migrará a `@hexy/sol` en F0.
+> **Export .yaml** en `GraphHeader`/`GraphContainer`. Se migrará a `@hexy/sol` en F0.
 
 ---
 
 ## 1. Objetivo
 
 Cerrar el ciclo de autoría de un artefacto de dominio: **crear/editar → validar en vivo →
-persistir → exportar a `.sop`** válido. Es la prueba mínima de que el dashboard sirve como
+persistir → exportar a `.yaml`** válido. Es la prueba mínima de que el dashboard sirve como
 *systems modeling tool* y de que el vocabulario (referencias `Type:Id`, composición `uses:`)
 funciona punta a punta.
 
@@ -25,7 +25,7 @@ funciona punta a punta.
 - **Validación combinada:** Zod (`ValidationService` actual) **+** `@hexy/sol`
   `SemanticValidator` (referencias, DRY, jerarquía) como **eval gate** en vivo.
 - **Persistencia ligera (BFF):** guardar el modelo (archivo JSON / in-memory primero).
-- **Export `.sop`:** serializar el grafo a YAML `.sop` canónico.
+- **Export `.yaml`:** serializar el grafo a YAML `.yaml` canónico.
 
 > Sin Python, sin ejecución de loop, sin MCP. Solo autoría + validación + export.
 
@@ -35,7 +35,7 @@ El usuario:
 1. Crea un artefacto `Intent` y un `Process` que lo referencia (`uses: { intent: Intent:X }`).
 2. Ve **validación en vivo**: si pone un string genérico o referencia inexistente, aparece
    el error del eval gate; al corregir, pasa a verde.
-3. Pulsa **Export** → descarga un `.sop` que **pasa `SemanticValidator.validateDocument()`
+3. Pulsa **Export** → descarga un `.yaml` que **pasa `SemanticValidator.validateDocument()`
    sin errores** y valida contra `sol-schema.json`.
 
 ## 4. Pasos de implementación
@@ -48,7 +48,7 @@ El usuario:
   `CROSS_REFERENCE_VALIDATION`) a los campos de UI ya soportados.
 - Mostrar inline en `SemanticArtifactEditor` (ya tiene estado de validación por campo).
 
-### 4.2 Serializador `.sop` (TS)
+### 4.2 Serializador `.yaml` (TS)
 - Nuevo módulo `apps/web/lib/sop/serialize.ts`: `VisualArtifact`/grafo → objeto SOL →
   YAML (`yaml.stringify`). Respetar la **gramática canónica**: `meta`, `uses:` (composición,
   no duplicación), referencias `Type:Id`, flujo `Actor:Rol → "acción"` para `Process`.
@@ -61,7 +61,7 @@ El usuario:
   sobreviva al reload (Postgres llega en F8).
 
 ### 4.4 UI de export
-- Botón **Export `.sop`** en el editor/lista que llama al serializador y descarga el archivo;
+- Botón **Export `.yaml`** en el editor/lista que llama al serializador y descarga el archivo;
   feedback con `useNotifications`.
 
 ## 5. Archivos a crear/modificar
@@ -78,7 +78,7 @@ El usuario:
   `SOL_SCHEMA`.
 - **Unit:** referencia inexistente → el eval gate combinado devuelve error
   `CROSS_REFERENCE_VALIDATION`.
-- **E2E manual (criterio §3):** autoría → validación en vivo → export `.sop` válido.
+- **E2E manual (criterio §3):** autoría → validación en vivo → export `.yaml` válido.
 - `pnpm -w test` verde.
 
 ## 7. Dependencias

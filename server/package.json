@@ -1,0 +1,18 @@
+{
+  "name": "hexy-server",
+  "version": "1.0.0",
+  "description": "Backend Node.js puro (node:http) para Hexy — YAML como fuente de verdad + índice SQLite",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "yaml": "^2.5.0"
+  }
+}

@@ -1,7 +1,7 @@
 # HarnessRuntime — Design Spec (the loop) + SOL→Hexy contract
 
 > **Diseño, no implementación.** Especifica (a) el `HarnessRuntime` mínimo que cierra el
-> "hueco del loop" y (b) el contrato por el cual un artefacto SOL `.sop` se carga, valida y
+> "hueco del loop" y (b) el contrato por el cual un artefacto SOL `.yaml` se carga, valida y
 > ejecuta en Hexy. Construye sobre lo que **ya existe** en el repo.
 >
 > Estado: `draft` · Última actualización: 2026-06-17 · Ver [POSITIONING §5.3](../POSITIONING.md#53-estado-del-arte--cerrar-el-hueco-del-loop).
@@ -101,10 +101,10 @@ Reglas de diseño:
 
 ## 4. Contrato de integración SOL → Hexy
 
-Cómo un artefacto `.sop` llega a ejecutarse. Hoy esto es **prosa**; aquí se vuelve interfaz.
+Cómo un artefacto `.yaml` llega a ejecutarse. Hoy esto es **prosa**; aquí se vuelve interfaz.
 
 ```
-  .sop (YAML)
+  .yaml (YAML)
      │  1. PARSE        yaml → objeto; validar contra sol-schema.json
      ▼
   SolArtifact
@@ -126,7 +126,7 @@ Puntos de contrato (cada uno es un punto de fallo explícito, no silencioso):
 
 | Etapa | Entrada | Salida | Falla si… |
 |---|---|---|---|
-| **Parse** | `.sop` | `SolArtifact` | no valida contra `sol-schema.json` |
+| **Parse** | `.yaml` | `SolArtifact` | no valida contra `sol-schema.json` |
 | **Resolve** | `SolArtifact` | `ResolvedArtifact` | una referencia `Type:Id` no existe (anti-alucinación) |
 | **Project** | `ResolvedArtifact` | grafo RDF | inconsistencia ontológica (reasoner) |
 | **Plan** | grafo | `Step[]`/`Guardrail[]`/goal | `Process` sin `flow` o sin `Evaluation` |

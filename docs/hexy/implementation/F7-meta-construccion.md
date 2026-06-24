@@ -25,7 +25,7 @@ una feature, corre su `Process` de validación (su `Evaluation`), y el estado se
 traza — Hexy validando a Hexy.
 
 ## 4. Verificación
-- Los artefactos `.sop` del roadmap pasan el eval gate (F1).
+- Los artefactos `.yaml` del roadmap pasan el eval gate (F1).
 - Un `Process` de meta-construcción corre en el harness (F4) y, si usa tools (F5), respeta
   los guardrails de `Authority`.
 

@@ -5,11 +5,11 @@
 
 ## 1. Objetivo
 Conectar la capa ligera (Next.js BFF) con el **motor pesado** (Python/FastAPI): enviar un
-`.sop`, que el motor lo **proyecte a RDF/OWL**, razone, y devuelva **entidades, inferencias y
+`.yaml`, que el motor lo **proyecte a RDF/OWL**, razone, y devuelva **entidades, inferencias y
 sub-grafo** que el lado TS no puede calcular. Primer cruce real de la frontera de cómputo.
 
 ## 2. Alcance E2E
-- **Engine (`core/`):** endpoint FastAPI `POST /model/project` que recibe `.sop`/JSON, usa
+- **Engine (`core/`):** endpoint FastAPI `POST /model/project` que recibe `.yaml`/JSON, usa
   `hexy-rdf-processor.py` + `hexy-ontology-manager.py` para proyectar a RDF, razonar
   (HermiT/Pellet) y devolver entidades + relaciones inferidas + estadísticas del grafo.
 - **BFF (`apps/web`):** route handler `app/api/engine/project` que hace de proxy al motor
@@ -23,7 +23,7 @@ nuevas (p. ej. transitividad de `DEPENDS_ON`, o entidades derivadas) que no esta
 grafo autorado — evidencia de que el motor razona.
 
 ## 4. Verificación
-- `pytest` del endpoint `/model/project` con un `.sop` fixture → entidades/inferencias esperadas.
+- `pytest` del endpoint `/model/project` con un `.yaml` fixture → entidades/inferencias esperadas.
 - El BFF responde y la UI pinta las inferencias; el motor corre como proceso/servicio aparte.
 
 ## 5. Dependencias

@@ -16,7 +16,7 @@ carga, valida y **corre el loop** del agente usando artefactos de negocio versio
 
 | Capa | Repo | Responsabilidad |
 |---|---|---|
-| **Lenguaje / Dominio** | [`../sol`](../sol) | *Ubiquitous Language ejecutable*: 17 artefactos `.sop`, composición DRY, **referencias semánticas anti-alucinación** (`Actor:X`). |
+| **Lenguaje / Dominio** | [`../sol`](../sol) | *Ubiquitous Language ejecutable*: 17 artefactos `.yaml`, composición DRY, **referencias semánticas anti-alucinación** (`Actor:X`). |
 | **Ejecución / Harness** | este repo (`hexy`) | **HarnessRuntime** (el loop), Context Orchestration, Semantic Engine OWL/RDF, ExecutionContext (traza), API REST y dashboard. |
 
 Las dos capas evolucionan a ritmos distintos: SOL al ritmo del **negocio**, Hexy al ritmo
@@ -45,7 +45,10 @@ condiciones, actores y flujos de forma estructurada y auditable.
 - 🧰 **HarnessRuntime** *(en diseño)* — corre el loop `act → observe → validate → decide →
   repeat`. (`docs/hexy/harness-runtime.md`)
 - 🧩 **Tools / Plugins** — vía **MCP** (prioritario), Jira, n8n, AWS Step Functions, REST.
-- 🌐 **API REST** (FastAPI) y **dashboard** React + D3 para artefactos y relaciones.
+- 🌐 **API REST** — backend **Node.js puro** (`node:http`, `server/`) con **YAML versionable
+  como fuente de verdad** + índice **SQLite** (`node:sqlite`) reconstruible.
+- 🖥️ **Dashboard vanilla** (JS + CSS, sin framework) para autorar artefactos y relaciones
+  contra esa API.
 
 ---
 
@@ -67,9 +70,10 @@ dos modos:
 
 ```
 hexy/
-├── core/        # Semantic Engine + Context Orchestration (Python: hexy-*.py) + API REST
+├── core/        # Semantic Engine + Context Orchestration (Python: hexy-*.py)
+├── server/      # Backend Node.js puro (node:http): YAML (fuente de verdad) + índice SQLite
 ├── shared/      # Single Source of Truth (TS): types/, events/, repository/, adapters/
-├── dashboard/   # UI de artefactos (React 19 + TypeScript + D3)
+├── dashboard/   # UI de artefactos (vanilla JS + CSS, bundleada con Vite)
 ├── landing/     # Landing page (Next.js)  ·  contenido de "Visión", no de runtime
 ├── docs/        # Documentación  →  empezar por docs/POSITIONING.md
 └── specs/       # Especificaciones del dashboard
@@ -96,9 +100,29 @@ hexy/
 
 ## 🤖 Requisitos
 
+- **Node.js >= 22** — requerido por `server/` (usa `node:sqlite`, nativo desde Node 22).
 - Python >= 3.10 (core / Semantic Engine)
-- Node.js >= 18 (dashboard / shared / landing)
 - Docker (opcional, para infraestructura local)
+- Gestor de paquetes: **pnpm** (monorepo con turbo).
+
+---
+
+## ▶️ Cómo ejecutar (backend + dashboard)
+
+```bash
+pnpm install
+
+# Terminal 1 — backend Node.js puro (datos persistentes en server/data/)
+pnpm --filter hexy-server dev        # http://localhost:4000
+
+# Terminal 2 — dashboard vanilla (proxy /api → :4000)
+pnpm --filter hexy-dashboard dev     # http://localhost:3000
+```
+
+- **YAML = fuente de verdad** versionable en `server/data/` (un `.yaml` por artefacto).
+- **SQLite = índice derivado** (`server/data/hexy.db`, gitignored); se reconstruye desde los
+  YAML al arrancar. Detalle de la API y la arquitectura en [`server/README.md`](server/README.md).
+- Tests del backend: `pnpm --filter hexy-server test` (`node --test`).
 
 ---
 

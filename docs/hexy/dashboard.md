@@ -45,7 +45,7 @@ El dashboard es la **autoría** de la capa de lenguaje; el harness es la **ejecu
                             │  exporta / sincroniza
                             ▼
 ┌──────────────────────────────────────────────────────────────┐
-│  LENGUAJE         SOL — artefactos .sop (Ubiquitous Language)│
+│  LENGUAJE         SOL — artefactos .yaml (Ubiquitous Language)│
 │                   referencias semánticas anti-alucinación     │
 └───────────────────────────┬──────────────────────────────────┘
                             │  contrato SOL→Hexy (parse→resolve→…)
@@ -130,7 +130,7 @@ El resultado es un **grafo de dominio validado**: la entrada de los dos caminos 
 El grafo validado **es el domain model**, no un boceto previo a él:
 
 - **`Area` = bounded context**; los artefactos = el **Ubiquitous Language** del sistema.
-- Se exporta a **SOL `.sop`** (specs-as-code versionadas).
+- Se exporta a **SOL `.yaml`** (specs-as-code versionadas).
 - El **harness de Hexy** dirige el *scaffolding* / generación de código **anclado en
   referencias verificadas**: como cada `Actor:X`, `Process:Y` resuelve contra el modelo (el
   contrato Resolve de [`harness-runtime.md`](harness-runtime.md) §4 falla si no existe), el
@@ -141,7 +141,7 @@ El grafo validado **es el domain model**, no un boceto previo a él:
 > context window del agente codificador; los bounded contexts (`Area`) son sus *guardrails*.
 
 **Hoy:** no hay generador de código implementado. Este camino es **diseño**; depende del
-export a `.sop` y del `HarnessRuntime` mínimo.
+export a `.yaml` y del `HarnessRuntime` mínimo.
 
 ---
 
@@ -176,7 +176,7 @@ modelado de `Process`/`Event` en el dashboard existe, la ejecución no.
 | Modelo `VisualArtifact` + schemas Zod | ✅ Implementado | `dashboard/artifacts/types/VisualArtifact.ts` |
 | Relaciones tipadas (10 tipos) | ✅ Implementado | `shared/types/Artifact.ts` |
 | Arquitectura event-driven + servicios | ✅ Implementado | `dashboard/shared/event-bus/`, `dashboard/artifacts/services/` |
-| Export del modelo a SOL `.sop` | 🔴 No implementado | requisito de ambos caminos |
+| Export del modelo a SOL `.yaml` | 🔴 No implementado | requisito de ambos caminos |
 | **Camino A** — codegen de dominio | 🌟 Visión / diseño | depende de export + HarnessRuntime |
 | **Camino B** — ejecución de flujos | 🌟 Visión / diseño | depende del HarnessRuntime |
 | Persistencia del modelo | 🔴 No implementado | hoy in-memory (`InMemoryEventBus`) |

@@ -15,7 +15,7 @@
 
 - **SOL — Semantic Operations Language** es la **capa de lenguaje/dominio**: un
   *Ubiquitous Language ejecutable*. Define el negocio como **artefactos versionados**
-  (`.sop`) con **referencias semánticas verificables** (`Actor:X`, `Process:Y`) que son
+  (`.yaml`) con **referencias semánticas verificables** (`Actor:X`, `Process:Y`) que son
   *anti-alucinación por diseño*.
 - **Hexy** es la **capa de ejecución**: el **harness** que carga, valida y **corre el loop**
   del agente, usando los artefactos SOL como *guardrails*, *tools* y *criterios de término*.
@@ -59,7 +59,7 @@ SOL+Hexy fue diseñado alrededor de esa idea **antes de que tuviera nombre**:
 │  Bloques fundacionales: Intent · Context · Authority · Evaluation      │
 │  Referencias semánticas anti-alucinación: Actor:X, Process:Y           │
 │  Bounded contexts: jerarquía estratégico/táctico/operacional + Area    │
-│  Tooling: .sop (YAML), JSON Schema, validator, VS Code language server │
+│  Tooling: .yaml (YAML), JSON Schema, validator, VS Code language server │
 └───────────────────────────────┬────────────────────────────────────────┘
                                  │  contrato de carga/validación/ejecución
                                  ▼
@@ -93,7 +93,7 @@ se define **una sola vez**; su detalle canónico vive en
 
 | Término del proyecto | Definición | Nombre en la industria 2026 |
 |---|---|---|
-| **Artifact (SOL)** | Unidad de dominio versionada (`.sop`) con `meta`/`uses`/`relationships` | *Spec-as-code* / unidad del Ubiquitous Language |
+| **Artifact (SOL)** | Unidad de dominio versionada (`.yaml`) con `meta`/`uses`/`relationships` | *Spec-as-code* / unidad del Ubiquitous Language |
 | **Intent / Context / Authority / Evaluation** | Los 4 bloques fundacionales reutilizables | Foundational vocabulary (DDD) |
 | **Referencia semántica** (`Actor:X`) | Puntero tipado y verificable entre artefactos | *Grounding* anti-hallucination |
 | **Area + jerarquía** | Frontera lingüística donde aplica un modelo | **Bounded context** / guardrail |
@@ -193,7 +193,7 @@ la mitad *ejecución/loop* (Hexy) es donde está el trabajo de ingeniería pendi
 
 | Capacidad | Estado | Evidencia / Nota |
 |---|---|---|
-| 17 artefactos SOL + composición DRY | ✅ Implementado | `../sol/docs/templates/*.sop` |
+| 17 artefactos SOL + composición DRY | ✅ Implementado | `../sol/docs/templates/*.yaml` |
 | Reglas de referencia anti-alucinación | ✅ Documentado | `../sol/docs/templates/SEMANTIC_REFERENCE_RULES.md` |
 | Schema + validator + VS Code extension | 🟡 Dev build (v0.0.3-dev) | tests fallan, e2e no validado |
 | Motor OWL/RDF + SPARQL | ✅ Implementado | `core/hexy-ontology-manager.py`, `core/hexy-rdf-processor.py` |
@@ -206,7 +206,7 @@ la mitad *ejecución/loop* (Hexy) es donde está el trabajo de ingeniería pendi
 | Persistencia (Redis/Postgres) | 🔴 No implementado | configurado, sin integración |
 | Contrato de integración SOL→Hexy | 🔴 No especificado | ver harness-runtime.md (a crear) |
 | Dashboard como modelado de dominio | 🟡 Parcial | arquitectura ~100%, features ~25% — ver [dashboard.md](hexy/dashboard.md) |
-| Model→code (sistemas de dominio) | 🌟 Visión | Camino A del dashboard; depende de export `.sop` + HarnessRuntime |
+| Model→code (sistemas de dominio) | 🌟 Visión | Camino A del dashboard; depende de export `.yaml` + HarnessRuntime |
 | Ejecución de flujos de negocio | 🌟 Visión | Camino B del dashboard; depende del HarnessRuntime |
 | SCL / SOL como lenguaje en landing | 🌟 Visión | `landing/` — separar de "implementado" |
 | Federated / RL / multimodal | 🌟 Visión | roadmap nivel 4 |

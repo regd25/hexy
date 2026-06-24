@@ -1,21 +1,17 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
-import { fileURLToPath, URL } from 'node:url'
 
+const API_TARGET = process.env.HEXY_API_TARGET ?? 'http://localhost:4000'
+
+// Frontend vanilla (sin React). Vite solo bundlea/sirve JS+CSS y hace proxy de /api al
+// backend node:http (server/). En producción el dashboard se sirve estático y /api apunta
+// al backend desplegado.
 export default defineConfig({
-    plugins: [react()],
-    resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./', import.meta.url)),
-            '@dashboard': fileURLToPath(new URL('./', import.meta.url)),
-            '@shared': fileURLToPath(new URL('../shared/index.ts', import.meta.url)),
-            '@core': fileURLToPath(new URL('../core', import.meta.url)),
-        },
-    },
     server: {
         port: 3000,
         open: true,
+        proxy: {
+            '/api': { target: API_TARGET, changeOrigin: true },
+        },
     },
     build: {
         outDir: 'dist',

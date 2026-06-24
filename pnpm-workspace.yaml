@@ -1,0 +1,17 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "dashboard"
+  - "landing"
+  - "shared"
+  - "server"
+
+allowBuilds:
+  esbuild: set this to true or false
+  unrs-resolver: false
+
+# Allow these dependencies to run install/build scripts (pnpm blocks them by default).
+# esbuild is required by Vite; unrs-resolver by the eslint import resolver.
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver

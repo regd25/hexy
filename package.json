@@ -1,5 +1,22 @@
 {
-  "dependencies": {
-    "uuid": "^11.1.0"
+  "name": "hexy",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SOL + Hexy — a Domain-Driven AI Framework (monorepo)",
+  "packageManager": "pnpm@11.4.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.18"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "unrs-resolver"
+    ]
   }
 }

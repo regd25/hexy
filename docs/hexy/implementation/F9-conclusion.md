@@ -19,13 +19,13 @@ el dashboard (lenguaje y harness homologados de punta a punta).
 
 ## 3. Criterio de validación (desde el dashboard)
 Un usuario nuevo sigue el getting-started: **instala limpio, levanta la app, modela y valida un
-artefacto, corre un loop**, y la **extensión VS Code** valida un `.sop` con las mismas reglas
+artefacto, corre un loop**, y la **extensión VS Code** valida un `.yaml` con las mismas reglas
 que el dashboard.
 
 ## 4. Verificación
 - Instalación limpia (`pnpm install && pnpm build`) en un entorno fresco, verde.
 - Deploy reproducible (web + engine) con health checks.
-- La extensión usa `@hexy/sol`; un `.sop` válido en el dashboard lo es también en VS Code.
+- La extensión usa `@hexy/sol`; un `.yaml` válido en el dashboard lo es también en VS Code.
 
 ## 5. Dependencias
 F0–F8. Cierra la definición de **"concluido"** del [roadmap](README.md).

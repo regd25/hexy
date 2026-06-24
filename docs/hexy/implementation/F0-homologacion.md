@@ -49,11 +49,11 @@ es importable desde la app.
   - **Extraer `@hexy/sol`** (`packages/sol/src/`): mover
     `tools/sol-vscode-extension/src/validator/SemanticValidator.ts`,
     `.../formatter/SolFormatter.ts`, y convertir `.../schemas/sol-schema.json` → `schema.ts`
-    (`export const SOL_SCHEMA = … as const`). Añadir `parser.ts` (`.sop` YAML → objeto)
+    (`export const SOL_SCHEMA = … as const`). Añadir `parser.ts` (`.yaml` YAML → objeto)
     usando `yaml`. `index.ts` exporta validator + formatter + schema + parser.
   - La extensión (`tools/sol-vscode-extension/`) pasa a **depender de `@hexy/sol`**
     (`"@hexy/sol": "workspace:*"`) y actualiza imports.
-  - **Docs SOL → `docs/sol/`:** templates `.sop`, `SEMANTIC_REFERENCE_RULES.md`,
+  - **Docs SOL → `docs/sol/`:** templates `.yaml`, `SEMANTIC_REFERENCE_RULES.md`,
     `USAGE_GUIDE.md`, examples, README (como `OVERVIEW.md`), CHANGELOG, RELEASE_STATUS (archivo).
 
 ### 4.3 `@hexy/shared`
