@@ -18,6 +18,7 @@ const STATUS_LABEL = {
     stoppedByViolation: '✖ Detenido por violación',
     budgetExhausted: '⏳ Presupuesto agotado',
     planFailed: '✖ Plan inválido',
+    toolFailed: '✖ Fallo de tool MCP',
 }
 
 function entryLine(entry) {
@@ -30,11 +31,20 @@ function entryLine(entry) {
                 ...(g.prohibit ?? []).map((t) => `prohibit «${t}»`),
                 ...(g.require ?? []).map((t) => `require «${t}»`),
             ].join(', ')
+            const tools = (entry.tools ?? []).length > 0 ? ` · tools MCP: ${entry.tools.map(esc).join(', ')}` : ''
             div.innerHTML =
                 `<b>▶ ${esc(entry.process)}</b> · goal: ${esc(entry.goal ?? '—')} · término: ${esc(entry.termination)}` +
-                `<br/><span class="dim">steps: ${entry.steps.map(esc).join(' → ')}${guard ? ` · guardrails: ${esc(guard)}` : ''} · budget: ${entry.budget}</span>`
+                `<br/><span class="dim">steps: ${entry.steps.map(esc).join(' → ')}${tools}${guard ? ` · guardrails: ${esc(guard)}` : ''} · budget: ${entry.budget}</span>`
         } else if (entry.name === 'step:act') {
             div.innerHTML = `<b>ACT</b> step ${entry.step}: ${esc(entry.action)} <span class="dim">(${esc(entry.actor)})</span>`
+        } else if (entry.name === 'tool:authorize') {
+            div.className += entry.allowed ? '' : ' run-panel__line--blocked'
+            div.innerHTML =
+                `<b>AUTHORIZE</b> tool <b>${esc(entry.tool)}</b> <span class="lvl lvl--${esc(entry.level)}">${esc(entry.level)}</span> → ` +
+                `${entry.allowed ? '<span class="ok">permitido</span>' : '<span class="bad">bloqueado</span>'} <span class="dim">${esc(entry.reason)}</span>`
+        } else if (entry.name === 'tool:call') {
+            const args = entry.args && Object.keys(entry.args).length > 0 ? JSON.stringify(entry.args) : ''
+            div.innerHTML = `<b>ACT</b> step ${entry.step}: tool call <b>${esc(entry.tool)}</b><span class="dim">${esc(args ? ` ${args}` : '')}</span> <span class="dim">(MCP)</span>`
         } else if (entry.name === 'loop:decide') {
             div.innerHTML = `<span class="dim">DECIDE → ${esc(entry.decision)}</span>`
         } else if (entry.name === 'evaluation:satisfied') {

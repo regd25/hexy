@@ -96,3 +96,92 @@ def test_plan_fails_for_process_without_steps():
 def test_plan_error_for_non_process():
     with pytest.raises(PlanError):
         build_plan({"artifacts": [{"id": "x", "type": "intent", "name": "I"}], "relationships": []}, "x")
+
+
+# --- F5: tools reales vía MCP + permisos por Authority (integración con tools/mcp-notes) ---
+
+
+def _tool_model(step_desc, authority_desc=None):
+    """Process con un step-tool y (opcional) una Authority conectada."""
+    artifacts = [
+        {"id": "p", "type": "process", "name": "Registro", "description": "Proceso con tool."},
+        {"id": "s", "type": "procedure", "name": "Anotar", "description": step_desc},
+    ]
+    relationships = [{"sourceId": "p", "targetId": "s", "type": "contains"}]
+    if authority_desc is not None:
+        artifacts.append({"id": "auth", "type": "authority", "name": "OpsLead", "description": authority_desc})
+        relationships.append({"sourceId": "auth", "targetId": "p", "type": "influences"})
+    return {"artifacts": artifacts, "relationships": relationships}
+
+
+@pytest.fixture()
+def notes_file(tmp_path, monkeypatch):
+    path = tmp_path / "notes.md"
+    monkeypatch.setenv("HEXY_NOTES_FILE", str(path))
+    return path
+
+
+def test_tool_step_executes_via_mcp_with_authority(notes_file):
+    model = _tool_model('tool: notes_append {"text": "hola desde el loop"}', "Autoriza la operación del registro.")
+    trace = _run(model)
+    assert trace[-1]["status"] == "completed"
+    auth = next(t for t in trace if t.get("name") == "tool:authorize")
+    assert auth["allowed"] is True and auth["level"] == "write"
+    call = next(t for t in trace if t.get("name") == "tool:call")
+    assert call["tool"] == "notes_append"
+    obs = next(t for t in trace if t["kind"] == "observation")
+    assert "Nota añadida" in obs["content"]
+    # Efecto real sobre el sistema externo.
+    assert "hola desde el loop" in notes_file.read_text()
+
+
+def test_write_tool_blocked_without_authority(notes_file):
+    trace = _run(_tool_model('tool: notes_append {"text": "no debería escribirse"}'))
+    assert trace[-1]["status"] == "stoppedByViolation"
+    auth = next(t for t in trace if t.get("name") == "tool:authorize")
+    assert auth["allowed"] is False
+    violation = next(t for t in trace if t["kind"] == "violation")
+    assert violation["stage"] == "authorize" and violation["severity"] == "error"
+    assert not notes_file.exists()
+
+
+def test_destructive_tool_blocked_with_plain_authority(notes_file):
+    # Una Authority normal permite write pero NO destructive.
+    trace = _run(_tool_model("tool: notes_clear", "Autoriza operaciones normales."))
+    assert trace[-1]["status"] == "stoppedByViolation"
+    auth = next(t for t in trace if t.get("name") == "tool:authorize")
+    assert auth["level"] == "destructive" and auth["allowed"] is False
+
+
+def test_negated_destructive_mention_does_not_grant(notes_file):
+    # Regresión: «(no destructivas)» contiene la subcadena pero NIEGA el permiso.
+    notes_file.write_text("- previa\n")
+    trace = _run(_tool_model("tool: notes_clear", "Autoriza escritura del registro (no destructivas)."))
+    assert trace[-1]["status"] == "stoppedByViolation"
+    auth = next(t for t in trace if t.get("name") == "tool:authorize")
+    assert auth["allowed"] is False
+    assert notes_file.read_text() == "- previa\n"  # el archivo NO se tocó
+
+
+def test_destructive_tool_executes_with_destructive_authority(notes_file):
+    notes_file.write_text("- previa\n")
+    trace = _run(_tool_model("tool: notes_clear", "Autoriza también acciones destructivas."))
+    assert trace[-1]["status"] == "completed"
+    assert notes_file.read_text() == ""
+
+
+def test_readonly_tool_allowed_without_any_authority(notes_file):
+    notes_file.write_text("- una nota\n")
+    trace = _run(_tool_model("tool: notes_read"))
+    assert trace[-1]["status"] == "completed"
+    auth = next(t for t in trace if t.get("name") == "tool:authorize")
+    assert auth["level"] == "readOnly" and auth["allowed"] is True
+    obs = next(t for t in trace if t["kind"] == "observation")
+    assert "una nota" in obs["content"]
+
+
+def test_unknown_tool_fails_explicitly(notes_file):
+    trace = _run(_tool_model("tool: notes_nuke", "Autoriza todo, incluso destructivas."))
+    assert trace[-1]["status"] == "toolFailed"
+    violation = next(t for t in trace if t["kind"] == "violation")
+    assert "desconocida" in violation["message"].lower()

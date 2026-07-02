@@ -747,6 +747,38 @@ body {
     border-left-color: var(--yellow);
     background: rgba(234, 179, 8, 0.1);
 }
+.run-panel__done--toolFailed {
+    border-left-color: var(--red);
+    background: rgba(239, 68, 68, 0.12);
+}
+.run-panel__line .bad {
+    color: #f87171;
+    font-weight: 700;
+}
+.run-panel__line--blocked {
+    border-left-color: var(--red);
+}
+.lvl {
+    display: inline-block;
+    padding: 0 0.4rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.lvl--readOnly {
+    background: rgba(20, 184, 166, 0.2);
+    color: #2dd4bf;
+}
+.lvl--write {
+    background: rgba(96, 165, 250, 0.2);
+    color: #60a5fa;
+}
+.lvl--destructive {
+    background: rgba(239, 68, 68, 0.25);
+    color: #f87171;
+}
 
 /* --- Toastify overrides --- */
 .toastify {

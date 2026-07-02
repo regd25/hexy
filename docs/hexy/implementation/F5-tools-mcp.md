@@ -1,7 +1,20 @@
 # F5 — Tools vía MCP
 
-> Estado: 📋 Planeado · Capa: TS + Python · Dependencias: [F4](F4-harness-loop.md).
-> Nivel de detalle: objetivo + alcance + validación.
+> Estado: ✅ Implementado · Capa: Python (cliente MCP + PEP/PDP) + Node (servidor MCP de prueba) · Dependencias: [F4](F4-harness-loop.md).
+>
+> **Implementación:** `tools/mcp-notes/` — servidor MCP real (stdio, JSON-RPC 2.0, Node puro)
+> con 3 tools anotadas con la semántica MCP estándar (`readOnlyHint`/`destructiveHint`/
+> `idempotentHint`): `notes_append` (write), `notes_read` (readOnly), `notes_clear`
+> (destructive). `core/engine/mcp_client.py` — cliente MCP mínimo stdlib (initialize →
+> tools/list → tools/call). Un step declara su tool con la directiva `tool: nombre {args}` en
+> su descripción; el PLAN la parsea y el RUN la ejecuta como acción real. **Permisos
+> (PEP/PDP):** readOnly siempre permitido; write requiere una `Authority` conectada al
+> proceso; destructive requiere una Authority que lo autorice afirmativamente (las menciones
+> negadas — «no destructivas» — NO conceden). La traza emite `tool:authorize` (nivel +
+> decisión + razón) y `tool:call`; un bloqueo es violation `error` y detiene el loop. UI: el
+> panel Run muestra AUTHORIZE con badge de nivel, la llamada con args y el resultado real.
+> Verificado con 7 tests de integración pytest (spawn real del servidor) + E2E en navegador.
+> Servidor MCP configurable vía `HEXY_MCP_CMD` (default: el de prueba del repo).
 
 ## 1. Objetivo
 Que los pasos del loop ejecuten **acciones reales** como *tools* vía **MCP (Model Context

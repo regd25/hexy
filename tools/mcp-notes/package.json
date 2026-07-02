@@ -1,0 +1,8 @@
+{
+  "name": "hexy-mcp-notes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Servidor MCP mínimo de prueba (stdio) para las tool calls del HarnessRuntime (F5)",
+  "type": "module",
+  "bin": { "hexy-mcp-notes": "./server.js" }
+}

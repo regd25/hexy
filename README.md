@@ -74,6 +74,7 @@ hexy/
 ├── server/      # Backend Node.js puro (node:http): YAML (fuente de verdad) + índice SQLite
 ├── shared/      # Single Source of Truth (TS): types/, events/, repository/, adapters/
 ├── dashboard/   # UI de artefactos (vanilla JS + CSS, bundleada con Vite)
+├── tools/       # Servidores MCP: mcp-notes (tool server de prueba del HarnessRuntime, F5)
 ├── landing/     # Landing page (Next.js)  ·  contenido de "Visión", no de runtime
 ├── docs/        # Documentación  →  empezar por docs/POSITIONING.md
 └── specs/       # Especificaciones del dashboard
