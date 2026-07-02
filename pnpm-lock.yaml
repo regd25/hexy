@@ -12,6 +12,8 @@ importers:
         specifier: ^2.9.18
         version: 2.9.18
 
+  core/engine: {}
+
   dashboard:
     dependencies:
       toastify-js:
