@@ -112,20 +112,20 @@ hexy/
 
 ```bash
 pnpm install
-
-# Terminal 1 — backend Node.js puro (datos persistentes en server/data/)
-pnpm --filter hexy-server dev        # http://localhost:4000
-
-# Terminal 2 — dashboard vanilla (proxy /api → :4000)
-pnpm --filter hexy-dashboard dev     # http://localhost:3000
-
-# Terminal 3 (opcional) — motor Python (RDF + inferencias, F3)
-cd core/engine && python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
-cd core/engine && ./.venv/bin/uvicorn app:app --port 8000   # http://localhost:8000
+pnpm dev          # turbo: backend (:4000) + dashboard (:3000) + motor Python (:8000) + landing
 ```
 
-> El motor (`core/engine/`) es opcional: el dashboard funciona sin él; el botón **"Analizar
-> con el motor"** requiere que esté corriendo (el backend hace de proxy vía `HEXY_ENGINE_URL`).
+O por paquete:
+
+```bash
+pnpm --filter hexy-server dev        # backend Node puro       → http://localhost:4000
+pnpm --filter hexy-dashboard dev     # dashboard vanilla       → http://localhost:3000
+pnpm --filter hexy-engine dev        # motor Python (F3–F5)    → http://localhost:8000
+```
+
+> El script `dev` del motor crea su venv e instala `core/engine/requirements.txt` la primera
+> vez. El dashboard funciona sin el motor; **"Analizar con el motor"** (F3) y **▶ Run** (F4/F5)
+> lo requieren (el backend hace de proxy vía `HEXY_ENGINE_URL`).
 
 - **YAML = fuente de verdad** versionable en `server/data/` (un `.yaml` por artefacto).
 - **SQLite = índice derivado** (`server/data/hexy.db`, gitignored); se reconstruye desde los
