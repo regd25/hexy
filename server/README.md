@@ -60,3 +60,7 @@ devuelve `{ artifacts, relationships, unresolved }`.
 `POST /api/engine/project` (F3) hace de proxy al motor Python (`HEXY_ENGINE_URL`, default
 `http://localhost:8000`): reenvía el modelo actual y devuelve entidades, relaciones
 **inferidas** (cierre transitivo), ciclos y stats RDF. Responde `502` si el motor no corre.
+
+`POST /api/run/:processId` (F4) corre un Process con el **HarnessRuntime** del motor y
+re-emite la traza **SSE** (`data: {seq, kind: event|observation|violation|done, …}`) al
+cliente. Body opcional: `{ budget }` (tope de steps, default 20).

@@ -7,11 +7,15 @@ Arranque (desde core/engine/):  uvicorn app:app --port 8000   ·   o:  python ap
 
 from __future__ import annotations
 
+import json
+
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from projector import project
+from runtime import run_process, DEFAULT_BUDGET
 
 app = FastAPI(title="Hexy Engine", version="0.1.0")
 
@@ -51,6 +55,35 @@ def health():
 def model_project(req: ProjectRequest):
     """Proyecta el modelo a RDF y devuelve entidades, inferencias, ciclos y estadísticas."""
     return project(req.model_dump())
+
+
+class RunRequest(ProjectRequest):
+    processId: str
+    budget: int = DEFAULT_BUDGET
+
+
+@app.post("/run")
+def run(req: RunRequest):
+    """
+    HarnessRuntime (F4): corre el Process y emite la traza por SSE
+    (una línea `data: {json}` por entrada: event | observation | violation | done).
+    """
+
+    def stream():
+        for item in run_process(req.model_dump(), req.processId, req.budget):
+            yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.post("/run/sync")
+def run_sync(req: RunRequest):
+    """Variante no-streaming (tests / smoke): devuelve la traza completa."""
+    return {"trace": list(run_process(req.model_dump(), req.processId, req.budget))}
 
 
 if __name__ == "__main__":

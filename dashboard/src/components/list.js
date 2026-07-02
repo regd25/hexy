@@ -1,5 +1,6 @@
 /** Barra lateral: lista de artefactos con búsqueda por texto y filtro por tipo. */
 import { ARTIFACT_FILTER_OPTIONS } from '../constants.js'
+import { openRunPanel } from './runPanel.js'
 
 export function createList() {
     const el = document.createElement('div')
@@ -65,11 +66,23 @@ export function createList() {
                     <div class="list__desc"></div>
                     <div class="list__tags"></div>
                 </div>
-                <span class="tag" data-type></span>
+                <div class="list__side">
+                    <span class="tag" data-type></span>
+                </div>
             `
             item.querySelector('.list__name').textContent = a.name
             item.querySelector('.list__desc').textContent = a.description ?? ''
             item.querySelector('[data-type]').textContent = a.type
+
+            // F4: los Process son ejecutables — botón ▶ Run que abre el panel de traza.
+            if (a.type === 'process') {
+                const runBtn = document.createElement('button')
+                runBtn.className = 'btn btn--run'
+                runBtn.textContent = '▶ Run'
+                runBtn.title = 'Correr este proceso con el HarnessRuntime'
+                runBtn.addEventListener('click', () => openRunPanel(a))
+                item.querySelector('.list__side').appendChild(runBtn)
+            }
             const tagsEl = item.querySelector('.list__tags')
             for (const t of tags) {
                 const span = document.createElement('span')

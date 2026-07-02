@@ -7,7 +7,7 @@ const API_TARGET = process.env.HEXY_API_TARGET ?? 'http://localhost:4000'
 // al backend desplegado.
 export default defineConfig({
     server: {
-        port: 3000,
+        port: Number(process.env.PORT ?? 3000),
         open: true,
         proxy: {
             '/api': { target: API_TARGET, changeOrigin: true },

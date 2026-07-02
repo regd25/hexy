@@ -1,7 +1,16 @@
 # F4 — El loop (HarnessRuntime mínimo)
 
-> Estado: 📋 Planeado · Capa: Python · Dependencias: [F3](F3-engine-bridge.md).
-> Nivel de detalle: objetivo + alcance + validación. Diseño base: [harness-runtime.md](../harness-runtime.md).
+> Estado: ✅ Implementado · Capa: Python (motor) + Node (proxy SSE) + dashboard · Dependencias: [F3](F3-engine-bridge.md).
+>
+> **Implementación:** `core/engine/runtime.py` — etapa PLAN (Process.relaciones salientes →
+> `Step[]`; Policies conectadas → guardrails `prohibit`/`require` por término; Intent conectado
+> → goal; Evaluation conectada → término) y loop `act → observe → validate → decide` como
+> generador de traza (events/observations/violations, vocabulario de ExecutionContext).
+> Violation `error` (prohibit) = parada; `require` incumplido = warning; presupuesto explícito
+> (`budgetExhausted`). Streaming: `POST /run` (SSE) + `POST /run/sync`; el backend Node re-emite
+> el SSE en `POST /api/run/:processId`. UI: botón **▶ Run** en los Process del sidebar → panel
+> de traza en vivo con severidades. Verificado con 7 tests pytest + E2E en navegador (término
+> feliz y parada por violación). Los steps son acciones simuladas — F5 los convierte en tools MCP.
 
 ## 1. Objetivo
 Cerrar el **hueco del loop**: implementar el `HarnessRuntime` mínimo que **corre** un

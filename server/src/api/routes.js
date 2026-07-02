@@ -125,18 +125,22 @@ export function createRouter({ service, validation }) {
         sendJson(res, 200, await importGraph(service, body.yaml, { mode: body.mode }))
     })
 
-    // --- Engine bridge (F3): proxy al motor pesado Python (RDF + inferencias) ---
-    router.post('/api/engine/project', async ({ res }) => {
+    // --- Engine bridge (F3/F4): proxies al motor pesado Python ---
+    /** Modelo actual en la forma que consume el motor. */
+    async function currentModel() {
         const artifacts = await service.getAllArtifacts()
         const relLists = await Promise.all(artifacts.map((a) => service.getArtifactRelationships(a.id)))
         const relationships = [...new Map(relLists.flat().map((r) => [r.id, r])).values()]
-
-        const model = {
+        return {
             artifacts: artifacts.map((a) => ({ id: a.id, type: a.type, name: a.name, description: a.description })),
             relationships: relationships.map((r) => ({ sourceId: r.sourceId, targetId: r.targetId, type: r.type })),
         }
+    }
+    const ENGINE_URL = () => process.env.HEXY_ENGINE_URL ?? 'http://localhost:8000'
 
-        const engineUrl = process.env.HEXY_ENGINE_URL ?? 'http://localhost:8000'
+    router.post('/api/engine/project', async ({ res }) => {
+        const model = await currentModel()
+        const engineUrl = ENGINE_URL()
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), 8000)
         try {
@@ -156,6 +160,40 @@ export function createRouter({ service, validation }) {
         } finally {
             clearTimeout(timeout)
         }
+    })
+
+    // F4 — HarnessRuntime: corre un Process y re-emite la traza SSE del motor al cliente.
+    router.post('/api/run/:processId', async ({ res, params, body }) => {
+        const model = await currentModel()
+        const engineUrl = ENGINE_URL()
+        let engineRes
+        try {
+            engineRes = await fetch(`${engineUrl}/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...model, processId: params.processId, budget: body?.budget ?? 20 }),
+            })
+            if (!engineRes.ok || !engineRes.body) throw new Error(`engine responded ${engineRes.status}`)
+        } catch (err) {
+            return sendJson(res, 502, {
+                error: `No se pudo contactar el motor (${engineUrl}): ${err.message}. ¿Está corriendo? (cd core/engine && ./.venv/bin/uvicorn app:app --port 8000)`,
+            })
+        }
+
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            Connection: 'keep-alive',
+            'Access-Control-Allow-Origin': '*',
+        })
+        try {
+            for await (const chunk of engineRes.body) {
+                res.write(chunk)
+            }
+        } catch {
+            /* cliente desconectado o stream roto: cerrar sin más */
+        }
+        res.end()
     })
 
     return router

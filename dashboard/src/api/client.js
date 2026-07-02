@@ -56,4 +56,47 @@ export const api = {
 
     // Engine bridge (F3): proyección RDF + inferencias del motor Python.
     engineProject: () => request('POST', '/engine/project', {}),
+
+    /**
+     * F4 — HarnessRuntime: corre un Process y consume la traza SSE.
+     * Invoca onEntry(entry) por cada entrada de traza; resuelve al terminar el stream.
+     */
+    async runProcess(processId, onEntry, { budget = 20 } = {}) {
+        const res = await fetch(`${BASE}/run/${processId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ budget }),
+        })
+        if (!res.ok) {
+            let message = `run → ${res.status}`
+            try {
+                const data = await res.json()
+                if (data?.error) message = data.error
+            } catch {
+                /* sin JSON */
+            }
+            throw new Error(message)
+        }
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        for (;;) {
+            const { done, value } = await reader.read()
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+            // Cada entrada SSE termina en doble salto de línea.
+            let idx
+            while ((idx = buffer.indexOf('\n\n')) !== -1) {
+                const frame = buffer.slice(0, idx)
+                buffer = buffer.slice(idx + 2)
+                const line = frame.split('\n').find((l) => l.startsWith('data: '))
+                if (!line) continue
+                try {
+                    onEntry(JSON.parse(line.slice(6)))
+                } catch {
+                    /* entrada malformada: se ignora */
+                }
+            }
+        }
+    },
 }
