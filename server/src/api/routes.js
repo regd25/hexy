@@ -171,7 +171,13 @@ export function createRouter({ service, validation }) {
             engineRes = await fetch(`${engineUrl}/run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...model, processId: params.processId, budget: body?.budget ?? 20 }),
+                body: JSON.stringify({
+                    ...model,
+                    processId: params.processId,
+                    budget: body?.budget ?? 20,
+                    // F6 — presupuesto de tokens del contexto por step (si el cliente lo omite, el motor usa su default).
+                    ...(body?.contextTokens != null ? { contextTokens: body.contextTokens } : {}),
+                }),
             })
             if (!engineRes.ok || !engineRes.body) throw new Error(`engine responded ${engineRes.status}`)
         } catch (err) {

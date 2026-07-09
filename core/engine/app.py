@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from projector import project
 from runtime import run_process, DEFAULT_BUDGET
+from context import DEFAULT_CONTEXT_TOKENS
 
 app = FastAPI(title="Hexy Engine", version="0.1.0")
 
@@ -60,6 +61,7 @@ def model_project(req: ProjectRequest):
 class RunRequest(ProjectRequest):
     processId: str
     budget: int = DEFAULT_BUDGET
+    contextTokens: int = DEFAULT_CONTEXT_TOKENS
 
 
 @app.post("/run")
@@ -70,7 +72,7 @@ def run(req: RunRequest):
     """
 
     def stream():
-        for item in run_process(req.model_dump(), req.processId, req.budget):
+        for item in run_process(req.model_dump(), req.processId, req.budget, req.contextTokens):
             yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(
@@ -83,7 +85,7 @@ def run(req: RunRequest):
 @app.post("/run/sync")
 def run_sync(req: RunRequest):
     """Variante no-streaming (tests / smoke): devuelve la traza completa."""
-    return {"trace": list(run_process(req.model_dump(), req.processId, req.budget))}
+    return {"trace": list(run_process(req.model_dump(), req.processId, req.budget, req.contextTokens))}
 
 
 if __name__ == "__main__":

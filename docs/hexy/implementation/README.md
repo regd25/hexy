@@ -48,7 +48,7 @@ hexy/  (pnpm + turborepo)
 | **F3** | Engine bridge (light↔heavy) | 📋 Planeado | Veo inferencias/relaciones que el lado TS no calcula | TS+Py | [F3](F3-engine-bridge.md) |
 | **F4** | El loop (HarnessRuntime mínimo) | 📋 Planeado | Ejecuto un `Process` y veo la traza + violations en vivo | Py | [F4](F4-harness-loop.md) |
 | **F5** | Tools vía MCP | 📋 Planeado | Un paso del loop hace una acción de integración real (ligera) | TS+Py | [F5](F5-tools-mcp.md) |
-| **F6** | Context Orchestration / token budget | 📋 Planeado | Veo el "porqué" de cada pieza de contexto y el presupuesto | Py | [F6](F6-context-orchestration.md) |
+| **F6** | Context Orchestration / token budget | ✅ Implementado | Veo el "porqué" de cada pieza de contexto y el presupuesto | Py | [F6](F6-context-orchestration.md) |
 | **F7** | Meta-construcción (dogfood) | 📋 Planeado | El framework modela y rastrea su propio build | TS+Py | [F7](F7-meta-construccion.md) |
 | **F8** | Persistencia, auth, observabilidad | 📋 Planeado | Mis modelos persisten; los runs son auditables | TS+Py | [F8](F8-persistencia-observabilidad.md) |
 | **F9** | Conclusión / empaquetado | 📋 Planeado | Instalo limpio, despliego y la extensión funciona | infra | [F9](F9-conclusion.md) |

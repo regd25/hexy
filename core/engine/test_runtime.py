@@ -67,6 +67,23 @@ def test_prohibit_policy_stops_the_loop_with_error_violation():
     assert len(acts) == 1
 
 
+def test_context_entry_emitted_per_step_before_act():
+    """F6: cada step emite una entrada `context` (sub-grafo + budget) antes de actuar."""
+    trace = _run(_model())
+    contexts = [t for t in trace if t["kind"] == "context"]
+    acts = [t for t in trace if t.get("name") == "step:act"]
+    assert len(contexts) == len(acts) == 2
+    # El context de cada step precede a su act (misma numeración de step).
+    for ctx, act in zip(contexts, acts):
+        assert ctx["step"] == act["step"]
+        assert trace.index(ctx) < trace.index(act)
+    # Bundle bien formado y con selección semántica (el step ancla incluido, budget reportado).
+    first = contexts[0]
+    assert first["included"] and first["included"][0]["id"] == "s1"
+    assert first["tokensUsed"] <= first["tokensBudget"]
+    assert 0 < first["compressionRatio"] <= 1.0
+
+
 def test_budget_exhausted_terminates_the_loop():
     trace = _run(_model(), budget=1)
     done = trace[-1]

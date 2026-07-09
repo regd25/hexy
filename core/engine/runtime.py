@@ -28,6 +28,7 @@ import time
 
 
 from mcp_client import McpClient, McpError
+from context import select_context, DEFAULT_CONTEXT_TOKENS
 
 DEFAULT_BUDGET = 20
 
@@ -152,10 +153,14 @@ def build_plan(model, process_id, budget=DEFAULT_BUDGET):
     }
 
 
-def run_process(model, process_id, budget=DEFAULT_BUDGET):
+def run_process(model, process_id, budget=DEFAULT_BUDGET, context_tokens=DEFAULT_CONTEXT_TOKENS):
     """
     Corre el loop y va emitiendo la traza (generador de dicts serializables).
-    Tipos de entrada de traza: event | observation | violation | done.
+    Tipos de entrada de traza: context | event | observation | violation | done.
+
+    F6: antes de ACT, cada step selecciona su sub-grafo semántico relevante recortado a
+    `context_tokens` (Context Orchestration) y lo emite como entrada `context` —
+    evidencia de selección semántica, no de volcado del modelo completo.
     """
     seq = 0
 
@@ -203,6 +208,20 @@ def run_process(model, process_id, budget=DEFAULT_BUDGET):
                 yield entry("event", name="loop:decide", decision="budgetExhausted", step=i + 1)
                 yield entry("done", status="budgetExhausted", completedSteps=i, totalSteps=len(steps))
                 return
+
+            # CONTEXT (F6): selección de sub-grafo semántico + presupuesto de tokens,
+            # ANTES de actuar. Reemplaza el volcado del modelo por solo lo relevante al step.
+            bundle = select_context(model, step["id"], context_tokens)
+            yield entry(
+                "context",
+                step=i + 1,
+                stepName=bundle["step_name"],
+                included=bundle["included"],
+                excludedCount=bundle["excluded_count"],
+                tokensUsed=bundle["tokens_used"],
+                tokensBudget=bundle["tokens_budget"],
+                compressionRatio=bundle["compression_ratio"],
+            )
 
             tool = step.get("tool")
             if tool:

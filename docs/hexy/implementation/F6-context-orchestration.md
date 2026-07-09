@@ -1,7 +1,23 @@
 # F6 — Context Orchestration / token budget
 
-> Estado: 📋 Planeado · Capa: Python · Dependencias: [F4](F4-harness-loop.md).
-> Nivel de detalle: objetivo + alcance + validación.
+> Estado: ✅ Implementado · Capa: Python (selección de sub-grafo + budget) + JS (panel de contexto) · Dependencias: [F4](F4-harness-loop.md).
+>
+> **Implementación:** `core/engine/context.py` — pieza pura `select_context(model, step_id,
+> max_tokens) → ContextBundle`. En cada step, en vez de volcar el modelo entero, selecciona
+> solo el **sub-grafo semántico** relevante: BFS sobre `{artifacts, relationships}` como grafo
+> no dirigido desde el step, puntuando por **cercanía** (`1/(1+distancia)`) + un **boost de
+> gobernanza** para los artefactos que condicionan la decisión (Policy/Authority/Intent/
+> Evaluation y el Process contenedor). El resultado se ordena por relevancia y se llena hasta
+> agotar `max_tokens` (estimación ~`len(texto)/4`); el step-ancla nunca se descarta. El bundle
+> reporta `included:[{id,name,type,reason,tokens,distance,score}]`, `excluded_count`,
+> `tokens_used/tokens_budget` y `compression_ratio` (fracción del modelo completo cargada).
+> `runtime.run_process` emite una entrada de traza `kind:"context"` por step **antes del ACT**;
+> `app.py`/`server` exponen `contextTokens` (default `DEFAULT_CONTEXT_TOKENS = 120`). UI: el
+> panel Run renderiza el bloque CONTEXT — piezas incluidas con su justificación, chips por tipo,
+> barra de token budget y `−N% del modelo`. Verificado con 9 tests pytest (subconjunto ⊆
+> modelo, artefacto desconectado nunca entra, respeta el budget, ancla siempre presente,
+> gobernanza priorizada sobre steps hermanos, reasons referencian artefactos reales) + 1 test de
+> integración del runtime + E2E en navegador.
 
 ## 1. Objetivo
 Integrar el `ContextOrchestrator` (ya implementado en `core/hexy-context-orchestrator.py`)

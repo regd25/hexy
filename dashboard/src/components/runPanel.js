@@ -52,6 +52,8 @@ function entryLine(entry) {
         } else {
             div.textContent = entry.name
         }
+    } else if (entry.kind === 'context') {
+        return contextLine(entry)
     } else if (entry.kind === 'observation') {
         div.className = 'run-panel__line run-panel__line--obs'
         div.innerHTML = `<b>OBSERVE</b> ${esc(entry.content)}`
@@ -64,6 +66,35 @@ function entryLine(entry) {
             entry.completedSteps !== undefined ? ` · ${entry.completedSteps}/${entry.totalSteps} steps` : ''
         div.innerHTML = `<b>${STATUS_LABEL[entry.status] ?? entry.status}</b>${progress}`
     }
+    return div
+}
+
+/**
+ * F6 — entrada `context`: el sub-grafo semántico seleccionado para el step, con las piezas
+ * incluidas + por qué, la barra de presupuesto de tokens y el ratio de compresión.
+ */
+function contextLine(entry) {
+    const div = document.createElement('div')
+    div.className = 'run-panel__line run-panel__ctx'
+    const pct = Math.min(100, Math.round((entry.tokensUsed / Math.max(1, entry.tokensBudget)) * 100))
+    const compression = Math.round((1 - entry.compressionRatio) * 100)
+    const pieces = (entry.included ?? [])
+        .map(
+            (p) =>
+                `<li><span class="run-panel__ctx-name">${esc(p.name)}</span>` +
+                `<span class="lvl lvl--${esc(p.type)}">${esc(p.type)}</span>` +
+                `<span class="dim"> — ${esc(p.reason)}</span> <span class="run-panel__ctx-tok">~${p.tokens} tok</span></li>`,
+        )
+        .join('')
+    div.innerHTML =
+        `<div class="run-panel__ctx-head"><b>CONTEXT</b> step ${entry.step}: ` +
+        `<b>${entry.included?.length ?? 0}</b> pieza(s) incluida(s) · ` +
+        `<span class="dim">${entry.excludedCount} fuera</span> · ` +
+        `<span class="run-panel__ctx-comp">−${compression}% del modelo</span></div>` +
+        `<ul class="run-panel__ctx-list">${pieces}</ul>` +
+        `<div class="run-panel__ctx-budget">` +
+        `<div class="run-panel__ctx-bar"><span style="width:${pct}%"></span></div>` +
+        `<span class="dim">token budget: ${entry.tokensUsed}/${entry.tokensBudget} (${pct}%)</span></div>`
     return div
 }
 

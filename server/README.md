@@ -62,5 +62,8 @@ devuelve `{ artifacts, relationships, unresolved }`.
 **inferidas** (cierre transitivo), ciclos y stats RDF. Responde `502` si el motor no corre.
 
 `POST /api/run/:processId` (F4) corre un Process con el **HarnessRuntime** del motor y
-re-emite la traza **SSE** (`data: {seq, kind: event|observation|violation|done, …}`) al
-cliente. Body opcional: `{ budget }` (tope de steps, default 20).
+re-emite la traza **SSE** (`data: {seq, kind: context|event|observation|violation|done, …}`)
+al cliente. Body opcional: `{ budget, contextTokens }` — `budget` es el tope de steps
+(default 20); `contextTokens` (F6) es el presupuesto de tokens del sub-grafo de contexto por
+step (default 120 en el motor). Las entradas `kind:"context"` reportan, por step, las piezas
+seleccionadas con su justificación, el token budget usado y el ratio de compresión.
