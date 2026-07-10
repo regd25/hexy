@@ -52,7 +52,7 @@ describe('NavigationItem Entity', () => {
 
   describe('external URL detection', () => {
     it('should detect external URLs', () => {
-      const externalItem = NavigationItem.create('external', 'External', 'https:
+      const externalItem = NavigationItem.create('external', 'External', 'https://example.com')
       const internalItem = NavigationItem.create('internal', 'Internal', '/internal')
       const hashItem = NavigationItem.create('hash', 'Hash', '#section')
 
@@ -83,7 +83,7 @@ describe('NavigationItem Entity', () => {
       const item = NavigationItem.create(
         'test',
         'Test Item',
-        'https:
+        'https://example.com',
         'Test description',
         '🧪',
         5
@@ -95,7 +95,7 @@ describe('NavigationItem Entity', () => {
       expect(plainObject).toEqual({
         id: 'test',
         name: 'Test Item',
-        url: 'https:
+        url: 'https://example.com',
         description: 'Test description',
         icon: '🧪',
         isActive: true,

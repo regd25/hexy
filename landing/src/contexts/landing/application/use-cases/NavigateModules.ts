@@ -19,8 +19,9 @@ export class NavigateModules {
     try {
 
       const navigation = await this.navigationRepository.findAll()
-      const moduleId = NavigationItemId.create(request.moduleId)
-      
+      // Valida el formato del id (lanza si es inválido); se navega con el valor original.
+      NavigationItemId.create(request.moduleId)
+
       const navigationItem = navigation.navigateToModule(request.moduleId)
       
       if (!navigationItem) {
