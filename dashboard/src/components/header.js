@@ -3,7 +3,7 @@ import { api } from '../api/client.js'
 import { actions, getState } from '../state/store.js'
 import { showSuccess, showError } from '../notifications.js'
 
-export function createHeader() {
+export function createHeader({ onAutoLayout } = {}) {
     const el = document.createElement('div')
     el.className = 'graph__header'
     el.innerHTML = `
@@ -13,6 +13,7 @@ export function createHeader() {
                 <span class="badge-validity" data-validity hidden>
                     <span class="badge-validity__dot"></span><span data-validity-text></span>
                 </span>
+                <button class="btn" data-autolayout title="Reorganizar el grafo con un layout de fuerzas">Auto-organizar</button>
                 <button class="btn" data-analyze title="Proyectar a RDF y inferir relaciones con el motor (Python)">Analizar con el motor</button>
                 <button class="btn" data-import title="Importar un .yaml SOL y reconstruir el grafo">Import .yaml</button>
                 <button class="btn btn--primary" data-export>Export .yaml</button>
@@ -29,6 +30,19 @@ export function createHeader() {
     const importBtn = el.querySelector('[data-import]')
     const importFile = el.querySelector('[data-import-file]')
     const analyzeBtn = el.querySelector('[data-analyze]')
+    const autoLayoutBtn = el.querySelector('[data-autolayout]')
+
+    autoLayoutBtn.addEventListener('click', async () => {
+        if (getState().artifacts.length < 2) return
+        autoLayoutBtn.disabled = true
+        autoLayoutBtn.textContent = 'Organizando…'
+        try {
+            await onAutoLayout?.()
+        } finally {
+            autoLayoutBtn.disabled = false
+            autoLayoutBtn.textContent = 'Auto-organizar'
+        }
+    })
 
     analyzeBtn.addEventListener('click', async () => {
         if (getState().artifacts.length === 0) return
@@ -111,6 +125,7 @@ export function createHeader() {
 
         exportBtn.disabled = artifactCount === 0
         analyzeBtn.disabled = artifactCount === 0
+        autoLayoutBtn.disabled = artifactCount < 2
 
         if (artifactCount > 0) {
             badge.hidden = false

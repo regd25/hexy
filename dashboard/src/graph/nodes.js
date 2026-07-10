@@ -80,6 +80,32 @@ export function createTemporalNode(temporal, { current } = {}) {
     return el
 }
 
+/**
+ * Crea el elemento DOM de un nodo "referencia" fantasma: una @mención escrita en alguna
+ * descripción que aún no corresponde a ningún artefacto. No está persistido; es solo feedback
+ * visual (más pequeño, punteado). Click → promoverlo a artefacto real.
+ */
+export function createReferenceNode(name, { x, y }, onClick) {
+    const el = document.createElement('div')
+    el.className = 'node node--reference'
+    el.dataset.reference = name
+    el.style.left = `${x}px`
+    el.style.top = `${y}px`
+    el.style.backgroundColor = COLORS.reference
+
+    const label = document.createElement('span')
+    label.className = 'node__label'
+    label.textContent = name
+    el.appendChild(label)
+
+    el.title = `Referencia sin resolver: @${name} (clic para crearla)`
+    el.addEventListener('click', (e) => {
+        e.stopPropagation()
+        onClick?.(name)
+    })
+    return el
+}
+
 function showTooltip(nodeEl, messages) {
     hideTooltip(nodeEl)
     const tip = document.createElement('div')

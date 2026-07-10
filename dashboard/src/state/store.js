@@ -5,6 +5,7 @@
  */
 
 import { api } from '../api/client.js'
+import { parseMentions, sanitize } from '../editors/mentions.js'
 
 const state = {
     artifacts: [],
@@ -30,6 +31,24 @@ export function subscribe(fn) {
 
 export function getState() {
     return state
+}
+
+/**
+ * Nodos "referencia" fantasma: @menciones en las descripciones que no corresponden a ningún
+ * artefacto existente. Derivado (no persistido). Devuelve [{ name, sources: [artifactId] }].
+ */
+export function getPhantoms() {
+    const byName = new Map(state.artifacts.map((a) => [sanitize(a.name), a.id]))
+    const phantoms = new Map() // sanitized → { name, sources: Set }
+    for (const a of state.artifacts) {
+        for (const mention of parseMentions(a.description ?? '')) {
+            const key = sanitize(mention)
+            if (!key || byName.has(key)) continue // resuelve a un artefacto → no es fantasma
+            if (!phantoms.has(key)) phantoms.set(key, { name: mention, sources: new Set() })
+            phantoms.get(key).sources.add(a.id)
+        }
+    }
+    return [...phantoms.values()].map((p) => ({ name: p.name, sources: [...p.sources] }))
 }
 
 /** Deduplica relaciones por id (una relación aparece bajo source y target). */
@@ -112,6 +131,19 @@ export const actions = {
     async persistPosition(id, x, y) {
         const updated = await api.updateArtifact(id, { coordinates: { x, y }, visualProperties: { x, y } })
         state.artifacts = state.artifacts.map((a) => (a.id === id ? updated : a))
+        emit()
+    },
+
+    /** Persiste posiciones de varios artefactos en paralelo (tras un auto-layout); un solo emit. */
+    async persistPositions(list) {
+        if (!list || list.length === 0) return
+        const updates = await Promise.all(
+            list.map(({ id, x, y }) =>
+                api.updateArtifact(id, { coordinates: { x, y }, visualProperties: { x, y } })
+            )
+        )
+        const byId = new Map(updates.map((u) => [u.id, u]))
+        state.artifacts = state.artifacts.map((a) => byId.get(a.id) ?? a)
         emit()
     },
 

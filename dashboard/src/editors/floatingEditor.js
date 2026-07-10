@@ -5,6 +5,7 @@
  */
 
 import { ARTIFACT_TYPE_OPTIONS } from '../constants.js'
+import { MENTION_RE, stripSpaces } from './mentions.js'
 
 let active = null
 
@@ -12,9 +13,6 @@ export function closeFloatingEditor() {
     active?.destroy()
     active = null
 }
-
-const MENTION_RE = /@([A-Za-zÁÉÍÓÚÑáéíóú0-9-]*)$/
-const sanitize = (s) => s.replace(/\s+/g, '')
 
 /**
  * @param {object} opts
@@ -142,7 +140,10 @@ export function openFloatingEditor(opts) {
     }
 
     function renderDropdown() {
-        closeDropdown()
+        // Solo quita el nodo DOM previo; NO reinicia acItems (closeDropdown sí lo hace, y
+        // llamarlo aquí vaciaba la lista antes de pintarla → el dropdown nunca aparecía).
+        dropdown?.remove()
+        dropdown = null
         if (acItems.length === 0) return
         dropdown = document.createElement('div')
         dropdown.className = 'autocomplete-dropdown'
@@ -151,7 +152,7 @@ export function openFloatingEditor(opts) {
         dropdown.style.top = `${rect.bottom + 4}px`
         acItems.forEach((item, i) => {
             const row = document.createElement('div')
-            row.className = 'autocomplete-item' + (i === acIndex ? ' autocomplete-item--active' : '')
+            row.className = `autocomplete-item${i === acIndex ? ' autocomplete-item--active' : ''}`
             row.innerHTML = `<span class="autocomplete-item__name"></span><span class="autocomplete-item__meta"></span>`
             row.querySelector('.autocomplete-item__name').textContent = item.name
             row.querySelector('.autocomplete-item__meta').textContent = `${item.type} · ${item.id.slice(0, 8)}`
@@ -170,7 +171,7 @@ export function openFloatingEditor(opts) {
         const before = value.slice(0, cursor)
         const trigger = before.lastIndexOf('@')
         if (trigger === -1) return
-        const display = sanitize(item.name)
+        const display = stripSpaces(item.name)
         const newValue = `${value.slice(0, trigger)}@${display} ${value.slice(cursor)}`
         textarea.value = newValue
         const pos = trigger + 1 + display.length + 1

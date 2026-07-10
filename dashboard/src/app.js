@@ -21,18 +21,25 @@ export function mountApp(root) {
 
     const graphPanel = document.createElement('div')
     graphPanel.className = 'panel graph'
-    const header = createHeader()
     const canvasWrap = document.createElement('div')
     canvasWrap.className = 'canvas-wrap'
 
-    // El canvas y el flujo de autoría se referencian mutuamente; se enlazan tras crearse.
+    // El canvas y el flujo de autoría se referencian mutuamente; los callbacks del canvas
+    // usan `flow` de forma diferida (aún sin asignar al crear el canvas), por eso es `let`.
+    // eslint-disable-next-line prefer-const
     let flow
     const canvas = createCanvas({
         onCreateAt: (x, y) => flow.startCreate(x, y),
         onOpenEditor: (artifact) => flow.openEditor(artifact),
         getActiveArtifactId: () => flow?.activeArtifactId() ?? null,
+        onCreateFromMention: (name, sources, position) => flow.createFromPhantom(name, sources, position),
     })
-    flow = createAuthoringFlow({ canvasEl: canvas.el, requestCanvasRender: () => canvas.render() })
+    flow = createAuthoringFlow({
+        canvasEl: canvas.el,
+        requestCanvasRender: () => canvas.render(),
+        worldToScreen: (x, y) => canvas.worldToScreen(x, y),
+    })
+    const header = createHeader({ onAutoLayout: () => canvas.autoLayout() })
 
     canvasWrap.appendChild(canvas.el)
     graphPanel.append(header.el, canvasWrap)

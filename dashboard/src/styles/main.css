@@ -380,6 +380,19 @@ body {
     overflow: hidden;
     cursor: crosshair;
 }
+.canvas--pannable {
+    cursor: grab;
+}
+.canvas--panning {
+    cursor: grabbing;
+}
+/* Capa "mundo": recibe el transform de zoom/paneo. Los hijos (aristas y nodos) viven aquí. */
+.canvas__world {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
 .canvas__edges {
     position: absolute;
     inset: 0;
@@ -387,6 +400,7 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 5;
+    overflow: visible;
 }
 .selection-rect {
     position: absolute;
@@ -445,6 +459,20 @@ body {
 .node--dragging {
     transition: none;
     cursor: grabbing;
+}
+/* Nodo "referencia" fantasma: @mención sin resolver. Más pequeño, punteado, tenue. */
+.node--reference {
+    width: 40px;
+    height: 40px;
+    font-size: 9px;
+    border-style: dashed;
+    border-color: #94a3b8;
+    opacity: 0.7;
+    box-shadow: none;
+}
+.node--reference:hover {
+    opacity: 1;
+    border-color: #cbd5e1;
 }
 .node__badge {
     position: absolute;

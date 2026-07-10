@@ -7,6 +7,12 @@
       "runtimeArgs": ["--filter", "hexy-dashboard", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "server",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "hexy-server", "dev"],
+      "port": 4000
     }
   ]
 }

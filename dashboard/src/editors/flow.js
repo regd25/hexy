@@ -8,8 +8,7 @@ import { actions, getState } from '../state/store.js'
 import { showSuccess, showError } from '../notifications.js'
 import { openInlineEditor, closeInlineEditor } from './inlineEditor.js'
 import { openFloatingEditor, closeFloatingEditor } from './floatingEditor.js'
-
-const sanitize = (s) => s.replace(/\s+/g, '').toLowerCase()
+import { sanitize, parseMentions } from './mentions.js'
 
 function validateName(name, artifacts) {
     const errors = []
@@ -32,19 +31,20 @@ function validateDescription(description) {
     return errors
 }
 
-function parseMentions(text) {
-    const matches = text.match(/@([A-Za-zÁÉÍÓÚÑáéíóú0-9-]+)/g) || []
-    return matches.map((m) => m.slice(1))
-}
-
-export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
+export function createAuthoringFlow({ canvasEl, requestCanvasRender, worldToScreen }) {
     let currentTemporalId = null
     let editingArtifact = null
     let editingType = 'intent'
-    let pendingRelationFromId = null
+    let pendingRelationFromIds = []
     let currentName = ''
 
-    const rect = () => canvasEl.getBoundingClientRect()
+    // Mapea coordenadas de mundo → pantalla (respeta zoom/paneo). Fallback sin viewport.
+    const toScreen =
+        worldToScreen ??
+        ((x, y) => {
+            const r = canvasEl.getBoundingClientRect()
+            return { x: r.left + x, y: r.top + y }
+        })
 
     function reset() {
         currentTemporalId = null
@@ -71,9 +71,9 @@ export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
     }
 
     function openDescriptionEditor({ x, y }) {
-        const r = rect()
+        const s = toScreen(x, y)
         openFloatingEditor({
-            position: { x: r.left + x, y: r.top + y + 80 },
+            position: { x: s.x, y: s.y + 80 },
             title: editingArtifact
                 ? `Editando: ${editingArtifact.name}`
                 : `Nuevo artefacto: ${currentName}`,
@@ -114,18 +114,19 @@ export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
                 closeFloatingEditor()
                 showSuccess(`Artefacto "${newArtifact.name}" creado`)
 
-                if (pendingRelationFromId) {
+                for (const sourceId of pendingRelationFromIds) {
+                    if (sourceId === newArtifact.id) continue
                     try {
                         await actions.createRelationship({
-                            sourceId: pendingRelationFromId,
+                            sourceId,
                             targetId: newArtifact.id,
                             type: 'references',
                         })
                     } catch (err) {
                         console.error('Error en relación pendiente:', err)
                     }
-                    pendingRelationFromId = null
                 }
+                pendingRelationFromIds = []
                 await createRelationsFromMentions(newArtifact.id, description)
                 void tempId
                 reset()
@@ -159,7 +160,7 @@ export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
             const temporal = await actions.createTemporal(x, y)
             currentTemporalId = temporal.temporaryId
             currentName = query
-            pendingRelationFromId = sourceId
+            pendingRelationFromIds = sourceId ? [sourceId] : []
             editingArtifact = null
             await actions.updateTemporal(temporal.temporaryId, { name: query, status: 'editing' })
             showNameEditor({ x, y, initialValue: query })
@@ -169,10 +170,10 @@ export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
     }
 
     function showNameEditor({ x, y, initialValue = '' }) {
-        const r = rect()
+        const s = toScreen(x, y)
         currentName = initialValue
         openInlineEditor({
-            position: { x: r.left + x, y: r.top + y + 80 },
+            position: { x: s.x, y: s.y + 80 },
             initialValue,
             onChange: (name) => {
                 currentName = name
@@ -212,6 +213,25 @@ export function createAuthoringFlow({ canvasEl, requestCanvasRender }) {
             editingType = artifact.type
             currentTemporalId = null
             openDescriptionEditor({ x: artifact.visualProperties?.x ?? 0, y: artifact.visualProperties?.y ?? 0 })
+        },
+        /**
+         * Clic en un nodo "referencia" fantasma → crear el artefacto real con ese nombre y
+         * enlazarlo desde todos los artefactos que lo mencionan.
+         */
+        async createFromPhantom(name, sources, position) {
+            const x = position?.x ?? 200
+            const y = position?.y ?? 200
+            try {
+                const temporal = await actions.createTemporal(x, y)
+                currentTemporalId = temporal.temporaryId
+                currentName = name
+                pendingRelationFromIds = Array.isArray(sources) ? sources : []
+                editingArtifact = null
+                await actions.updateTemporal(temporal.temporaryId, { name, status: 'editing' })
+                showNameEditor({ x, y, initialValue: name })
+            } catch {
+                showError('Error al crear artefacto desde referencia')
+            }
         },
         /** Id del artefacto en edición (el canvas bloquea su interacción). */
         activeArtifactId() {
