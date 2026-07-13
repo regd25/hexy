@@ -14,7 +14,7 @@
 import { mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { stringify, parse } from 'yaml'
+import { stringify, parse } from './yamlCodec.js'
 
 export class YamlStore {
     constructor(dataDir) {
@@ -47,7 +47,7 @@ export class YamlStore {
 
     #writeEntity(dir, id, entity) {
         const file = path.join(dir, `${id}.yaml`)
-        return writeFile(file, stringify(entity, { lineWidth: 0 }), 'utf-8')
+        return writeFile(file, stringify(entity), 'utf-8')
     }
 
     async #deleteEntity(dir, id) {

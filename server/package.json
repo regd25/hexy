@@ -11,8 +11,5 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "test": "node --test"
-  },
-  "dependencies": {
-    "yaml": "^2.5.0"
   }
 }
