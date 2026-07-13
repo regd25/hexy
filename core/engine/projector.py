@@ -3,7 +3,7 @@ Proyección a RDF + inferencias semánticas (la "capa pesada" de Hexy).
 
 Toma el modelo autorado (artefactos + relaciones declaradas) y calcula lo que la capa
 ligera (Node/dashboard) no puede:
-  - proyección a un grafo RDF (rdflib) con un namespace hexy:,
+  - proyección a un grafo RDF (rdf.py propio) con un namespace hexy:,
   - cierre transitivo de relaciones transitivas (depends_on, contains) → relaciones
     INFERIDAS que no estaban declaradas,
   - detección de ciclos (smell semántico),
@@ -14,8 +14,8 @@ Lógica pura y testeable (sin FastAPI). Spec: docs/hexy/implementation/F3-engine
 
 from __future__ import annotations
 
-import networkx as nx
-from rdflib import Graph, Literal, Namespace, RDF, RDFS
+import graphs
+from rdf import Graph, Literal, Namespace, RDF, RDFS
 
 HEXY = Namespace("https://hexy.dev/onto#")
 
@@ -68,17 +68,17 @@ def _infer_transitive(artifacts, relationships):
     inferred = []
     cycles = []
     for rel_type in TRANSITIVE_TYPES:
-        g = nx.DiGraph()
+        g = graphs.DiGraph()
         g.add_nodes_from(a["id"] for a in artifacts)
         declared = {(r["sourceId"], r["targetId"]) for r in relationships if r["type"] == rel_type}
         g.add_edges_from(declared)
         if g.number_of_edges() == 0:
             continue
-        closure = nx.transitive_closure(g, reflexive=False)
+        closure = graphs.transitive_closure(g)
         for u, v in closure.edges():
             if (u, v) not in declared:
                 inferred.append({"sourceId": u, "targetId": v, "type": rel_type, "via": "transitive"})
-        for cycle in nx.simple_cycles(g):
+        for cycle in graphs.simple_cycles(g):
             cycles.append({"type": rel_type, "nodes": cycle})
     return inferred, cycles
 
@@ -96,7 +96,7 @@ def project(model):
     inferred, cycles = _infer_transitive(artifacts, relationships)
 
     # Grados sobre el grafo completo de relaciones declaradas.
-    dg = nx.DiGraph()
+    dg = graphs.DiGraph()
     dg.add_nodes_from(valid_ids)
     dg.add_edges_from((r["sourceId"], r["targetId"]) for r in relationships)
     roots = sorted(n for n in dg.nodes if dg.in_degree(n) == 0 and dg.out_degree(n) > 0)

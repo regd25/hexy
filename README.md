@@ -102,7 +102,7 @@ hexy/
 ## 🤖 Requisitos
 
 - **Node.js >= 22** — requerido por `server/` (usa `node:sqlite`, nativo desde Node 22).
-- Python >= 3.10 (core / Semantic Engine)
+- Python >= 3.9 (core / Semantic Engine — solo stdlib, sin pip)
 - Docker (opcional, para infraestructura local)
 - Gestor de paquetes: **pnpm** (monorepo con turbo).
 
@@ -123,8 +123,8 @@ pnpm --filter hexy-dashboard dev     # dashboard vanilla       → http://localh
 pnpm --filter hexy-engine dev        # motor Python (F3–F5)    → http://localhost:8000
 ```
 
-> El script `dev` del motor crea su venv e instala `core/engine/requirements.txt` la primera
-> vez. El dashboard funciona sin el motor; **"Analizar con el motor"** (F3) y **▶ Run** (F4/F5)
+> El motor es Python 100% stdlib: sin venv, sin pip, sin requirements — `python3 app.py` y ya.
+> El dashboard funciona sin el motor; **"Analizar con el motor"** (F3) y **▶ Run** (F4/F5)
 > lo requieren (el backend hace de proxy vía `HEXY_ENGINE_URL`).
 
 - **YAML = fuente de verdad** versionable en `server/data/` (un `.yaml` por artefacto).
