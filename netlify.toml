@@ -6,8 +6,8 @@
   publish = "landing/.next"
 
 [build.environment]
-  NODE_VERSION = "20"
-  # Netlify detecta pnpm por el pnpm-lock.yaml y el campo packageManager de la raíz.
+  # pnpm 11 (campo packageManager de la raíz) requiere Node >=22.13 (usa node:sqlite).
+  NODE_VERSION = "22"
 
 # Runtime oficial de Next.js (maneja el output de landing/.next, rutas y headers).
 [[plugins]]
