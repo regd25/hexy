@@ -12,11 +12,5 @@
   },
   "devDependencies": {
     "turbo": "^2.9.18"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "unrs-resolver"
-    ]
   }
 }
