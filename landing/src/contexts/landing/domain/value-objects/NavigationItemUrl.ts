@@ -11,7 +11,7 @@ export class NavigationItemUrl extends ValueObject<string> {
       throw new Error('NavigationItemUrl cannot be empty')
     }
     
-    // Allow relative URLs (starting with / or #), absolute URLs, or hash fragments
+
     const urlPattern = /^(\/[^\s]*|https?:\/\/[^\s]+|#[^\s]*)$/
     if (!urlPattern.test(value)) {
       throw new Error('NavigationItemUrl must be a valid relative URL, absolute URL, or hash fragment')

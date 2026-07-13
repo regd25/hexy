@@ -1,0 +1,14 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "dashboard"
+  - "landing"
+  - "shared"
+  - "server"
+  - "core/engine"
+
+# pnpm 11: mapa de paquetes autorizados a correr scripts de build (sustituye a
+# onlyBuiltDependencies). esbuild lo requiere Vite; unrs-resolver queda denegado.
+allowBuilds:
+  esbuild: true
+  unrs-resolver: false

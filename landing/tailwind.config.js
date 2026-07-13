@@ -8,13 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Esquema de colores basado en el diseño mostrado
+
         primary: {
           50: '#f0fdfa',
           100: '#ccfbf1',
           200: '#99f6e4',
           300: '#5eead4',
-          400: '#2dd4bf', // Teal principal
+          400: '#2dd4bf',
           500: '#14b8a6',
           600: '#0d9488',
           700: '#0f766e',
@@ -27,7 +27,7 @@ module.exports = {
           200: '#e9d5ff',
           300: '#d8b4fe',
           400: '#c084fc',
-          500: '#a855f7', // Púrpura principal
+          500: '#a855f7',
           600: '#9333ea',
           700: '#7c2d12',
           800: '#6b21a8',
@@ -43,20 +43,20 @@ module.exports = {
           600: '#475569',
           700: '#334155',
           800: '#1e293b',
-          900: '#0f172a', // Azul marino oscuro principal
+          900: '#0f172a',
           950: '#020617',
         },
         background: {
-          primary: '#0f172a', // Azul marino muy oscuro
-          secondary: '#1e293b', // Azul marino medio
-          tertiary: '#334155', // Azul gris
-          card: '#1e293b', // Fondo de cards
+          primary: '#0f172a',
+          secondary: '#1e293b',
+          tertiary: '#334155',
+          card: '#1e293b',
         },
         text: {
           primary: '#ffffff',
           secondary: '#e2e8f0',
           muted: '#94a3b8',
-          accent: '#14b8a6', // Teal para acentos
+          accent: '#14b8a6',
         },
         border: {
           primary: '#334155',

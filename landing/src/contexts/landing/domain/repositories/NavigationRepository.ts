@@ -8,6 +8,3 @@ export interface NavigationRepository {
   save(navigation: Navigation): Promise<void>
   getModuleNavigation(): Promise<Navigation>
 }
-
-// Narrative: Repository pattern ensures separation between domain logic
-// and data persistence, following hexagonal architecture principles 

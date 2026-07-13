@@ -1,4 +1,4 @@
-# API Reference
+# API Relation
 
 Esta sección contiene la documentación completa de las APIs de Hexy Framework.
 
@@ -11,7 +11,7 @@ Esta sección contiene la documentación completa de las APIs de Hexy Framework.
 - [Validation API](./validation-api.md)
 - [Context API](./context-api.md)
 - [Artifact API](./artifact-api.md)
-- [CLI Reference](./cli-reference.md)
+- [CLI Relation](./cli-reference.md)
 
 ## APIs principales
 

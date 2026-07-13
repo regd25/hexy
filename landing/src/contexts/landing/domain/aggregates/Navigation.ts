@@ -13,7 +13,7 @@ export class Navigation {
   }
 
   addItem(item: NavigationItem): void {
-    // Rule: AllModulesMustBeAccessible - Ensure all navigation items are accessible
+
     this._items.set(item.id.value, item)
   }
 
@@ -34,10 +34,10 @@ export class Navigation {
   }
 
   activateItem(id: NavigationItemId): void {
-    // Deactivate all items first
+
     this._items.forEach(item => item.deactivate())
     
-    // Activate the selected item
+
     const item = this.getItem(id)
     if (item) {
       item.activate()
@@ -48,7 +48,7 @@ export class Navigation {
     return this.getAllItems()
   }
 
-  // UseCase: NavigateModules implementation
+
   navigateToModule(moduleId: string): NavigationItem | undefined {
     const item = this._items.get(moduleId)
     if (item) {
@@ -58,8 +58,8 @@ export class Navigation {
     return undefined
   }
 
-  // Narrative: Navigation aggregate ensures consistency in navigation state
-  // and enforces business rules across all navigation items
+
+
   getNavigationState() {
     return {
       totalItems: this._items.size,

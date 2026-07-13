@@ -1,0 +1,643 @@
+[    0.0 ->     4.8] Bienvenidos a The Debate, nuestro espacio de análisis plural y perspectivas
+[    4.8 ->     9.5] contrastantes, donde diseccionamos arquitecturas complejas y modelos
+[    9.5 ->    15.5] conceptuales. Imagínate esto, un agente de inteligencia artificial totalmente
+[   15.5 ->    20.0] autónomo en tu empresa, digamos que detecta una ineficiencia y decide
+[   20.0 ->    23.4] renegociar un contrato millonario con un proveedor clave.
+[   23.4 ->    27.7] ¡Wow! Un sueño de eficiencia para cualquier gerente, ¿no?
+[   27.7 ->    32.7] ¡Claro! Suena increíblemente innovador, es el futuro de la eficiencia operativa,
+[   32.7 ->    38.0] hasta que, pues, te das cuenta de que el agente, en su afán por optimizar todo,
+[   38.0 ->    42.5] alucinó una cláusula legal que simplemente no existe en tus políticas.
+[   42.5 ->    44.2] ¡Uff! ¡Un desastre!
+[   44.2 ->    49.2] ¡Exacto! Y te acaba de comprometer a pagar multas ridículas, entonces la
+[   49.2 ->    53.3] gran pregunta es ¿Cómo frenas ese vehículo antes de que se vaya por el
+[   53.3 ->    58.6] acantilado? Hoy estamos hablando exactamente de eso, de cómo ponerle un
+[   58.6 ->    61.6] volante y frenos reales a la AI autónoma.
+[   61.6 ->    63.0] ¡Que vaya que los necesita!
+[   63.0 ->    70.1] Totalmente. Específicamente vamos a diseccionar HEXI, que es la capa de ejecución de un
+[   70.1 ->    78.8] Domain Driven AI Framework, y su lenguaje hermano, S-O-L, El Semantic Operations Language.
+[   78.8 ->    83.3] La premisa que nos reúne hoy es la afirmación fundacional de este proyecto.
+[   83.3 ->    88.8] Y cito, tus artefactos de negocio son las guardrails del loop del agente.
+[   88.8 ->    93.5] Y a ver, es una premisa fascinante porque el problema no es si necesitamos control o no.
+[   93.5 ->    97.2] O sea, nadie quiere que su AI firme contratos inventados.
+[   97.2 ->    98.2] ¡Claro nadie!
+[   98.2 ->   102.0] La verdadera pregunta aquí es ¿A qué costo conseguimos ese control?
+[  102.0 ->   107.2] Hoy vamos a debatir si gobernar un agente mediante una estricta, digamos, ejecución reactiva,
+[  107.3 ->   113.6] donde el sistema valida obsesivamente artefactos semánticos como el Intent, el Context o la Authority.
+[  113.6 ->   117.2] Es verdaderamente la solución definitiva contra la ambigüedad.
+[  117.2 ->   122.8] O si, por el contrario, esta rigidez arquitectónica termina convirtiendo a modelos cognitivos
+[  122.8 ->   127.5] súper brillantes en simples motores de reglas glorificados de los años 90.
+[  127.5 ->   129.8] ¡Uy, palabras fuertes!
+[  129.8 ->   133.1] Pues sí, porque corremos el riesgo de perder toda esa adaptabilidad que nos
+[  133.1 ->   135.4] hizo adoptar la AI en primer lugar, ¿verdad?
+[  135.4 ->   139.2] Bueno, para dejar mi postura súper clara desde el principio,
+[  139.2 ->   144.4] yo estoy convencida de que esta ejecución reactiva, impulsada por un lenguaje ubicuo
+[  144.4 ->   149.2] y matemáticamente verificable como Sol, no es solo una buena idea.
+[  149.2 ->   154.1] O sea, es la evolución absolutamente necesaria para crear un plano de control de IA
+[  154.1 ->   159.5] que sea determinista, auditable y, sobre todo, seguro para entornos corporativos reales.
+[  159.5 ->   162.6] Y yo este lo veo desde otro ángulo.
+[  162.6 ->   168.4] Aunque la separación de capas que propone Hexy me parece una obra de arte a nivel de diseño,
+[  168.4 ->   172.9] forzar cada pequeño evento a través de un collo de botella de validación semántica
+[  172.9 ->   175.8] va a asfixiar la autonomía de la gente.
+[  175.8 ->   180.8] Yo estoy convencido de que este enfoque subestima muchísimo la fricción real que existe
+[  180.8 ->   184.0] al intentar cerrar el famoso hueco del loop en la práctica.
+[  184.0 ->   186.6] Entiendo por dónde vas, pero, a ver,
+[  186.6 ->   192.1] pongamos un poco de contexto sobre el problema real que Hexy viene a resolver.
+[  192.1 ->   197.6] Si nos estás escuchando I, has intentado poner un agente complejo de Lang Chain
+[  197.6 ->   199.5] o similares en producción.
+[  199.5 ->   200.7] Un dolor de cabeza.
+[  200.7 ->   202.9] Sí, un dolor de cabeza total.
+[  202.9 ->   207.0] Sabes perfectamente que los LLMS actuales son, en esencia,
+[  207.0 ->   211.4] amplificadores muy confiados del vocabulario que les lanzas.
+[  211.4 ->   215.2] Si no les das definiciones milimétricamente precisas,
+[  215.2 ->   218.2] van a tomar decisiones que suenan lógicas,
+[  218.2 ->   224.1] súper persuasivas, pero que a nivel de negocio son semánticamente un desastre.
+[  224.1 ->   227.6] Mezclan permisos a sumenroles que no tienen.
+[  227.6 ->   232.4] Entonces, la genialidad de Hexy es separar el problema en dos capas.
+[  232.4 ->   234.8] Tienes la capa de definición con Sol,
+[  234.8 ->   238.5] donde tu negocio no es un prompt larguísimo y difuso,
+[  238.5 ->   243.1] sino un conjunto de 17 artefactos versionados y componibles.
+[  243.1 ->   244.4] 17, sí.
+[  244.4 ->   248.6] Hablamos de referencias estrictamente tipadas.
+[  248.6 ->   254.6] O sea, a la gente no le pasas un texto que dice, avísale al gerente.
+[  254.6 ->   258.0] Le pasas una referencia en código duro que dice,
+[  258.0 ->   261.4] actor, dos puntos, director de operaciones.
+[  261.4 ->   264.8] Espera, pausa y un segundo para que la audiencia nos siga.
+[  264.8 ->   267.8] Me estás diciendo que en lugar de dar la instrucción
+[  267.8 ->   270.0] es el lenguaje natural al modelo,
+[  270.0 ->   273.7] estamos forzando al organización a mapear todas sus estructuras,
+[  273.7 ->   275.8] sus roles, políticas, procesos.
+[  275.8 ->   279.2] En estos 17 artefactos que actúan como podio,
+[  279.2 ->   280.2] Así es.
+[  280.2 ->   282.0] Hasta ahí, digamos, en la capa de diseño,
+[  282.0 ->   284.5] estoy de acuerdo en que es un avance monumental.
+[  284.5 ->   287.0] Formalizar el Ubiquitus Language es el lenguaje ubico
+[  287.0 ->   288.6] del que habla el Domain Driven Design
+[  288.6 ->   290.0] y tratar las políticas de la empresa
+[  290.0 ->   293.1] como si fueran repositorios de código me parece brillante.
+[  293.1 ->   294.1] Exacto.
+[  294.1 ->   297.6] Pero, ojo, no se queda solo en el diseño
+[  297.6 ->   301.0] y aquí es donde la magia ocurre en la ejecución.
+[  301.0 ->   304.6] Cuando el Harness Runtime de Hexy entra en acción,
+[  304.6 ->   309.1] esas referencias no son sugerencias amables en el prompt.
+[  309.1 ->   310.4] Entonces, ¿qué son?
+[  310.4 ->   313.6] Actúan como compuertas de validación en tiempo real.
+[  313.6 ->   315.9] Hexy no es un orquestador que es simplemente
+[  315.9 ->   318.1] con catena strings para el modelo.
+[  318.1 ->   321.0] Es un motor donde el presupuesto de tokens,
+[  321.0 ->   324.4] que sabemos que es carísimo e inestable si lo saturamos.
+[  324.4 ->   325.7] Totalmente carísimo.
+[  325.7 ->   326.7] Exacto.
+[  326.7 ->   329.0] Pues se maneja de forma matemática.
+[  329.0 ->   333.5] Usa consultas SPAQL, que para quienes no estén familiarizados
+[  333.5 ->   336.1] es básicamente como un SQL pero diseñado
+[  336.1 ->   339.3] para buscar conexiones en bases de datos de grafos.
+[  339.3 ->   342.4] Esto sirve para recuperar exactamente el subgrafo
+[  342.4 ->   344.7] de información que la gente necesita.
+[  344.7 ->   346.9] Ni un token más, ni uno menos.
+[  346.9 ->   351.0] Y ahí, justo ahí, es donde empieza mi preocupación operativa.
+[  351.0 ->   354.1] Esa dependencia obsesiva en la ejecución reactiva
+[  354.1 ->   357.1] puede paralizar por completo el sistema.
+[  357.1 ->   359.0] A ver, expliquemos la mecánica.
+[  359.0 ->   362.3] En el modo reactivo de Hexy, el framework se queda escuchando
+[  362.3 ->   364.4] eventos y valida cada acción propuesta
+[  364.4 ->   366.9] contra estas reglas de grafos.
+[  366.9 ->   369.6] El propio diseño de Hexy admite abiertamente
+[  369.6 ->   373.0] que existe un loopgrap, un hueco en el ciclo.
+[  373.0 ->   375.7] El sistema, a través de su execution context,
+[  375.7 ->   378.5] modela de manera hermosa la traza de lo que pasa,
+[  378.5 ->   381.9] anota los eventos, las observaciones, las violaciones.
+[  381.9 ->   384.1] Pero, este, todavía no ejecuté el ciclo
+[  384.1 ->   386.2] de forma autónoma con soltura.
+[  386.2 ->   388.8] Mi miedo fundamentado es que, en el mundo real,
+[  388.8 ->   390.9] la latencia de hacer estas consultas semánticas
+[  390.9 ->   393.3] por cada microacción ahogue a la gente.
+[  393.3 ->   396.2] Pero esa latencia no es un defecto,
+[  396.2 ->   398.5] es el mecanismo de defensa.
+[  398.5 ->   401.8] Y esto nos mete de lleno del meollo del asunto,
+[  401.8 ->   405.9] la dicotomía entre cómo ejecutamos a estos agentes.
+[  405.9 ->   409.1] Hexy te da la opción de un motor que está dor tradicional,
+[  409.1 ->   412.4] donde tú le dictas paso a paso lo que debe hacer
+[  412.4 ->   413.8] o el modo reactivo.
+[  413.8 ->   415.1] ¿Qué es el que tú defiendes?
+[  415.2 ->   418.1] Yo defiendo el modo reactivo a capa y espada.
+[  418.1 ->   420.2] Piénsalo con esta analogía.
+[  420.2 ->   422.5] La ejecución reactiva es, literalmente,
+[  422.5 ->   424.9] el sistema inmunológico de la corporación.
+[  424.9 ->   425.3] A ver.
+[  425.3 ->   427.9] El cerebro no le dicta a cada glóbulo blanco
+[  427.9 ->   430.2] cómo moverse centímetro a centímetro.
+[  430.2 ->   430.9] No.
+[  430.9 ->   433.3] Simplemente lo sueltan el torrente sanguíneo
+[  433.3 ->   436.1] que en nuestra arquitectura sería el event boss.
+[  436.1 ->   439.6] Los agentes reaccionan autónomamente a los eventos.
+[  439.6 ->   441.8] Hexy solo aplica estos guardrails,
+[  441.8 ->   444.2] las reglas de authority en policy,
+[  444.2 ->   447.2] cuando detecta una anomalía o una violación.
+[  447.2 ->   450.0] Le das libertad al LLM para razonar,
+[  450.0 ->   452.4] pero con una red de seguridad inquebrantable.
+[  452.4 ->   455.0] Fígate que tu analogía del sistema inmunológico
+[  455.0 ->   457.4] ilustra perfectamente mi punto.
+[  457.4 ->   459.9] ¿Qué pasa en el cuerpo humano cuando el sistema inmunológico
+[  459.9 ->   462.4] es hiperactivo y reacciona todo?
+[  462.4 ->   464.7] Bueno, sí, entiendo a dónde vas.
+[  464.7 ->   466.7] Tienes una enfermedad autoinmune.
+[  466.7 ->   469.7] El cuerpo inglés atacarse a sí mismo y se paraliza.
+[  469.7 ->   472.0] Llevando esto a la mecánica de Hexy,
+[  472.0 ->   475.3] yo cuestiono muchísimo el costo real de esta operación.
+[  475.3 ->   476.7] En el modo reactivo puro,
+[  476.7 ->   478.9] por cada evento que marca un cambio de estado,
+[  478.9 ->   481.0] el semantic engine tiene que procesar reglas
+[  481.0 ->   484.4] en formatos súper pesados como OILM o RDF
+[  484.4 ->   485.8] para decidir si la acción de la gente
+[  485.8 ->   488.0] cuadra con el intent y el contexto.
+[  488.0 ->   489.0] Sí, pero...
+[  489.0 ->   492.1] Estamos agarrando la ventaja principal de un LLM,
+[  492.1 ->   494.0] que es su fluidez cognitiva rápida,
+[  494.0 ->   497.0] y la estamos metiendo en el peor trámite burocrático posible.
+[  497.0 ->   499.4] No estoy de acuerdo con que sea burocracia.
+[  499.4 ->   500.9] Es precisión.
+[  500.9 ->   502.6] Suena pesado, pero...
+[  502.6 ->   503.9] En la práctica,
+[  503.9 ->   506.2] la gente va a llegar a su condición de término,
+[  506.2 ->   508.2] digamos, un budget exhausted,
+[  508.2 ->   510.6] porque se le acabó el tiempo o los tokens,
+[  510.6 ->   513.2] mucho antes de lograr el resultado deseado.
+[  513.2 ->   516.3] Simplemente se la pasará pidiendo permisos semánticos.
+[  516.3 ->   520.7] Entiendo por qué la palabra grafo o inferencia ontológica
+[  520.7 ->   523.4] asusta cuando hablamos de latencia,
+[  523.4 ->   525.2] pero analicemos cómo lo hace Hexy
+[  525.2 ->   527.9] para no caer en ese cuello de botella.
+[  527.9 ->   530.4] El motor semántico evalúa relaciones como
+[  530.4 ->   533.3] the pension or conflicts with, ¿sí?
+[  533.3 ->   535.1] Pero no lo haces caneando
+[  535.1 ->   537.8] toda la base de conocimiento histórica de la empresa.
+[  537.8 ->   538.4] ¿OK?
+[  538.4 ->   542.2] Lo haces sobre un subgrafo enano y altamente comprimido
+[  542.2 ->   545.6] que el context orchestrator Jack Straho.
+[  545.6 ->   548.5] Y aquí está el truco de por qué esto salva tu presupuesto
+[  548.5 ->   551.3] de tokens en lugar de agotarlo.
+[  551.3 ->   554.8] En vez de inyectar un PDF corporativo de 50 páginas
+[  554.8 ->   556.6] en el prompt del LLM,
+[  556.6 ->   558.5] rogándole que siga las reglas.
+[  558.5 ->   560.1] Lo cual nunca funciona bien.
+[  560.1 ->   561.1] Exacto.
+[  561.1 ->   564.3] En vez de eso, Sparkle extrae los 100 tokens
+[  564.3 ->   568.2] precisos de la regla exacta que aplica a ese momento.
+[  568.2 ->   570.8] El modo reactivo previene que la gente invoque
+[  570.8 ->   573.4] una herramienta o modifique una base de datos
+[  573.4 ->   577.2] si no tiene la authority correcta validada matemáticamente.
+[  577.2 ->   579.3] Esa es una teoría arquitectónica bellísima,
+[  579.3 ->   580.3] te lo concedo.
+[  580.3 ->   583.1] Pero bajémoslo a la mecánica real del loop.
+[  583.1 ->   586.2] El agente actúa, observa, el sistema valida,
+[  586.2 ->   588.1] el agente decide de nuevo.
+[  588.1 ->   589.8] Si la validación es tan implacable
+[  589.8 ->   592.2] que la mínima desviación de la política
+[  592.2 ->   594.1] genera un evento de violation,
+[  594.1 ->   596.4] el agente se la va a pasar recalibrando su ruta
+[  596.4 ->   598.1] en lugar de avanzar hacia la meta.
+[  598.1 ->   601.8] Bueno, pero recalibrar es mejor que equivocarse.
+[  601.8 ->   605.4] Un orquestador paso a paso puede parecer menos sofisticado,
+[  605.4 ->   607.3] pero es predecible.
+[  607.3 ->   608.5] El modo reactivo,
+[  608.5 ->   610.7] al depender de estos 17 artefactos
+[  610.7 ->   612.5] que interactúan en tiempo real,
+[  612.5 ->   615.6] suma la latencia de la inferencia lógica tradicional
+[  615.6 ->   619.1] encima de la latencia que ya trae GPT-4 o Cloud.
+[  619.1 ->   620.1] Es demasiado.
+[  620.1 ->   622.6] Pero esa latencia que criticas
+[  622.6 ->   626.3] es exactamente lo que nos salva de la alucinación,
+[  626.3 ->   627.9] que, seamos sinceros,
+[  627.9 ->   631.8] es el terror número uno de implementar agentes hoy en día.
+[  631.8 ->   635.3] Déjame enfocarme en un mecanismo técnico específico,
+[  635.3 ->   638.5] la etapa que el framework llama Resolve.
+[  638.5 ->   640.0] Ajá, el contrato.
+[  640.0 ->   640.9] Exacto.
+[  640.9 ->   644.8] Esto es el contrato duro entre Sol y Hexi.
+[  644.8 ->   648.4] Cuando tú cargas un archivo.sob al sistema,
+[  648.4 ->   650.2] antes de que la gente, si quiera,
+[  650.2 ->   652.8] empiece a planificar su primera jugada,
+[  652.8 ->   655.8] el sistema resuelve cada referencia.
+[  655.8 ->   658.7] Si el sistema detecta que la gente intenta reaccionar
+[  658.7 ->   661.2] a un evento llamando a un actor
+[  661.2 ->   663.5] o a un proceso que no está definido
+[  663.5 ->   665.5] en los esquemas de validación,
+[  665.5 ->   668.2] que, por cierto, usan SOD bajo el capó
+[  668.2 ->   671.1] para asegurar que la estructura de datos es exacta...
+[  671.1 ->   672.9] Sí, SOD es muy estricto.
+[  672.9 ->   674.5] ¡Súper estricto!
+[  674.6 ->   676.9] Pues el contrato falla de inmediato.
+[  676.9 ->   679.2] La ejecución se frena en seco.
+[  679.2 ->   682.5] Esto es un freno antialucinaciones por diseño.
+[  682.5 ->   683.5] A ver si te sigo.
+[  683.5 ->   685.2] Me estás diciendo que si el agente,
+[  685.2 ->   688.0] procesando un contexto de recursos humanos,
+[  688.0 ->   690.9] determina lógicamente que necesita la aprobación
+[  690.9 ->   692.7] de un gerente de bienestar,
+[  692.7 ->   695.2] pero ese rol específico no está textualmente
+[  695.2 ->   697.7] declarado y tipeado en el esquema de SOD,
+[  697.7 ->   700.2] el sistema literalmente le corta la corriente.
+[  700.2 ->   700.7] Sí.
+[  700.7 ->   702.6] No hay margen para que el LM
+[  702.6 ->   704.9] infiera que gerente de bienestar
+[  704.9 ->   708.3] equivale al director de HR que si está en el grafo.
+[  708.3 ->   711.1] Exactamente, le corta la corriente.
+[  711.1 ->   713.6] Porque permitir esa inferencia laxa
+[  713.6 ->   716.2] es lo que abre la puerta a que mañana
+[  716.2 ->   719.7] asigne salarios basándose en roles inventados.
+[  719.7 ->   722.9] O sea, no le estamos pidiendo amablemente en el prompt.
+[  722.9 ->   726.2] Por favor, usa solo los roles oficiales.
+[  726.2 ->   728.8] El harness runtime bloquea la acción
+[  728.8 ->   731.0] a nivel de compilación semántica.
+[  731.0 ->   732.0] ¡Wow!
+[  732.1 ->   734.8] Esa es una defensa contundente de la seguridad,
+[  734.8 ->   738.7] lo admito, pero te das cuenta de la colisión brutal
+[  738.7 ->   742.0] que esto va a tener con el mundo de los negocios reales.
+[  742.0 ->   744.2] El mundo corporativo no es una ontología
+[  744.2 ->   746.8] inmutable de relaciones cristalizadas.
+[  746.8 ->   748.7] Pero debería ser más ordenado.
+[  748.7 ->   750.0] Debería.
+[  750.0 ->   753.0] Pero está lleno de excepciones, de edge cases,
+[  753.0 ->   756.5] de incendios que requieren pensamiento lateral.
+[  756.5 ->   758.2] Si la ejecución reactiva de EXI
+[  758.2 ->   760.8] exige una coherencia matemática perfecta
+[  760.8 ->   763.0] entre el intent y el context,
+[  763.0 ->   764.6] ¿qué va a hacer ese agente cuando se enfrente
+[  764.6 ->   766.8] a un escenario de crisis que no estaba mapeado
+[  766.8 ->   769.6] en el archivo.sob de hace seis meses?
+[  769.6 ->   772.7] El sistema hace lo que debe hacer un sistema seguro.
+[  772.7 ->   775.5] Emite una violation inmutable,
+[  775.5 ->   778.6] la registra en el historial del execution context
+[  778.6 ->   780.0] y alerta.
+[  780.0 ->   781.6] Y ahí está la trampa.
+[  781.6 ->   784.1] Emitirá una violation con nivel de error fatal
+[  784.1 ->   785.6] y detendrá el loop.
+[  785.6 ->   787.6] Porque si tus guardrails son de acero,
+[  787.6 ->   790.0] cualquier roce te destroza el coche.
+[  790.0 ->   792.4] Y aquí es donde la promesa entera de la IA autónoma
+[  792.4 ->   794.1] se nos cae a pedazos, la verdad.
+[  794.1 ->   797.0] No diría que a pedazos, eso lo control.
+[  797.0 ->   799.6] Si el agente se congela y levanta las manos
+[  799.6 ->   802.0] cada vez que la realidad no cuadra perfectamente
+[  802.0 ->   803.9] con el vocabulario aprobado,
+[  803.9 ->   805.2] vas a necesitar a un humano
+[  805.2 ->   807.8] constantemente desbloqueando la fila.
+[  807.8 ->   810.2] Pasamos de tener humanos haciendo el trabajo,
+[  810.2 ->   812.4] a tener humanos aprobando las excepciones
+[  812.4 ->   814.6] de un sistema semántico paranoico.
+[  814.6 ->   816.6] Ay, paranoico.
+[  816.6 ->   817.7] Sí.
+[  817.7 ->   819.2] Si le quitamos al LLM
+[  819.2 ->   820.9] la capacidad de adaptar sus acciones
+[  820.9 ->   822.4] fuera de las líneas del grafo
+[  822.4 ->   824.3] cuando el contexto lo amerita,
+[  824.3 ->   826.7] ya no estamos usando inteligencia artificial.
+[  826.7 ->   829.6] Estamos usando un motor de reglas de 1995
+[  829.6 ->   831.8] con una interfaz de chat muy cara.
+[  831.8 ->   833.4] Creo que estás hiperbolizando
+[  833.4 ->   835.7] un poco el impacto de la validación.
+[  835.7 ->   837.1] Estás asumiendo que todavía
+[  837.1 ->   838.8] Iolation detiene el mundo
+[  838.8 ->   840.0] y la arquitectura de Hexy
+[  840.0 ->   842.7] es muchísimo más inteligente que eso.
+[  842.7 ->   845.8] El Validation Service tiene niveles de severidad.
+[  845.8 ->   847.7] Tienes Warnings o Infos
+[  847.7 ->   849.6] que permiten que el ciclo continúe,
+[  849.6 ->   851.1] pero dejan una marca indeleble
+[  851.1 ->   853.3] en la traza para la auditoría posterior.
+[  853.3 ->   855.9] OK, eso suaviza un poco las cosas.
+[  855.9 ->   859.4] Sólo las desviaciones críticas frenan el loop.
+[  859.4 ->   862.8] Pero te devuelvo la pregunta con un caso real.
+[  862.8 ->   865.0] Piensa en una gente que opera en finanzas
+[  865.0 ->   866.4] moviendo presupuestos
+[  866.4 ->   869.6] o en infraestructura de TI desplegando servidores
+[  869.6 ->   872.2] o en legal redactando NDAs.
+[  872.2 ->   873.4] De verdad, no prefieres
+[  873.4 ->   875.4] que el sistema se detenga abruptamente
+[  875.5 ->   877.7] ante una variable no reconocida
+[  877.7 ->   879.0] en lugar de dejarlo actuar
+[  879.0 ->   881.5] creativamente sobre una alucinación.
+[  881.5 ->   885.3] A ver, en finanzas y en infraestructura 100%.
+[  885.3 ->   887.2] Te compro la rigidez ahí.
+[  887.2 ->   889.2] Pero el framework Hexy no se vende
+[  889.2 ->   891.6] como una solución de nicho para contadores.
+[  891.6 ->   893.2] Propone ser el sistema operativo
+[  893.2 ->   895.0] para toda la organización.
+[  895.0 ->   896.9] Y eso incluye áreas fluidas.
+[  896.9 ->   899.2] Claro, marketing, ventas.
+[  899.2 ->   900.1] Exacto.
+[  900.1 ->   901.6] Imagina a una gente manejando
+[  901.6 ->   904.0] la redacción de una campaña de marketing
+[  904.0 ->   907.4] hipercreativa, regida por VisionCGuideLines
+[  907.4 ->   910.5] o una gente facilitando la ideación de productos.
+[  910.5 ->   912.6] Aplicar el mismo peaje determinista
+[  912.6 ->   916.0] de tolerancia cero a toda la empresa es asfixiante.
+[  916.0 ->   918.4] La brillantes de los modelos de lenguaje modernos
+[  918.4 ->   920.3] es su capacidad para conectar puntos
+[  920.3 ->   922.8] que no están explícitamente conectados.
+[  922.8 ->   924.7] Hexy obliga a que cada conexión
+[  924.7 ->   927.1] esté tipiada en un grafo OWL
+[  927.1 ->   928.8] antes de que la gente pueda actuar.
+[  928.8 ->   930.0] Estamos neutralizando
+[  930.0 ->   932.6] la principal ventaja de esta tecnología.
+[  932.6 ->   934.6] Es un punto súper interesante.
+[  934.6 ->   936.5] Y entiendo el temor de verdad,
+[  936.5 ->   938.8] pero yo lo formularía diferente.
+[  938.8 ->   941.5] No estamos neutralizando la ventaja cognitiva.
+[  941.5 ->   945.2] La estamos canalizando para que no destruya valor.
+[  945.2 ->   947.5] Y la forma en que Hexy maneja esta amplitud
+[  947.5 ->   950.6] que mencionas, como marketing versus finanzas,
+[  950.6 ->   952.8] sin crear ese efecto asfixiante,
+[  952.8 ->   955.2] es a través de los bounded contexts,
+[  955.2 ->   957.1] que en el lenguaje SOL se materialicen
+[  957.1 ->   958.8] en el artefacto AREA.
+[  958.8 ->   960.1] Ajá, las áreas.
+[  960.1 ->   962.0] Y este, me parece,
+[  962.0 ->   965.3] es un terreno muy fértil para nuestro debate.
+[  965.3 ->   968.0] Hexy diseña subagentes que viven
+[  968.0 ->   970.0] aislados por su área.
+[  970.0 ->   972.6] Marketing tiene su mundo semántico.
+[  972.6 ->   974.5] Finanzas el suyo.
+[  974.5 ->   976.3] En la ejecución reactiva,
+[  976.3 ->   979.0] limitar que estos agentes se comuniquen solo
+[  979.0 ->   982.3] mediante la emisión de events asíncronos
+[  982.3 ->   986.0] garantiza que los vocabularios no se contaminen.
+[  986.0 ->   987.6] Un agente de finanzas
+[  987.6 ->   991.6] jamás va a alucinar términos de la arquitectura de software,
+[  991.6 ->   993.7] porque su orquestador de contexto
+[  993.7 ->   997.0] solo comprime y lee su propio subgrafo.
+[  997.0 ->   998.6] Es un orden federado.
+[  998.6 ->  1002.4] Y aquí es donde yo veo el muro contra el que nos vamos a estrellar.
+[ 1002.4 ->  1004.7] No estamos construyendo muros de cristal
+[ 1004.7 ->  1007.4] demasiado gruesos entre los agentes.
+[ 1007.4 ->  1010.0] El concepto de bounded context es fantástico
+[ 1010.0 ->  1013.3] cuando diseñas microservicios de software tradicionales.
+[ 1013.3 ->  1016.1] Pero los problemas organizacionales más complejos
+[ 1016.2 ->  1019.2] los que realmente justifican pagar por IA avanzada
+[ 1019.2 ->  1021.5] son interdisciplinarios por naturaleza.
+[ 1021.5 ->  1023.3] Pero pueden hablar entre ellos.
+[ 1023.3 ->  1026.2] Sí, pero si un subagente solo puede percibir eventos
+[ 1026.2 ->  1027.9] que han sido previamente filtrados
+[ 1027.9 ->  1030.1] para que coincidan con el vocabulario estricto
+[ 1030.1 ->  1031.4] de su pequeña área,
+[ 1031.4 ->  1033.9] perdemos la capacidad integradora.
+[ 1033.9 ->  1036.9] Pero la comunicación cross-area sigue existiendo.
+[ 1036.9 ->  1039.4] No están incomunicados en burbujas.
+[ 1039.4 ->  1042.2] Si el agente de finanzas necesita que ingeniería
+[ 1042.2 ->  1044.2] apruebe un presupuesto en la nube,
+[ 1044.2 ->  1047.4] finanzas emite un evento, ingeniería lo captura,
+[ 1047.4 ->  1049.4] corre su propio proceso aislado
+[ 1049.4 ->  1051.5] y emite un evento de resultado.
+[ 1051.5 ->  1055.0] Es el patrona síncrono que hace que un Amazon o un Netflix
+[ 1055.0 ->  1056.2] no colapsen.
+[ 1056.2 ->  1059.2] Sí, funciona increíble en transacciones deterministas.
+[ 1059.2 ->  1060.2] Te lo concedo.
+[ 1060.2 ->  1063.0] Pero, a ver, pongamos un escenario real.
+[ 1063.0 ->  1065.5] Tienes un problema crítico en la calena de suministro
+[ 1065.5 ->  1067.2] que está retrasando entregas.
+[ 1067.2 ->  1069.5] Ese problema tiene ramificaciones legales
+[ 1069.5 ->  1071.2] por incumplimiento de contratos,
+[ 1071.2 ->  1073.4] ramificaciones financieras por multas
+[ 1073.4 ->  1076.2] y ramificaciones de relaciones públicas.
+[ 1076.2 ->  1077.6] Un caos total.
+[ 1077.6 ->  1078.8] Un caos.
+[ 1078.8 ->  1082.7] Un LLM al que le das acceso al contexto transversal
+[ 1082.7 ->  1085.5] puede sintetizar una solución holística
+[ 1085.5 ->  1089.2] y decirte, oye, si pagamos esta pequeña multa hora,
+[ 1089.2 ->  1093.4] evitamos el problema de RP y salvamos el contrato mayor.
+[ 1093.4 ->  1095.6] Puede conectar los puntos.
+[ 1095.6 ->  1098.3] Pero si fragmentas la inteligencia en cuatro áreas
+[ 1098.3 ->  1099.6] de sol distintas,
+[ 1099.6 ->  1102.8] la rigidez semántica rompe la resolución.
+[ 1102.8 ->  1105.4] El agente de finanzas recibe el evento legal,
+[ 1105.4 ->  1108.0] pero como no encaja en su ontología purificada,
+[ 1108.0 ->  1109.6] no sabe qué hacer con él.
+[ 1109.6 ->  1112.3] Se queda bloqueado porque referenciar directamente
+[ 1112.3 ->  1114.8] la política legal rompería las reglas
+[ 1114.8 ->  1116.9] ante alucinación de su área.
+[ 1116.9 ->  1118.7] Entiendo perfectamente la crítica
+[ 1118.7 ->  1121.0] sobre los silos de información.
+[ 1121.0 ->  1122.6] Pero, con total honestidad,
+[ 1122.6 ->  1124.8] recordemos cuál es la alternativa empílica
+[ 1124.8 ->  1126.2] que tenemos hoy.
+[ 1126.2 ->  1128.7] Antes de enfoques estructurados como Sol,
+[ 1128.7 ->  1129.9] ¿qué hacíamos?
+[ 1129.9 ->  1132.7] Agarrábamos la base de datos entera de la empresa
+[ 1132.7 ->  1134.6] y la embuteamos en la ventana de contexto
+[ 1134.6 ->  1137.3] de 200.000 tokens de Cloud o GPT.
+[ 1137.3 ->  1138.4] Que es carísimo, Cabo.
+[ 1138.4 ->  1140.0] Pasa mecánicamente,
+[ 1140.0 ->  1142.2] el modelo sufre del Lost in the Middle.
+[ 1142.2 ->  1144.6] Se olvida de las instrucciones iniciales,
+[ 1144.6 ->  1146.9] se confunde con políticas contradictorias
+[ 1146.9 ->  1148.3] de distintas áreas
+[ 1148.3 ->  1150.5] y termina prometiendo reembolsos a clientes
+[ 1150.5 ->  1152.0] que no aplican.
+[ 1152.0 ->  1153.4] El aislamiento por área,
+[ 1153.4 ->  1156.2] usando eventos asíncronos como único puente,
+[ 1156.2 ->  1157.8] te obliga a que el diseño de tu dominio
+[ 1157.8 ->  1159.1] sea impecable.
+[ 1159.1 ->  1160.8] Si hay fricción entre el área legal
+[ 1160.8 ->  1162.6] y la financiera en tu sistema,
+[ 1162.7 ->  1165.1] no es un fallo del framework de IA.
+[ 1165.1 ->  1167.0] Entonces, ¿de quién es la culpa?
+[ 1167.0 ->  1169.4] Es un síntoma revelador de que los flujos
+[ 1169.4 ->  1171.5] organizacionales reales de tu empresa
+[ 1171.5 ->  1174.9] son un desastre y necesitan rediseñarse.
+[ 1174.9 ->  1177.0] Exagencia básicamente hace visible
+[ 1177.0 ->  1178.4] la deuda organizacional.
+[ 1178.4 ->  1180.0] Fíjate lo que estás diciendo.
+[ 1180.0 ->  1181.5] Estás obligando a la organización
+[ 1181.5 ->  1183.3] a tener procesos y vocabularios
+[ 1183.3 ->  1184.9] perfectos e impecables
+[ 1184.9 ->  1186.7] antes de poder aprovechar el potencial
+[ 1186.7 ->  1188.4] de sus agentes autónomos.
+[ 1188.4 ->  1189.9] Eso es poner una barrera de entrada
+[ 1189.9 ->  1192.4] casi imposible para la mayoría de las empresas.
+[ 1192.4 ->  1195.8] Yo lo veo como un incentivo para mejorar.
+[ 1195.8 ->  1197.1] Volviendo a tu vehículo
+[ 1197.1 ->  1198.8] todo terreno del principio.
+[ 1198.8 ->  1201.4] Una empresa viva no es un tren estático.
+[ 1201.4 ->  1202.8] Está constantemente negociando
+[ 1202.8 ->  1204.8] las fronteras entre departamentos.
+[ 1204.8 ->  1206.5] Las autoridades y las políticas
+[ 1206.5 ->  1209.0] mutan orgánicamente día a día.
+[ 1209.0 ->  1211.2] Si Hexy trata estos artefactos
+[ 1211.2 ->  1213.6] como código duro que falla y rompe lupa
+[ 1213.6 ->  1215.1] la primera discrepancia,
+[ 1215.1 ->  1216.9] estás forzando a la empresa entera
+[ 1216.9 ->  1219.6] a volverse rígida para complacer al framework
+[ 1219.6 ->  1221.4] en lugar de que el framework de IA
+[ 1221.4 ->  1223.1] se adapte a la maravillosa y ambigua
+[ 1223.1 ->  1224.8] realidad de la empresa.
+[ 1224.8 ->  1227.4] Pero ese es exactamente el salto de paradigma
+[ 1227.4 ->  1229.2] que trae esta arquitectura.
+[ 1229.2 ->  1231.4] O sea, la superficie de modelado,
+[ 1231.4 ->  1233.2] el dashboard de Hexy,
+[ 1233.2 ->  1235.8] está diseñado precisamente para que las áreas
+[ 1235.8 ->  1237.6] puedan actualizar sus definiciones
+[ 1237.6 ->  1239.2] de forma dinámica,
+[ 1239.2 ->  1242.2] creando nuevas versiones de los artefactos.
+[ 1242.2 ->  1245.0] No es código grabado en piedra.
+[ 1245.0 ->  1246.7] Es código gestionado.
+[ 1246.7 ->  1248.8] Pero se tiene que gestionar manualmente.
+[ 1248.8 ->  1250.9] Sí, pero estos cambios
+[ 1250.9 ->  1253.3] se evaluan en tiempo real.
+[ 1253.3 ->  1255.0] Y si hay un conflicto,
+[ 1255.0 ->  1256.2] digamos que legal,
+[ 1256.2 ->  1258.0] cambia a una política
+[ 1258.0 ->  1260.2] que rompe el proceso de ventas,
+[ 1260.2 ->  1262.7] el Validation Service de Hexy
+[ 1262.7 ->  1265.2] te tira una alerta antes de que la gente
+[ 1265.2 ->  1268.6] empiece a operar con políticas contradictorias
+[ 1268.6 ->  1271.2] y cause un desastre en producción.
+[ 1271.2 ->  1274.5] La tesis de Hexy es que la realidad operativa
+[ 1274.5 ->  1276.0] de misión crítica
+[ 1276.0 ->  1277.9] no debería ser difusa.
+[ 1277.9 ->  1279.9] Al exigir que una gente se mueva
+[ 1279.9 ->  1282.3] solo bajo un intent super claro
+[ 1282.3 ->  1284.0] con una autoridad real
+[ 1284.0 ->  1286.6] y métricas de Evaluation verificables,
+[ 1286.6 ->  1289.3] no estamos asfixiando a la organización.
+[ 1289.3 ->  1291.6] La estamos forzando a madurar.
+[ 1291.6 ->  1293.8] Es una visión admirable, de verdad,
+[ 1293.8 ->  1297.0] desde el purismo de la ingeniería de software.
+[ 1297.0 ->  1298.5] Pero no puede evitar regresar
+[ 1298.5 ->  1300.6] a la herida abierta de este diseño
+[ 1300.6 ->  1302.8] que es el hueco del loop.
+[ 1302.8 ->  1304.6] Actualmente el proyecto admite
+[ 1304.6 ->  1306.3] que su entorno de ejecución
+[ 1306.3 ->  1308.8] modela a la perfección las observaciones,
+[ 1308.9 ->  1311.9] las violaciones y los estados de este grafo.
+[ 1311.9 ->  1313.9] Pero el ciclo autónomo cerrado,
+[ 1313.9 ->  1316.2] el bucle real donde el modelo actúa,
+[ 1316.2 ->  1319.7] falla, corrige y triunfa sin intervención humana,
+[ 1319.7 ->  1323.1] sigue en fase de diseño a través del harness runtime.
+[ 1323.1 ->  1325.4] Es un trabajo en progreso, sí.
+[ 1325.4 ->  1327.7] Mi preocupación genuina es que cuando intenten
+[ 1327.7 ->  1330.2] llevar esta visión purista a producción
+[ 1330.2 ->  1332.7] se darán cuenta de que someter a un modelo cognitivo
+[ 1332.7 ->  1334.7] a un interrogatorio semántico estricto
+[ 1334.7 ->  1336.5] en cada micropaso del loop
+[ 1336.5 ->  1338.7] va a agotar el tiempo y la paciencia.
+[ 1338.8 ->  1341.2] El agente apenas logrará usar un par de herramientas
+[ 1341.2 ->  1342.7] antes de colapsar bajo el peso
+[ 1342.7 ->  1344.7] de su propia burocracia antológica.
+[ 1344.7 ->  1348.5] Yo creo firmemente que cerrar ese hueco del loop
+[ 1348.5 ->  1350.2] es un desafío de ingeniería
+[ 1350.2 ->  1352.6] que se va a resolver muy pronto.
+[ 1352.6 ->  1355.2] No es una falla conceptual insalvable.
+[ 1355.2 ->  1357.9] El equipo detrás de Hexy está desarrollando
+[ 1357.9 ->  1361.2] el harness runtime para conectarse directamente
+[ 1361.2 ->  1365.8] mediante el protocolo MSP, el Model Context Protocol.
+[ 1365.8 ->  1367.2] ¿Qué es una gran tecnología?
+[ 1367.2 ->  1368.3] Es buenísima.
+[ 1368.3 ->  1371.2] Para la audiencia, MSP es básicamente
+[ 1371.2 ->  1373.4] un estándar abierto que permite al modelo
+[ 1373.4 ->  1375.2] interactuar de manera segura
+[ 1375.2 ->  1377.5] con herramientas y datos locales
+[ 1377.5 ->  1379.4] sin comprometer el contexto.
+[ 1379.4 ->  1382.8] Al priorizar MSP sobre integraciones propietarias
+[ 1382.8 ->  1384.8] y tratar las violaciones semánticas
+[ 1384.8 ->  1387.7] como guardrails nativos en cada ciclo,
+[ 1387.7 ->  1389.6] la ejecución reactiva nos va a dar
+[ 1389.6 ->  1391.8] el Santo Grial Corporativo,
+[ 1391.8 ->  1394.4] que es una auditoría inmutable.
+[ 1394.4 ->  1397.4] Sabremos por qué el agente renegoció el contrato,
+[ 1397.4 ->  1398.8] qué rol le dio el permiso
+[ 1398.8 ->  1401.8] y qué indicador usó para validar el éxito.
+[ 1401.8 ->  1405.3] Eso convierte a Hexy en el plano de control definitivo
+[ 1405.3 ->  1406.7] de la IA empresarial.
+[ 1406.7 ->  1409.7] En eso estamos totalmente de acuerdo.
+[ 1409.7 ->  1413.3] La observabilidad y la capacidad de auditar cada paso
+[ 1413.3 ->  1416.1] son beneficios gigantescos,
+[ 1416.1 ->  1418.2] de usar un lenguaje ubicua.
+[ 1418.2 ->  1420.1] Nadie en su sanojuicio discutiría
+[ 1420.1 ->  1422.8] el inmenso valor de tener un rastro causal
+[ 1422.8 ->  1425.6] de por qué la caja negra tomó una decisión.
+[ 1425.6 ->  1428.4] Sin embargo, este para resumir mi postura
+[ 1428.4 ->  1430.6] sobre hacia dónde va todo esto.
+[ 1430.6 ->  1432.9] Creo que el éxito práctico del framework
+[ 1432.9 ->  1435.8] en el mundo real dependerá inevitablemente
+[ 1435.8 ->  1439.0] de que relajen algunas de estas validaciones deterministas.
+[ 1439.0 ->  1439.7] Ya veo.
+[ 1439.7 ->  1440.8] Sí, porque si no,
+[ 1440.8 ->  1443.8] le integran al sistema un nivel mínimo de tolerancia
+[ 1443.8 ->  1444.9] a la ambigüedad,
+[ 1444.9 ->  1447.2] lo que Hexy terminará haciendo es modelar
+[ 1447.2 ->  1450.2] de forma matemáticamente perfecta y auditable
+[ 1450.2 ->  1452.4] la razón exacta por la cual un agente
+[ 1452.4 ->  1454.8] decidió no hacer absolutamente nada.
+[ 1454.8 ->  1457.1] Tendremos una hermosa trasa inmutable
+[ 1457.1 ->  1458.4] de inacción corporativa.
+[ 1458.4 ->  1461.2] Es un riesgo súper válido
+[ 1461.2 ->  1463.8] y me alegra que al menos estemos alineados
+[ 1463.8 ->  1466.6] en la importancia de la observabilidad.
+[ 1466.6 ->  1468.3] Creo que de este debate surge
+[ 1468.3 ->  1471.8] un área de convergencia muy clara entre nosotros.
+[ 1471.8 ->  1475.6] El cambio en la industria de la simple ingeniería de PROMPS
+[ 1475.6 ->  1478.5] hacia lo que llamamos ingeniería de loop,
+[ 1478.5 ->  1481.8] el loop engineering ya no tiene marcha atrás.
+[ 1481.8 ->  1486.7] La época de mandarle un bloque de texto de 100 líneas a un LLM,
+[ 1486.7 ->  1490.0] cruzar los dedos y rezar para que no invente datos,
+[ 1490.0 ->  1490.9] se acabó.
+[ 1490.9 ->  1492.6] Totalmente de acuerdo.
+[ 1492.6 ->  1494.7] El salto conceptual que da sol
+[ 1494.7 ->  1497.0] al tratar el ubiquitous language de la empresa
+[ 1497.0 ->  1498.6] como infraestructura pura,
+[ 1498.6 ->  1500.4] o sea como código comprobable
+[ 1500.4 ->  1502.3] y no solo como texto plano,
+[ 1502.3 ->  1504.8] es un triunfo intelectual tremendo.
+[ 1504.8 ->  1506.8] Supera por muchísimo el enfoque ingenuo
+[ 1506.8 ->  1510.1] de depender ciegamente del tamaño de la ventana de contexto.
+[ 1510.1 ->  1512.6] Mis reservas como pudiste ver a lo largo de la charla
+[ 1512.6 ->  1514.6] son puramente sobre la fricción operativa
+[ 1514.6 ->  1515.9] de correr eso en tiempo real.
+[ 1515.9 ->  1519.3] Y esa tensión entre la fricción operativa
+[ 1519.3 ->  1521.1] y el control estricto
+[ 1521.1 ->  1523.7] es el corazón mismo de lo que hace Ahex
+[ 1523.7 ->  1526.2] y tan fascinante de analizar.
+[ 1526.2 ->  1529.2] Nos deja con un balance crítico para pensar.
+[ 1529.2 ->  1533.8] La constante batalla entre estos 17 artefactos semánticos
+[ 1533.8 ->  1537.1] funcionando como guardrails de acero indestructible
+[ 1537.1 ->  1540.4] frente a la necesidad real de una autonomía fluida
+[ 1540.4 ->  1542.5] que le permita a la inteligencia artificial
+[ 1542.5 ->  1545.1] ser bueno inteligente, ¿no?
+[ 1545.1 ->  1547.1] El verdadero impacto de esta arquitectura
+[ 1547.1 ->  1550.4] se revelará cuando salgamos de los tableros de diseño
+[ 1550.4 ->  1552.0] y veamos agentes reales
+[ 1552.0 ->  1554.9] enfrentándose al fuego de la producción masiva.
+[ 1554.9 ->  1555.7] Así es.
+[ 1555.7 ->  1558.4] Ahí comprobaremos si esos famosos muros de cristal
+[ 1558.4 ->  1560.2] de los bounded contexts
+[ 1560.2 ->  1562.4] soportan la presión interdisciplinaria
+[ 1562.4 ->  1563.6] de una empresa real
+[ 1563.6 ->  1565.7] o si se resquebrajan ante el primer incendio
+[ 1565.7 ->  1567.7] que no viene tipificado en el manual.
+[ 1567.7 ->  1571.6] Lo cual nos trae de vuelta a la imagen con la que empezamos.
+[ 1571.6 ->  1574.0] Quizá el objetivo de Hexi y Sol
+[ 1574.0 ->  1576.3] no sea volver a poner el vehículo
+[ 1576.3 ->  1578.9] todoterreno de la inteligencia artificial
+[ 1578.9 ->  1582.4] sobre los rieles rígidos del software viejo.
+[ 1582.4 ->  1585.9] Quizá de lo que se trata es de instalarle al vehículo
+[ 1585.9 ->  1589.4] los sensores de proximidad más avanzados posibles.
+[ 1589.4 ->  1591.3] El agente todavía tiene la libertad
+[ 1591.3 ->  1594.0] de salirse de la carretera y explorar,
+[ 1594.0 ->  1597.8] pero ahora sus sensores, nuestros artefactos de negocio,
+[ 1597.8 ->  1600.5] le avisan exactamente a cuántos centímetros
+[ 1600.5 ->  1601.8] está el precipicio.
+[ 1601.8 ->  1604.7] O quizás para cerrar con tu analogía,
+[ 1604.7 ->  1606.4] le pusimos tantos sensores
+[ 1606.4 ->  1608.8] pitando al mismo tiempo en el tablero,
+[ 1608.8 ->  1612.0] advirtiendo de cada posible infracción milimétrica
+[ 1612.0 ->  1613.8] que el vehículo decide que es más seguro
+[ 1613.8 ->  1615.9] que darse estacionado en el garaje.
+[ 1615.9 ->  1618.0] ¿Será la validación semántica el motor
+[ 1618.0 ->  1621.2] que impulse la autonomía o el ancla que la frene?
+[ 1621.2 ->  1622.7] Una pregunta que, sin duda,
+[ 1622.7 ->  1624.8] nos mantendrá ocupados a medida
+[ 1624.8 ->  1627.5] que veamos madurar este ecosistema.
+[ 1627.5 ->  1630.2] Gracias por acompañarnos en esta disección profunda
+[ 1630.2 ->  1632.6] de la intersección entre el modelado de dominio
+[ 1632.6 ->  1634.2] y el futuro de la IA.
+[ 1634.2 ->  1637.2] Nos escuchamos en la próxima entrega de The Debate.

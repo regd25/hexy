@@ -232,7 +232,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <div className="p-8 text-center">
                   <div className="text-4xl mb-4">🔍</div>
                   <p className="text-text-muted">
-                    No se encontraron resultados para "{query}"
+                    No se encontraron resultados para &ldquo;{query}&rdquo;
                   </p>
                 </div>
               )}

@@ -1,0 +1,10 @@
+{
+  "name": "hexy-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Motor Python de Hexy: proyección RDF + inferencias (F3) y HarnessRuntime (F4/F5). Este package.json solo integra el motor al workflow pnpm/turbo; el código es Python 100% stdlib (sin venv ni pip).",
+  "scripts": {
+    "dev": "python3 app.py",
+    "test": "python3 -m unittest discover -s . -p 'test_*.py' -v"
+  }
+}

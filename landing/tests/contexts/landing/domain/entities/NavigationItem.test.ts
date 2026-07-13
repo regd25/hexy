@@ -105,6 +105,3 @@ describe('NavigationItem Entity', () => {
     })
   })
 })
-
-// Narrative: These tests ensure NavigationItem entity maintains its invariants
-// and behaves correctly according to SCL domain rules 

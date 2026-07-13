@@ -1,0 +1,14 @@
+# Configuración de Netlify para el monorepo pnpm de Hexy.
+# Solo se despliega la app `landing` (Next.js). La instalación corre desde la raíz para
+# respetar el workspace de pnpm y el lockfile; el build filtra únicamente ese paquete.
+[build]
+  command = "pnpm --filter hexy-landing build"
+  publish = "landing/.next"
+
+[build.environment]
+  # pnpm 11 (campo packageManager de la raíz) requiere Node >=22.13 (usa node:sqlite).
+  NODE_VERSION = "22"
+
+# Runtime oficial de Next.js (maneja el output de landing/.next, rutas y headers).
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

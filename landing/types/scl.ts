@@ -1,4 +1,3 @@
-// SCL Artifact Types - Semantic Context Language Type Definitions
 
 export interface SCLOrganization {
   id: string
@@ -126,7 +125,6 @@ export interface SCLMetadata {
   documentation?: string
 }
 
-// Search and Library Types
 export interface SearchResult {
   id: string
   title: string
@@ -151,7 +149,6 @@ export interface ArtifactLibraryItem {
   module?: SCLModule
 }
 
-// UI Component Types
 export interface NavigationItem {
   id: string
   name: string
