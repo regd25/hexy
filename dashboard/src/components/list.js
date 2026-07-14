@@ -30,15 +30,24 @@ export function createList() {
 
     search.addEventListener('input', () => {
         query = search.value
+        lastRenderedArtifacts = null // el filtro cambió: forzar rebuild
         render(lastState)
     })
     typeSel.addEventListener('change', () => {
         type = typeSel.value
+        lastRenderedArtifacts = null
         render(lastState)
     })
 
+    let lastRenderedArtifacts = null // referencia del último render (diff barato)
+
     function render(state) {
         lastState = state
+        // La lista solo depende de `artifacts` (+ los filtros locales). El store reemplaza el
+        // array en cada cambio estructural → si la referencia no cambió, no hay que reconstruir
+        // cientos de items (la selección rubber-band emite por mousemove).
+        if (state.artifacts === lastRenderedArtifacts) return
+        lastRenderedArtifacts = state.artifacts
         const byType = type === 'all' ? state.artifacts : state.artifacts.filter((a) => a.type === type)
         const q = query.trim().toLowerCase()
         const filtered = !q

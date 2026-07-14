@@ -7,7 +7,7 @@
 import { getState, getPhantoms, actions } from '../state/store.js'
 import { showSuccess, showError } from '../notifications.js'
 import { NODE_SIZE } from '../constants.js'
-import { createArtifactNode, createTemporalNode, createReferenceNode, drawEdges, nodeCenter } from './nodes.js'
+import { createArtifactNode, createTemporalNode, createReferenceNode, drawEdges, syncDeclaredEdges, centersOf, nodeCenter } from './nodes.js'
 import { openContextMenu } from '../components/contextMenu.js'
 import { createForceLayout } from './forceLayout.js'
 
@@ -79,32 +79,93 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
     }
 
     // --- render ---
+    let nodeEls = new Map() // id → elemento .node (para el fast-path de posiciones)
+    let lastStructure = null // referencias de la última estructura renderizada (diff barato)
+
     function render() {
         const state = getState()
+
+        // Fast-path: si solo cambió la selección/activo (el store reemplaza los arrays en cada
+        // cambio estructural, así que comparar referencias basta), actualiza clases y sal.
+        // Crítico: la selección rubber-band emite por mousemove — reconstruir cientos de nodos
+        // por evento congela el canvas.
+        const structural =
+            !lastStructure ||
+            lastStructure.artifacts !== state.artifacts ||
+            lastStructure.relationships !== state.relationships ||
+            lastStructure.temporals !== state.temporals ||
+            lastStructure.inferred !== state.inferred
+        if (!structural) {
+            const activeId = getActiveArtifactId?.()
+            for (const [id, elNode] of nodeEls) {
+                elNode.classList.toggle('node--selected', state.selectedIds.has(id))
+                elNode.classList.toggle('node--active', activeId === id)
+            }
+            return
+        }
+        lastStructure = {
+            artifacts: state.artifacts,
+            relationships: state.relationships,
+            temporals: state.temporals,
+            inferred: state.inferred,
+        }
+
         // Quita nodos previos (conserva svg + selection rect).
         world.querySelectorAll('.node').forEach((n) => n.remove())
+        nodeEls = new Map()
 
         const phantoms = computePhantoms(state)
         redrawEdges(phantoms)
 
         const activeId = getActiveArtifactId?.()
+        // Los nodos se insertan en un fragment: una sola inserción al DOM (importante con cientos).
+        const frag = document.createDocumentFragment()
         for (const a of state.artifacts) {
             const node = createArtifactNode(a, {
                 selected: state.selectedIds.has(a.id),
                 active: activeId === a.id,
             })
             wireNode(node, a)
-            world.appendChild(node)
+            frag.appendChild(node)
+            nodeEls.set(a.id, node)
         }
         for (const t of state.temporals) {
-            world.appendChild(createTemporalNode(t, { current: true }))
+            frag.appendChild(createTemporalNode(t, { current: true }))
         }
         for (const p of phantoms) {
-            world.appendChild(
+            frag.appendChild(
                 createReferenceNode(p.name, { x: p.x, y: p.y }, (name) =>
                     onCreateFromMention?.(name, p.sources, { x: p.x, y: p.y })
                 )
             )
+        }
+        world.appendChild(frag)
+    }
+
+    /**
+     * Fast-path de posiciones: mueve nodos y aristas EXISTENTES actualizando solo atributos,
+     * sin destruir/recrear DOM. Es lo que hace fluido el layout animado y el drag con
+     * cientos de nodos (el render() completo queda para cambios estructurales).
+     */
+    function syncPositions(override) {
+        const state = getState()
+        for (const a of state.artifacts) {
+            if (override?.id === a.id) continue // el nodo en drag ya lo mueve el handler
+            const elNode = nodeEls.get(a.id)
+            if (!elNode) continue
+            elNode.style.left = `${a.visualProperties?.x ?? 0}px`
+            elNode.style.top = `${a.visualProperties?.y ?? 0}px`
+        }
+        syncEdges(override)
+    }
+
+    /** Re-posiciona aristas declaradas + overlay inferido in place. */
+    function syncEdges(override) {
+        const state = getState()
+        const centerById = centersOf(state.artifacts, override)
+        syncDeclaredEdges(svg, centerById)
+        if (inferredPath && inferredPairs.length > 0) {
+            inferredPath.setAttribute('d', inferredD(centerById))
         }
     }
 
@@ -130,10 +191,27 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
         })
     }
 
+    // Overlay inferido (F3): con cientos de relaciones inferidas, un <line> por arista mata el
+    // rendimiento. Se dibujan TODAS en un único <path> (un solo elemento DOM).
+    let inferredPath = null
+    let inferredPairs = [] // [{sourceId, targetId}] del último redraw
+
+    function inferredD(centerById) {
+        let d = ''
+        for (const p of inferredPairs) {
+            const s = centerById.get(p.sourceId)
+            const t = centerById.get(p.targetId)
+            if (!s || !t) continue
+            d += `M${s.x},${s.y}L${t.x},${t.y}`
+        }
+        return d
+    }
+
     function redrawEdges(phantoms) {
         const state = getState()
         const override = isDragging && draggingId && liveDragCenter ? { id: draggingId, center: liveDragCenter } : null
         drawEdges(svg, state.artifacts, state.relationships, override)
+        inferredPath = null
 
         // Aristas punteadas hacia los nodos fantasma (referencias sin resolver).
         const list = phantoms ?? computePhantoms(state)
@@ -159,26 +237,18 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
             }
         }
 
-        // Overlay de relaciones inferidas por el motor (F3): ámbar punteado.
-        if (state.inferred.length > 0) {
-            const byId = new Map(state.artifacts.map((a) => [a.id, a]))
-            for (const r of state.inferred) {
-                const s = byId.get(r.sourceId)
-                const t = byId.get(r.targetId)
-                if (!s || !t) continue
-                const sc = nodeCenter(s)
-                const tc = nodeCenter(t)
-                const line = document.createElementNS(SVG_NS, 'line')
-                line.setAttribute('x1', sc.x)
-                line.setAttribute('y1', sc.y)
-                line.setAttribute('x2', tc.x)
-                line.setAttribute('y2', tc.y)
-                line.setAttribute('stroke', '#f59e0b')
-                line.setAttribute('stroke-width', '2')
-                line.setAttribute('stroke-dasharray', '2,4')
-                line.setAttribute('opacity', '0.85')
-                svg.appendChild(line)
-            }
+        // Overlay de relaciones inferidas por el motor (F3): ámbar punteado, todo en UN path.
+        inferredPairs = state.inferred.map((r) => ({ sourceId: r.sourceId, targetId: r.targetId }))
+        if (inferredPairs.length > 0) {
+            const centerById = centersOf(state.artifacts, override)
+            inferredPath = document.createElementNS(SVG_NS, 'path')
+            inferredPath.setAttribute('d', inferredD(centerById))
+            inferredPath.setAttribute('fill', 'none')
+            inferredPath.setAttribute('stroke', '#f59e0b')
+            inferredPath.setAttribute('stroke-width', '2')
+            inferredPath.setAttribute('stroke-dasharray', '2,4')
+            inferredPath.setAttribute('opacity', '0.85')
+            svg.appendChild(inferredPath)
         }
 
         if (relationLine) {
@@ -287,6 +357,17 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
         onCreateAt?.(x, y)
     })
 
+    // Throttle a un frame para el re-posicionado de aristas durante el drag.
+    let edgeSyncRaf = null
+    function scheduleEdgeSync() {
+        if (edgeSyncRaf) return
+        edgeSyncRaf = requestAnimationFrame(() => {
+            edgeSyncRaf = null
+            const override = isDragging && draggingId && liveDragCenter ? { id: draggingId, center: liveDragCenter } : null
+            syncEdges(override)
+        })
+    }
+
     // mousemove/up a nivel documento → el drag/selección continúan fuera del canvas.
     function onDocMouseMove(e) {
         // Paneo en curso: desplaza el viewport y sale.
@@ -322,14 +403,15 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
             draggingEl?.classList.add('node--dragging')
         }
 
-        // Drag en vivo (mueve el DOM directo, sin pasar por el store)
+        // Drag en vivo (mueve el DOM directo, sin pasar por el store). Las aristas se
+        // re-posicionan in place y con throttle a un frame (rAF) — nunca se recrean.
         if (isDragging && draggingEl) {
             const nx = x - dragOffset.x
             const ny = y - dragOffset.y
             draggingEl.style.left = `${nx}px`
             draggingEl.style.top = `${ny}px`
             liveDragCenter = { x: nx + NODE_SIZE / 2, y: ny + NODE_SIZE / 2 }
-            redrawEdges()
+            scheduleEdgeSync()
             return
         }
 
@@ -481,11 +563,37 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
         return ids
     }
 
+    // --- encuadre: ajusta zoom/paneo para que el grafo completo quepa en el viewport ---
+    function fitToView(padding = 60) {
+        const state = getState()
+        if (state.artifacts.length === 0) return
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (const a of state.artifacts) {
+            const x = a.visualProperties?.x ?? 0
+            const y = a.visualProperties?.y ?? 0
+            if (x < minX) minX = x
+            if (y < minY) minY = y
+            if (x + NODE_SIZE > maxX) maxX = x + NODE_SIZE
+            if (y + NODE_SIZE > maxY) maxY = y + NODE_SIZE
+        }
+        const r = rectOf()
+        const w = Math.max(maxX - minX, 1)
+        const h = Math.max(maxY - minY, 1)
+        const scale = Math.max(
+            ZOOM_MIN,
+            Math.min((r.width - 2 * padding) / w, (r.height - 2 * padding) / h, 1.25)
+        )
+        viewport.scale = scale
+        viewport.tx = (r.width - w * scale) / 2 - minX * scale
+        viewport.ty = (r.height - h * scale) / 2 - minY * scale
+        applyTransform()
+    }
+
     // --- auto-layout (fuerzas, sin D3) ---
-    let cancelLayout = null
+    let layoutRunning = false
 
     async function autoLayout() {
-        if (cancelLayout) return // ya hay uno en curso
+        if (layoutRunning) return // ya hay uno en curso
         const state = getState()
         if (state.artifacts.length < 2) return
 
@@ -502,8 +610,9 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
 
         const sim = createForceLayout({ nodes, links, width, height })
 
-        // Aplica posiciones mutando visualProperties en sitio (sin emit) y re-renderiza;
-        // así nodos y aristas quedan consistentes en cada frame. n es pequeño.
+        // Aplica posiciones mutando visualProperties en sitio (sin emit) y usa el fast-path:
+        // mover nodos/aristas existentes actualizando atributos. Reconstruir el DOM entero
+        // por frame (render()) se traba con cientos de nodos.
         const apply = (positions) => {
             const posById = new Map(positions.map((p) => [p.id, p]))
             for (const a of state.artifacts) {
@@ -511,7 +620,7 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
                 if (!p) continue
                 a.visualProperties = { ...(a.visualProperties ?? {}), x: p.x, y: p.y }
             }
-            render()
+            syncPositions()
         }
 
         const persist = async (final) => {
@@ -523,27 +632,22 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
             }
         }
 
-        // Con la pestaña oculta rAF se pausa; corre el layout de forma síncrona para no
-        // dejar el botón colgado. Con la pestaña visible, anima.
-        if (document.hidden) {
+        // Layout SIEMPRE estático: se calcula de golpe y se pinta el resultado final + encuadre.
+        // La animación por frame ralentizaba con grafos grandes y no aporta al análisis.
+        layoutRunning = true
+        try {
             const final = sim.runStatic()
             apply(final)
+            fitToView()
             await persist(final)
-            return
+        } finally {
+            layoutRunning = false
         }
-
-        await new Promise((resolve) => {
-            cancelLayout = sim.animate(apply, async (final) => {
-                cancelLayout = null
-                await persist(final)
-                resolve()
-            })
-        })
     }
 
     function destroy() {
-        cancelLayout?.()
-        cancelLayout = null
+        if (edgeSyncRaf) cancelAnimationFrame(edgeSyncRaf)
+        edgeSyncRaf = null
         document.removeEventListener('mousemove', onDocMouseMove)
         document.removeEventListener('mouseup', onDocMouseUp)
         window.removeEventListener('keydown', onKeyDown)
@@ -552,5 +656,5 @@ export function createCanvas({ onCreateAt, onOpenEditor, getActiveArtifactId, on
 
     applyTransform()
 
-    return { el, render, destroy, autoLayout, worldToScreen }
+    return { el, render, destroy, autoLayout, fitToView, worldToScreen }
 }

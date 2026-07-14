@@ -14,6 +14,7 @@ const state = {
     selectedIds: new Set(),
     validity: { isValid: true, errorCount: 0 },
     inferred: [], // relaciones inferidas por el motor (F3); overlay sobre el grafo
+    diagnostics: [], // diagnósticos estructurales del motor (Fase A): {severity,code,artifactId,message}
     loaded: false,
 }
 
@@ -89,6 +90,7 @@ export const actions = {
         state.artifacts = artifacts
         state.relationships = dedupeRelationships(relLists)
         state.inferred = [] // las inferencias quedan obsoletas al recargar el modelo
+        state.diagnostics = []
         state.loaded = true
         await refreshValidity()
         emit()
@@ -102,6 +104,12 @@ export const actions = {
     clearInferred() {
         if (state.inferred.length === 0) return
         state.inferred = []
+        emit()
+    },
+
+    /** Diagnósticos estructurales del motor (Fase A): errores/warnings accionables. */
+    setDiagnostics(list) {
+        state.diagnostics = list ?? []
         emit()
     },
 
