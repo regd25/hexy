@@ -1,9 +1,9 @@
 /** Cabecera del grafo: título, badge de validez (eval gate SOL), contadores, import y export. */
 import { api } from '../api/client.js'
 import { actions, getState } from '../state/store.js'
-import { showSuccess, showError } from '../notifications.js'
+import { showSuccess, showError, showInfo } from '../notifications.js'
 
-export function createHeader({ onAutoLayout } = {}) {
+export function createHeader({ onAutoLayout, onExtracted } = {}) {
     const el = document.createElement('div')
     el.className = 'graph__header'
     el.innerHTML = `
@@ -13,6 +13,16 @@ export function createHeader({ onAutoLayout } = {}) {
                 <span class="badge-validity" data-validity hidden>
                     <span class="badge-validity__dot"></span><span data-validity-text></span>
                 </span>
+                <input class="input input--path" data-extract-path type="text" value="../gatonica"
+                    title="Ruta a un repo (relativa al proyecto o absoluta) para extraer su grafo estructural" placeholder="ruta al repo…" />
+                <select class="input input--depth" data-extract-depth
+                    title="Profundidad del análisis: carpetas más profundas se agregan a su área (vista ejecutiva vs detalle)">
+                    <option value="2" selected>áreas (2)</option>
+                    <option value="3">medio (3)</option>
+                    <option value="">todo</option>
+                </select>
+                <button class="btn" data-extract title="Extraer el grafo estructural de código de un repo real (cualquier proyecto JS/TS o Python)">Extraer repo</button>
+                <button class="btn" data-enrich title="Fase C: Gemini etiqueta el grafo con nombres de negocio, descripciones ancladas al código, tipos ontológicos y relaciones semánticas">IA: enriquecer</button>
                 <button class="btn" data-autolayout title="Reorganizar el grafo con un layout de fuerzas">Auto-organizar</button>
                 <button class="btn" data-analyze title="Proyectar a RDF y inferir relaciones con el motor (Python)">Analizar con el motor</button>
                 <button class="btn" data-import title="Importar un .yaml SOL y reconstruir el grafo">Import .yaml</button>
@@ -31,6 +41,50 @@ export function createHeader({ onAutoLayout } = {}) {
     const importFile = el.querySelector('[data-import-file]')
     const analyzeBtn = el.querySelector('[data-analyze]')
     const autoLayoutBtn = el.querySelector('[data-autolayout]')
+    const extractBtn = el.querySelector('[data-extract]')
+    const extractPath = el.querySelector('[data-extract-path]')
+    const extractDepth = el.querySelector('[data-extract-depth]')
+
+    extractBtn.addEventListener('click', async () => {
+        const path = extractPath.value.trim()
+        if (!path) return showError('Escribe una ruta al repo a extraer')
+        extractBtn.disabled = true
+        extractBtn.textContent = 'Extrayendo…'
+        try {
+            const maxDepth = extractDepth.value ? Number(extractDepth.value) : undefined
+            const result = await api.extractRepo(path, { maxDepth })
+            await actions.loadAll() // recarga el grafo persistido
+            onExtracted?.()
+            const s = result.stats ?? {}
+            const langs = (s.languages ?? []).join('+')
+            const adapters = s.adapters?.length ? ` · adaptadores: ${s.adapters.join(', ')}` : ''
+            showSuccess(`Extraído «${path}»: ${result.artifacts} artefactos, ${result.relationships} relaciones (${s.filesScanned ?? 0} archivos, ${langs})${adapters}`)
+        } catch (err) {
+            showError(`Extracción falló: ${err.message}`)
+        } finally {
+            extractBtn.disabled = false
+            extractBtn.textContent = 'Extraer repo'
+        }
+    })
+
+    const enrichBtn = el.querySelector('[data-enrich]')
+    enrichBtn.addEventListener('click', async () => {
+        if (getState().artifacts.length === 0) return showError('Extrae o modela un grafo antes de enriquecerlo')
+        enrichBtn.disabled = true
+        enrichBtn.textContent = 'IA pensando…'
+        try {
+            // La misma ruta del input ancla la evidencia (extractos de código) del LLM.
+            const result = await api.enrichModel(extractPath.value.trim() || undefined)
+            await actions.loadAll()
+            const skipped = result.skipped?.length ? ` · ${result.skipped.length} propuesta(s) descartadas por el clamp` : ''
+            showSuccess(`IA (${result.stats?.model ?? 'gemini'}): ${result.updated} artefactos enriquecidos, ${result.relationsCreated} relación(es) semántica(s) nueva(s)${skipped}`)
+        } catch (err) {
+            showError(`Enriquecimiento falló: ${err.message}`)
+        } finally {
+            enrichBtn.disabled = false
+            enrichBtn.textContent = 'IA: enriquecer'
+        }
+    })
 
     autoLayoutBtn.addEventListener('click', async () => {
         if (getState().artifacts.length < 2) return
@@ -51,11 +105,23 @@ export function createHeader({ onAutoLayout } = {}) {
         try {
             const result = await api.engineProject()
             actions.setInferred(result.inferred ?? [])
+            const diagnostics = result.diagnostics ?? []
+            actions.setDiagnostics(diagnostics)
+
             const cyc = result.stats?.cycleCount ?? 0
             const cycMsg = cyc > 0 ? ` · ${cyc} ciclo(s) detectado(s)` : ''
             showSuccess(
                 `Motor: ${result.stats.nodes} entidades, ${result.rdf.triples} triples RDF, ${result.stats.inferredCount} relación(es) inferida(s)${cycMsg}`
             )
+
+            // Fase A: los diagnósticos del motor ya no se tragan — se muestran, el más grave primero.
+            const errors = diagnostics.filter((d) => d.severity === 'error')
+            const warnings = diagnostics.filter((d) => d.severity === 'warning')
+            if (errors.length > 0) {
+                showError(`${errors.length} error(es) de modelo — ${errors[0].message}`)
+            } else if (warnings.length > 0) {
+                showInfo(`${warnings.length} advertencia(s) — ${warnings[0].message}`)
+            }
         } catch (err) {
             showError(err.message)
         } finally {

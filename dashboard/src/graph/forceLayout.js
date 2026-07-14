@@ -19,6 +19,10 @@ const DEFAULTS = {
     alphaDecay: 0.02, // decaimiento por tick
     alphaMin: 0.02, // umbral para detener la animación
     maxTicks: 600, // tope duro de ticks en runStatic
+    // Estabilidad numérica: sin estos topes, dos nodos casi superpuestos generan una fuerza
+    // ∝ 1/d² → ∞ y la simulación EXPLOTA (posiciones de millones de px, grafo invisible).
+    minRepelDistance: 30, // la repulsión se satura por debajo de esta distancia
+    maxVelocity: 40, // px/tick máximos; capa cualquier pico de fuerza
 }
 
 export function createForceLayout({ nodes, links, width, height, options = {} }) {
@@ -49,7 +53,9 @@ export function createForceLayout({ nodes, links, width, height, options = {} })
                     d2 = dx * dx + dy * dy
                 }
                 const dist = Math.sqrt(d2)
-                const force = (opts.charge / d2) * alpha
+                // Suaviza la repulsión a corta distancia (evita fuerzas → ∞ con nodos superpuestos).
+                const d2safe = Math.max(d2, opts.minRepelDistance * opts.minRepelDistance)
+                const force = (opts.charge / d2safe) * alpha
                 const fx = (dx / dist) * force
                 const fy = (dy / dist) * force
                 a.vx += fx
@@ -92,6 +98,12 @@ export function createForceLayout({ nodes, links, width, height, options = {} })
             }
             n.vx *= opts.damping
             n.vy *= opts.damping
+            // Tope de velocidad: ningún pico de fuerza puede disparar un nodo fuera del mundo.
+            const speed = Math.hypot(n.vx, n.vy)
+            if (speed > opts.maxVelocity) {
+                n.vx = (n.vx / speed) * opts.maxVelocity
+                n.vy = (n.vy / speed) * opts.maxVelocity
+            }
             n.x += n.vx
             n.y += n.vy
         }

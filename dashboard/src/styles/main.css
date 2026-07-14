@@ -222,6 +222,18 @@ body {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
 }
+.input--path {
+    flex: 0 0 auto;
+    width: 8.5rem;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+}
+.input--depth {
+    flex: 0 0 auto;
+    width: auto;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.4rem;
+}
 .select {
     font: inherit;
     font-size: 0.85rem;

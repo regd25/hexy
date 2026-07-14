@@ -9,11 +9,15 @@ Arranque (desde core/engine/):  python3 app.py
 from __future__ import annotations
 
 import json
+import os
+import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from projector import project
 from runtime import run_process, DEFAULT_BUDGET
 from context import DEFAULT_CONTEXT_TOKENS
+from enricher import enrich_model
+from extractor import extract_repo
 
 HOST = "127.0.0.1"
 PORT = 8000
@@ -85,22 +89,52 @@ class EngineHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": str(err)})
             return
 
-        if self.path == "/model/project":
-            self._send_json(200, project(self._model_from(body)))
-            return
-
-        if self.path in ("/run", "/run/sync"):
-            process_id = body.get("processId")
-            if not process_id:
-                self._send_json(400, {"error": "processId es requerido"})
+        try:
+            if self.path == "/model/project":
+                self._send_json(200, project(self._model_from(body)))
                 return
-            budget = int(body.get("budget") or DEFAULT_BUDGET)
-            tokens = int(body.get("contextTokens") or DEFAULT_CONTEXT_TOKENS)
-            trace = run_process(self._model_from(body), process_id, budget, tokens)
-            if self.path == "/run/sync":
-                self._send_json(200, {"trace": list(trace)})
-            else:
-                self._stream_sse(trace)
+
+            if self.path == "/repo/extract":
+                path = body.get("path")
+                if not path or not os.path.isdir(path):
+                    self._send_json(400, {"error": f"path inválido o no es un directorio: {path!r}", "code": "BAD_PATH"})
+                    return
+                options = {
+                    k: body[k]
+                    for k in ("languages", "granularity", "adapters", "exclude", "maxFiles", "maxDepth")
+                    if body.get(k) is not None
+                }
+                self._send_json(200, extract_repo(path, options))
+                return
+
+            if self.path == "/model/enrich":
+                # Fase C: Gemini etiqueta el grafo estructural (nombre/descripción/tipo + relaciones
+                # semánticas), con clamp anti-alucinación. `path` opcional = repo para extractos.
+                path = body.get("path")
+                root = path if path and os.path.isdir(path) else None
+                self._send_json(200, enrich_model(self._model_from(body), root, {"model": body.get("model")}))
+                return
+
+            if self.path in ("/run", "/run/sync"):
+                process_id = body.get("processId")
+                if not process_id:
+                    self._send_json(400, {"error": "processId es requerido"})
+                    return
+                budget = int(body.get("budget") or DEFAULT_BUDGET)
+                tokens = int(body.get("contextTokens") or DEFAULT_CONTEXT_TOKENS)
+                trace = run_process(self._model_from(body), process_id, budget, tokens)
+                if self.path == "/run/sync":
+                    self._send_json(200, {"trace": list(trace)})
+                else:
+                    self._stream_sse(trace)
+                return
+        except Exception as err:  # noqa: BLE001 — el motor NO debe fallar en silencio (500 mudo)
+            self._send_json(500, {
+                "error": f"{type(err).__name__}: {err}",
+                "code": "ENGINE_ERROR",
+                "path": self.path,
+                "traceback": traceback.format_exc(),
+            })
             return
 
         self._send_json(404, {"error": f"ruta no encontrada: {self.path}"})
@@ -115,13 +149,23 @@ class EngineHandler(BaseHTTPRequestHandler):
         # Sin Content-Length: el fin del stream lo marca el cierre de la conexión.
         self.send_header("Connection", "close")
         self.end_headers()
+        def emit(item):
+            chunk = f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
+            self.wfile.write(chunk.encode("utf-8"))
+            self.wfile.flush()
+
         try:
             for item in items:
-                chunk = f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
-                self.wfile.write(chunk.encode("utf-8"))
-                self.wfile.flush()
+                emit(item)
         except (BrokenPipeError, ConnectionResetError):
             pass  # el cliente cortó; nada que hacer
+        except Exception as err:  # noqa: BLE001 — reportar el fallo en la traza, no colgar el stream
+            try:
+                emit({"kind": "violation", "severity": "error", "stage": "engine",
+                      "message": f"{type(err).__name__}: {err}", "traceback": traceback.format_exc()})
+                emit({"kind": "done", "status": "engineError"})
+            except (BrokenPipeError, ConnectionResetError):
+                pass
 
     def log_message(self, fmt, *args):  # silencia el log por request del BaseHTTPRequestHandler
         pass

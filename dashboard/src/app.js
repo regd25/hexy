@@ -39,7 +39,11 @@ export function mountApp(root) {
         requestCanvasRender: () => canvas.render(),
         worldToScreen: (x, y) => canvas.worldToScreen(x, y),
     })
-    const header = createHeader({ onAutoLayout: () => canvas.autoLayout() })
+    const header = createHeader({
+        onAutoLayout: () => canvas.autoLayout(),
+        // Tras extraer un repo: organizar el grafo nuevo y encuadrarlo (el layout ya encuadra al final).
+        onExtracted: () => canvas.autoLayout(),
+    })
 
     canvasWrap.appendChild(canvas.el)
     graphPanel.append(header.el, canvasWrap)

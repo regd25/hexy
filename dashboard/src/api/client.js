@@ -57,6 +57,15 @@ export const api = {
     // Engine bridge (F3): proyección RDF + inferencias del motor Python.
     engineProject: () => request('POST', '/engine/project', {}),
 
+    // Fase B: extrae el grafo estructural de un repo real y lo persiste como modelo.
+    // maxDepth (opcional): agrega carpetas más profundas que N niveles — "vista por áreas".
+    extractRepo: (path, { maxDepth } = {}) =>
+        request('POST', '/engine/extract', { path, replace: true, ...(maxDepth ? { maxDepth } : {}) }),
+
+    // Fase C: Gemini etiqueta el grafo actual (nombres de negocio, descripciones ancladas,
+    // tipos ontológicos y relaciones semánticas). `path` = repo del que sacar evidencia.
+    enrichModel: (path) => request('POST', '/engine/enrich', path ? { path } : {}),
+
     /**
      * F4 — HarnessRuntime: corre un Process y consume la traza SSE.
      * Invoca onEntry(entry) por cada entrada de traza; resuelve al terminar el stream.

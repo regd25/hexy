@@ -63,6 +63,60 @@ class TestProjector(unittest.TestCase):
         result = project(model)
         self.assertEqual(result["stats"]["edges"], 0)
 
+    def _codes(self, result):
+        return {(d["code"], d["artifactId"]) for d in result["diagnostics"]}
+
+    def test_diagnostic_process_without_flow(self):
+        # Un Process sin relaciones salientes no se puede ejecutar → error.
+        model = {
+            "artifacts": [{"id": "p", "type": "process", "name": "P"}, {"id": "i", "type": "intent"}],
+            "relationships": [{"sourceId": "i", "targetId": "p", "type": "references"}],
+        }
+        result = project(model)
+        self.assertIn(("PROCESS_WITHOUT_FLOW", "p"), self._codes(result))
+        self.assertGreaterEqual(result["stats"]["errorCount"], 1)
+
+    def test_diagnostic_orphan_and_governance_and_intent(self):
+        model = {
+            "artifacts": [
+                {"id": "p", "type": "process", "name": "P"},
+                {"id": "s", "type": "action", "name": "Paso"},
+                {"id": "pol", "type": "policy", "name": "Desconectada"},
+                {"id": "orph", "type": "concept", "name": "Suelto"},
+                {"id": "i", "type": "intent", "name": "Meta"},
+            ],
+            "relationships": [
+                {"sourceId": "p", "targetId": "s", "type": "references"},
+                {"sourceId": "i", "targetId": "p", "type": "references"},
+                {"sourceId": "pol", "targetId": "i", "type": "references"},
+            ],
+        }
+        codes = self._codes(project(model))
+        self.assertIn(("ORPHAN_ARTIFACT", "orph"), codes)          # sin ninguna relación
+        self.assertIn(("GOVERNANCE_NOT_APPLIED", "pol"), codes)    # conectada, pero no a un process
+        self.assertIn(("INTENT_WITHOUT_EVALUATION", "i"), codes)   # intent sin evaluation
+        self.assertNotIn(("PROCESS_WITHOUT_FLOW", "p"), codes)     # p sí tiene salida → sin error
+
+    def test_clean_model_has_no_diagnostics(self):
+        model = {
+            "artifacts": [
+                {"id": "p", "type": "process", "name": "P"},
+                {"id": "s", "type": "action", "name": "Paso"},
+                {"id": "i", "type": "intent", "name": "Meta"},
+                {"id": "e", "type": "evaluation", "name": "Criterio"},
+                {"id": "pol", "type": "policy", "name": "Regla"},
+            ],
+            "relationships": [
+                {"sourceId": "p", "targetId": "s", "type": "references"},
+                {"sourceId": "i", "targetId": "p", "type": "references"},
+                {"sourceId": "e", "targetId": "i", "type": "references"},
+                {"sourceId": "pol", "targetId": "p", "type": "references"},
+            ],
+        }
+        result = project(model)
+        self.assertEqual(result["diagnostics"], [])
+        self.assertEqual(result["stats"]["diagnosticCount"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

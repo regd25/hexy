@@ -127,7 +127,16 @@ function escapeHtml(s) {
     return div.innerHTML
 }
 
-/** Dibuja todas las aristas (relaciones) dentro del SVG dado. */
+/** Centros actuales de todos los artefactos (con override opcional para el nodo en drag). */
+export function centersOf(artifacts, overridePos) {
+    return new Map(artifacts.map((a) => [a.id, overridePos?.id === a.id ? overridePos.center : nodeCenter(a)]))
+}
+
+/**
+ * Dibuja todas las aristas (relaciones) dentro del SVG dado y registra las referencias
+ * línea↔endpoints en `svg.__declaredEdges` para poder re-posicionarlas sin recrear DOM
+ * (ver syncDeclaredEdges — clave de rendimiento con cientos de aristas).
+ */
 export function drawEdges(svg, artifacts, relationships, overridePos) {
     while (svg.firstChild) svg.removeChild(svg.firstChild)
 
@@ -136,10 +145,8 @@ export function drawEdges(svg, artifacts, relationships, overridePos) {
         '<marker id="hexy-edge-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b" /></marker>'
     svg.appendChild(defs)
 
-    const centerById = new Map(
-        artifacts.map((a) => [a.id, overridePos?.id === a.id ? overridePos.center : nodeCenter(a)])
-    )
-
+    const centerById = centersOf(artifacts, overridePos)
+    const refs = []
     for (const r of relationships) {
         const s = centerById.get(r.sourceId)
         const t = centerById.get(r.targetId)
@@ -154,5 +161,20 @@ export function drawEdges(svg, artifacts, relationships, overridePos) {
         line.setAttribute('opacity', '0.8')
         line.setAttribute('marker-end', 'url(#hexy-edge-arrow)')
         svg.appendChild(line)
+        refs.push({ el: line, sourceId: r.sourceId, targetId: r.targetId })
+    }
+    svg.__declaredEdges = refs
+}
+
+/** Re-posiciona las aristas existentes IN PLACE (solo atributos, cero creación de DOM). */
+export function syncDeclaredEdges(svg, centerById) {
+    for (const { el, sourceId, targetId } of svg.__declaredEdges ?? []) {
+        const s = centerById.get(sourceId)
+        const t = centerById.get(targetId)
+        if (!s || !t) continue
+        el.setAttribute('x1', s.x)
+        el.setAttribute('y1', s.y)
+        el.setAttribute('x2', t.x)
+        el.setAttribute('y2', t.y)
     }
 }
