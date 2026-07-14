@@ -1,9 +1,6 @@
 packages:
-  - "apps/*"
-  - "packages/*"
   - "dashboard"
   - "landing"
-  - "shared"
   - "server"
   - "core/engine"
 

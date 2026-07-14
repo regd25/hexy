@@ -35,13 +35,12 @@ condiciones, actores y flujos de forma estructurada y auditable.
 
 ## 🚀 Características principales
 
-- ⚙️ **Semantic Engine** — interpreta artefactos (OWL/RDF + SPARQL) y decide qué ejecutar,
-  validar o rechazar según reglas organizacionales. (`core/hexy-ontology-manager.py`,
-  `core/hexy-rdf-processor.py`)
-- 🔁 **Context Orchestration** — pipeline `cache → memory → select → compress → explain`
-  con explicabilidad nativa. (`core/hexy-context-orchestrator.py`)
-- 📦 **ExecutionContext** — traza inmutable: actor, propósito, inputs, events, observations,
-  violations. (`shared/types/ExecutionContext.ts`)
+- ⚙️ **Semantic Engine** — proyecta artefactos a RDF e infiere relaciones (cierre transitivo,
+  ciclos) según reglas organizacionales. (`core/engine/projector.py`, F3)
+- 🔁 **Context Orchestration** — selecciona el sub-grafo semántico relevante por step dentro
+  de un token budget, con razones explicables. (`core/engine/context.py`, F6)
+- 📦 **ExecutionContext** — traza inmutable emitida por el loop: event, observation, context,
+  violation, done. (`core/engine/runtime.py`, F4)
 - 🧰 **HarnessRuntime** *(en diseño)* — corre el loop `act → observe → validate → decide →
   repeat`. (`docs/hexy/harness-runtime.md`)
 - 🧩 **Tools / Plugins** — vía **MCP** (prioritario), Jira, n8n, AWS Step Functions, REST.
@@ -70,20 +69,20 @@ dos modos:
 
 ```
 hexy/
-├── core/        # Semantic Engine Python: prototipo (hexy-*.py) + engine/ (FastAPI RDF+inferencias, F3)
+├── core/engine/ # Semantic Engine Python (stdlib, sin deps): RDF+inferencias (F3),
+│                # HarnessRuntime (F4/F5), Context Orchestration (F6)
 ├── server/      # Backend Node.js puro (node:http): YAML (fuente de verdad) + índice SQLite
-├── shared/      # Single Source of Truth (TS): types/, events/, repository/, adapters/
 ├── dashboard/   # UI de artefactos (vanilla JS + CSS, bundleada con Vite)
 ├── tools/       # Servidores MCP: mcp-notes (tool server de prueba del HarnessRuntime, F5)
 ├── landing/     # Landing page (Next.js)  ·  contenido de "Visión", no de runtime
-├── docs/        # Documentación  →  empezar por docs/POSITIONING.md
-└── specs/       # Especificaciones del dashboard
+└── docs/        # Documentación  →  empezar por docs/POSITIONING.md
 ```
 
 > ℹ️ **Nota de migración.** El core original en TypeScript (`core/*.ts`) fue **eliminado** y
-> reemplazado por `shared/` (Single Source of Truth) + un core en **Python**. La
-> documentación con carpetas `plugins/ agents/ lib/` describía una estructura anterior que
-> **ya no existe**.
+> reemplazado por un core en **Python** (`core/engine/`). Los prototipos previos
+> (`core/hexy-*.py`, sin uso real en el sistema) y el paquete `shared/` (Single Source of
+> Truth en TS, sin importadores reales) fueron retirados; la documentación con carpetas
+> `plugins/ agents/ lib/` describía una estructura anterior que **ya no existe**.
 
 ---
 
