@@ -3,11 +3,19 @@
  * Lecturas → índice SQLite; mutaciones → write-through YAML + índice.
  */
 
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Router } from '../router.js'
 import { sendJson, sendText, notFound, badRequest } from '../http.js'
 import { serializeYaml } from '../domain/sol/serializeYaml.js'
 import { validateYaml } from '../domain/sol/validateYaml.js'
 import { importGraph } from '../domain/sol/importGraph.js'
+import { persistGraph } from '../domain/persistGraph.js'
+
+// Raíz del repo Hexy (server/src/api → ../../..) y raíz permitida para extracción
+// (el directorio de proyectos que la contiene: cubre gatonica, el propio hexy, etc.).
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
+const ALLOWED_ROOT = path.resolve(REPO_ROOT, '..')
 
 /**
  * @param {object} deps
@@ -155,11 +163,114 @@ export function createRouter({ service, validation }) {
         } catch (err) {
             const reason = err.name === 'AbortError' ? 'timeout' : err.message
             sendJson(res, 502, {
-                error: `No se pudo contactar el motor (${engineUrl}): ${reason}. ¿Está corriendo? (cd core/engine && uvicorn app:app --port 8000)`,
+                error: `No se pudo contactar el motor (${engineUrl}): ${reason}. ¿Está corriendo? (cd core/engine && python3 app.py)`,
             })
         } finally {
             clearTimeout(timeout)
         }
+    })
+
+    // Fase B — Extractor: pide al motor el grafo estructural de un repo real y lo persiste
+    // como modelo (para que project/diagnósticos/Run funcionen sobre él sin cambios).
+    router.post('/api/engine/extract', async ({ res, body }) => {
+        const raw = body?.path
+        if (!raw) throw badRequest('path is required')
+        const abs = path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(REPO_ROOT, raw)
+        if (abs !== ALLOWED_ROOT && !abs.startsWith(ALLOWED_ROOT + path.sep)) {
+            return sendJson(res, 400, { error: `path fuera del directorio permitido (${ALLOWED_ROOT}): ${abs}` })
+        }
+
+        const engineUrl = ENGINE_URL()
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 30000)
+        let graph
+        try {
+            const engineRes = await fetch(`${engineUrl}/repo/extract`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    path: abs,
+                    ...(body.languages != null ? { languages: body.languages } : {}),
+                    ...(body.granularity != null ? { granularity: body.granularity } : {}),
+                    ...(body.adapters != null ? { adapters: body.adapters } : {}),
+                    ...(body.maxDepth != null ? { maxDepth: body.maxDepth } : {}),
+                }),
+                signal: controller.signal,
+            })
+            const payload = await engineRes.json()
+            if (!engineRes.ok) return sendJson(res, engineRes.status, payload)
+            graph = payload
+        } catch (err) {
+            const reason = err.name === 'AbortError' ? 'timeout' : err.message
+            return sendJson(res, 502, {
+                error: `No se pudo contactar el motor (${engineUrl}): ${reason}. ¿Está corriendo? (cd core/engine && python3 app.py)`,
+            })
+        } finally {
+            clearTimeout(timeout)
+        }
+
+        const persisted = await persistGraph(service, graph, { mode: body.replace === false ? 'merge' : 'replace' })
+        sendJson(res, 200, { ...persisted, stats: graph.stats })
+    })
+
+    // Fase C — Enriquecedor: Gemini etiqueta el grafo actual (nombre/descripción/tipo +
+    // relaciones semánticas). El motor valida (clamp anti-alucinación); aquí se APLICA:
+    // updates vía updateArtifact y relaciones nuevas vía createRelationship.
+    router.post('/api/engine/enrich', async ({ res, body }) => {
+        const model = await currentModel()
+        if (model.artifacts.length === 0) return sendJson(res, 400, { error: 'No hay modelo que enriquecer' })
+
+        // `path` opcional: repo del que extraer evidencia (mismas reglas que extract).
+        let abs
+        if (body?.path) {
+            abs = path.isAbsolute(body.path) ? path.resolve(body.path) : path.resolve(REPO_ROOT, body.path)
+            if (abs !== ALLOWED_ROOT && !abs.startsWith(ALLOWED_ROOT + path.sep)) {
+                return sendJson(res, 400, { error: `path fuera del directorio permitido (${ALLOWED_ROOT}): ${abs}` })
+            }
+        }
+
+        const engineUrl = ENGINE_URL()
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 300000) // el LLM puede tardar (schema estructurado)
+        let proposal
+        try {
+            const engineRes = await fetch(`${engineUrl}/model/enrich`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...model, ...(abs ? { path: abs } : {}) }),
+                signal: controller.signal,
+            })
+            const payload = await engineRes.json()
+            if (!engineRes.ok) return sendJson(res, engineRes.status, payload)
+            proposal = payload
+        } catch (err) {
+            const reason = err.name === 'AbortError' ? 'timeout' : err.message
+            return sendJson(res, 502, {
+                error: `No se pudo contactar el motor (${engineUrl}): ${reason}. ¿Está corriendo? (cd core/engine && python3 app.py)`,
+            })
+        } finally {
+            clearTimeout(timeout)
+        }
+
+        let updated = 0
+        for (const u of proposal.updates ?? []) {
+            try {
+                await service.updateArtifact(u.id, { name: u.name, description: u.description, type: u.type })
+                updated++
+            } catch {
+                /* artefacto borrado a media propuesta: se omite */
+            }
+        }
+        let relationsCreated = 0
+        for (const r of proposal.relationships ?? []) {
+            try {
+                await service.createRelationship(r)
+                relationsCreated++
+            } catch {
+                /* relación inválida para las reglas del dominio: se omite */
+            }
+        }
+        sendJson(res, 200, { updated, relationsCreated, skipped: proposal.skipped ?? [], stats: proposal.stats })
     })
 
     // F4 — HarnessRuntime: corre un Process y re-emite la traza SSE del motor al cliente.
@@ -182,7 +293,7 @@ export function createRouter({ service, validation }) {
             if (!engineRes.ok || !engineRes.body) throw new Error(`engine responded ${engineRes.status}`)
         } catch (err) {
             return sendJson(res, 502, {
-                error: `No se pudo contactar el motor (${engineUrl}): ${err.message}. ¿Está corriendo? (cd core/engine && ./.venv/bin/uvicorn app:app --port 8000)`,
+                error: `No se pudo contactar el motor (${engineUrl}): ${err.message}. ¿Está corriendo? (cd core/engine && python3 app.py)`,
             })
         }
 
